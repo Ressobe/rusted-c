@@ -9,18 +9,34 @@
 
 enum TokenType {
 	Null, // null
-    Number, // just number
-    Identifier, // name of variable, function
+  Number, // just number
+  Identifier, // name of variable, function
 
-    Let, // let
-	Const, // const
-	Func, // func
+  // KEYWORDS
+  Let,
+	Const,
+	Func,
+  If,  
+  Else, 
 
-    BinaryOperator, // + - * / %
-    Equals, // =
+  EqualEqual,    // ==
+  NotEqual,      // !=
+  LessThan,      // <
+  LessEqual,     // <=
+  GreaterThan,   // >
+  GreaterEqual,  // >= 
+                 
+                 
+  And,      // &&
+  Or,       // ||
+  Not,      // !
+
+
+  BinaryOperator, // + - * / %
+  Equals, // =
 	Semicolon, // ;
-    OpenParen, // (
-    CloseParen, // )
+  OpenParen, // (
+  CloseParen, // )
 
 	OpenBrace, // {
 	CloseBrace, // }
