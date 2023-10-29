@@ -1,4 +1,4 @@
-#include "ast.h"
+#include "AST.h"
 
 Stmt::Stmt(NodeType kind) {
     this->kind = kind;

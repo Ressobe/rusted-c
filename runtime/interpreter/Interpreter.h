@@ -7,6 +7,7 @@
 #include "../../ast/AST.h"
 #include "../environment/Environment.h"
 #include <iostream>
+#include <cmath>
 
 
 class Interpreter {

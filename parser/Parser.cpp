@@ -63,7 +63,7 @@ Expr* Parser::parse_primary_expr() {
 			expect(TokenType::CloseParen, "Unexpected token found inside parenthesized expression. Expected closing parenthesis.");
             break;
 		default:
-            value = nullptr; // Initialize value as nullptr in the default case
+      value = nullptr; // Initialize value as nullptr in the default case
 			std::cerr << "Unexpected token found during parsing!" << at().getValue() << std::endl;
 			std::exit(1);
     }

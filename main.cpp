@@ -4,6 +4,7 @@
 #include "parser/Parser.h"
 #include "runtime/interpreter/Interpreter.h"
 #include "runtime/values/Values.h"
+#include "runtime/environment/Environment.h"
 
 void testLexer() {
     std::string sourceCode = "let x = (42 * 90) - 120 if";
@@ -29,7 +30,6 @@ makeAdder(3);
     
 )";
         
-  
         
     Parser parser;
     Environment env;
@@ -80,6 +80,7 @@ void repl() {
 }
 
 int main() {
-    run();
-    // repl();
+    //run();
+    repl();
+    return 0;
 }

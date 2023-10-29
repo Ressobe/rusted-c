@@ -1,4 +1,4 @@
-#include "environment.h"
+#include "Environment.h"
 #include "../values/Values.h"
 
 Environment::Environment(Environment* parentEnv) : parent(parentEnv) {}
