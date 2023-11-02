@@ -89,6 +89,28 @@ void printStatement(const Stmt& stmt, const std::string& indent) {
         }
         std::cout << indent << "  ]";
     }
+    else if (stmt.kind == NodeType::FunctionDeclaration) {
+        const FunctionDeclaration& funcDecl = static_cast<const FunctionDeclaration&>(stmt);
+        std::cout << indent << "  \"Name\": \"" << funcDecl.name << "\",\n";
+        std::cout << indent << "  \"Parameters\": [\n";
+        for (const std::string& param : funcDecl.parameters) {
+            std::cout << indent << "    \"" << param << "\"";
+            if (&param != &funcDecl.parameters.back()) {
+                std::cout << ",";
+            }
+            std::cout << "\n";
+        }
+        std::cout << indent << "  ],\n";
+        std::cout << indent << "  \"Body\": [\n";
+        for (const Stmt* bodyStmt : funcDecl.body) {
+            printStatement(*bodyStmt, indent + "    ");
+            if (bodyStmt != funcDecl.body.back()) {
+                std::cout << ",";
+            }
+            std::cout << "\n";
+        }
+        std::cout << indent << "  ]";
+    }
 
     std::cout << "\n" << indent << "}";
 }
@@ -108,15 +130,18 @@ std::string NodeTypeToString(NodeType type) {
 		case NodeType::BinaryExpr:
 			value =  "BinaryExpr";
 			break;
-        case NodeType::VarDeclaration:
-            value = "VarDeclaration";
-            break;
-        case NodeType::CallExpr:
-            value = "CallExpr";
-            break;
-        case NodeType::Null:
-            value = "Null";
-            break;
+    case NodeType::VarDeclaration:
+        value = "VarDeclaration";
+        break;
+    case NodeType::CallExpr:
+        value = "CallExpr";
+        break;
+    case NodeType::FunctionDeclaration:
+        value = "FunctionDeclaration";
+        break;
+    case NodeType::Null:
+        value = "Null";
+        break;
 		default:
 			value = "Unknown"; // Handle unknown enum values
 			break;

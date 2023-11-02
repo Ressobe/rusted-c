@@ -35,6 +35,6 @@ obj/main.o: main.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf obj bin
+	rm -rf obj bin/*
 
 .PHONY: all clean

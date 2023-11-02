@@ -64,9 +64,9 @@ RuntimeVal* Interpreter::eval_var_declaration(VarDeclaration* declaration, Envir
 
 RuntimeVal* Interpreter::eval_function_declaration(FunctionDeclaration* declaration, Environment* env)
 {
-    FnVal fn = FnVal(declaration->name, declaration->parameters, env, declaration->body);
+    FnVal* fn = new FnVal(declaration->name, declaration->parameters, env, declaration->body);
 
-    return env->declareVar(declaration->name, &fn, true);
+    return env->declareVar(declaration->name, fn, true);
 }
 
 RuntimeVal* Interpreter::eval_assignment(AssignmentExpr* node, Environment* env) {
@@ -135,7 +135,6 @@ RuntimeVal* Interpreter::eval_call_expr(CallExpr* expr, Environment* env) {
         return nativeFn->call(args, env);
     }
 
-    /*
     if (fn->type == ValueType::Function) {
         FnVal* func = dynamic_cast<FnVal*>(fn);
         Environment* scope(func->declarationEnv);
@@ -152,7 +151,8 @@ RuntimeVal* Interpreter::eval_call_expr(CallExpr* expr, Environment* env) {
         }
 
         return result;
-    }*/
+    }
+
 
     throw "Cannot call value that is not a function";
 }

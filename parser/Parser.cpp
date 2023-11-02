@@ -101,7 +101,7 @@ Stmt* Parser::parse_var_declaration() {
 
     expect(TokenType::Equals, "Expected equals token following identifier in var declaration.");
 
-    Expr* value = parse_expr();
+    Expr* value = this->parse_expr();
     Stmt* declaration = new VarDeclaration(isConstant, identifier, value);
 
     expect(TokenType::Semicolon, "Variable declaration statement must end with semicolon.");
@@ -111,8 +111,8 @@ Stmt* Parser::parse_var_declaration() {
 
 Stmt* Parser::parse_function_declaration() {
     this->eat();
-    std::string name = expect(TokenType::Identifier, "Expected function name following fn keyword").getValue();
-    std::vector<Expr*> args = parse_args();
+    std::string name = this->expect(TokenType::Identifier, "Expected function name following fn keyword").getValue();
+    std::vector<Expr*> args = this->parse_args();
 
     std::vector<std::string> params;
 
@@ -128,7 +128,7 @@ Stmt* Parser::parse_function_declaration() {
 
     std::vector<Stmt*> body;
 
-	while (at().getType() != TokenType::EOFToken && at().getType() != TokenType::CloseBrace) {
+	while (this->at().getType() != TokenType::EOFToken && this->at().getType() != TokenType::CloseBrace) {
 		body.push_back(parse_stmt());
 	}
 
@@ -140,11 +140,11 @@ Stmt* Parser::parse_function_declaration() {
 }
 
 Expr* Parser::parse_additive_expr() {
-    Expr* left = parse_multiplicative_expr();
+    Expr* left = this->parse_multiplicative_expr();
 
-    while (at().getValue() == "+" || at().getValue() == "-") {
-        std::string binaryOperator = eat().getValue();
-        Expr* right = parse_multiplicative_expr();
+    while (this->at().getValue() == "+" || this->at().getValue() == "-") {
+        std::string binaryOperator = this->eat().getValue();
+        Expr* right = this->parse_multiplicative_expr();
         left = new BinaryExpr(left, right, binaryOperator);
     }
 
@@ -152,11 +152,11 @@ Expr* Parser::parse_additive_expr() {
 }
 
 Expr* Parser::parse_multiplicative_expr() {
-    Expr* left = parse_call_member_expr();
+    Expr* left = this->parse_call_member_expr();
 
     while (at().getValue() == "/" || at().getValue() == "*" || at().getValue() == "%") {
-        std::string binaryOperator = eat().getValue();
-        Expr* right = parse_primary_expr();
+        std::string binaryOperator = this->eat().getValue();
+        Expr* right = this->parse_primary_expr();
         left = new BinaryExpr(left, right, binaryOperator);
     }
 
@@ -169,7 +169,7 @@ Expr* Parser::parse_assignment_expr() {
 
     if (this->at().getType() == TokenType::Equals) {
         this->eat();
-        Expr* value = parse_assignment_expr();
+        Expr* value = this->parse_assignment_expr();
 
         // Check for a semicolon
         if (this->at().getType() != TokenType::Semicolon) {
@@ -210,7 +210,7 @@ Expr* Parser::parse_call_member_expr() {
 
 
         expect(TokenType::CloseParen, "Expected a closing parenthesis in the function call.");
-        expect(TokenType::Semicolon, "Call expresion  must end with semicolon.");
+        // expect(TokenType::Semicolon, "Call expresion  must end with semicolon.");
 
 
         // Create the call expression

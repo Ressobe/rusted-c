@@ -6,43 +6,49 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 enum TokenType {
-	Null, // null
-  Number, // just number
-  Identifier, // name of variable, function
+  Identifier,
+  NumberLiteral,
+  StringLiteral,
+  FloatLiteral,
+
 
   // KEYWORDS
+	Null,
   Let,
 	Const,
 	Func,
   If,  
   Else, 
+  While,
+  Return,
 
+  Equals, // =
   EqualEqual,    // ==
   NotEqual,      // !=
   LessThan,      // <
   LessEqual,     // <=
   GreaterThan,   // >
   GreaterEqual,  // >= 
-                 
+  BinaryOperator, // + - * / %
                  
   And,      // &&
   Or,       // ||
   Not,      // !
 
 
-  BinaryOperator, // + - * / %
-  Equals, // =
 	Semicolon, // ;
   OpenParen, // (
   CloseParen, // )
-
+              
 	OpenBrace, // {
 	CloseBrace, // }
 
 	OpenBracket, // [
 	CloseBracket, // ]
+               
 	Comma, // ,
 
 	EOFToken, // end of file
@@ -53,6 +59,7 @@ class Token {
 		Token(const std::string& value, TokenType type);
 		std::string getValue() const;
 		TokenType getType() const;
+    std::string getTokeTypeName();
 
 	private:
 		std::string value;
@@ -67,9 +74,10 @@ class Lexer {
 	private:
 		std::string sourceCode;
 		std::vector<char> src;
-		bool isAlpha(char c);
-		bool isSkippable(char c);
-		bool isInt(char c);
+		bool isAlpha(char c) const;
+		bool isSkippable(char c) const;
+		bool isInt(char c) const;
+    void unrecognizedChar(char c) const;
 };
 
 #endif

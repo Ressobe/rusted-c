@@ -42,7 +42,7 @@ public:
     std::vector<std::string> parameters;
     Environment* declarationEnv;
     std::vector<Stmt *> body;
-	FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b);
+	  FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b);
 };
 
 #endif
