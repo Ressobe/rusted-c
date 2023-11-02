@@ -9,7 +9,10 @@
 #include <map>
 
 enum TokenType {
+  // Name of variable, function itp ...
   Identifier,
+
+  // Types
   NumberLiteral,
   StringLiteral,
   FloatLiteral,
@@ -25,15 +28,20 @@ enum TokenType {
   While,
   Return,
 
+  // Assigment
   Equals, // =
+
+  // Comapare
   EqualEqual,    // ==
   NotEqual,      // !=
   LessThan,      // <
   LessEqual,     // <=
   GreaterThan,   // >
   GreaterEqual,  // >= 
-  BinaryOperator, // + - * / %
                  
+  BinaryOperator, // + - * / %
+            
+  // Logical operators
   And,      // &&
   Or,       // ||
   Not,      // !
@@ -42,16 +50,13 @@ enum TokenType {
 	Semicolon, // ;
   OpenParen, // (
   CloseParen, // )
-              
 	OpenBrace, // {
 	CloseBrace, // }
-
 	OpenBracket, // [
 	CloseBracket, // ]
-               
 	Comma, // ,
 
-	EOFToken, // end of file
+	EOFToken, // End of file
 };
 
 class Token {
