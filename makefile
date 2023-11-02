@@ -1,40 +1,58 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall
+SRCDIR = .
+OBJDIR = obj
+BINDIR = bin
+ASTDIR = $(SRCDIR)/ast
+LEXERDIR = $(SRCDIR)/lexer
+PARSERDIR = $(SRCDIR)/parser
+ENVDIR = $(SRCDIR)/runtime/environment
+INTERPRETERDIR = $(SRCDIR)/runtime/interpreter
+VALUESDIR = $(SRCDIR)/runtime/values
 
-all: bin/rusted-c
+all: $(BINDIR)/rusted-c
 
-bin/rusted-c: obj/ast/AST.o obj/lexer/Lexer.o obj/parser/Parser.o obj/runtime/environment/Environment.o obj/runtime/interpreter/Interpreter.o obj/runtime/values/Values.o obj/main.o
+$(BINDIR)/rusted-c: $(OBJDIR)/ast/AST.o $(OBJDIR)/lexer/Lexer.o $(OBJDIR)/parser/Parser.o $(OBJDIR)/runtime/environment/Environment.o $(OBJDIR)/runtime/interpreter/Interpreter.o $(OBJDIR)/runtime/interpreter/expression/EvaluateExpression.o $(OBJDIR)/runtime/interpreter/statement/EvaluateStatement.o $(OBJDIR)/runtime/values/Values.o $(OBJDIR)/main.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-obj/ast/AST.o: ast/AST.cpp
+$(OBJDIR)/ast/AST.o: $(ASTDIR)/AST.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-obj/lexer/Lexer.o: lexer/Lexer.cpp
+$(OBJDIR)/lexer/Lexer.o: $(LEXERDIR)/Lexer.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-obj/parser/Parser.o: parser/Parser.cpp
+$(OBJDIR)/parser/Parser.o: $(PARSERDIR)/Parser.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-obj/runtime/environment/Environment.o: runtime/environment/Environment.cpp
+$(OBJDIR)/runtime/environment/Environment.o: $(ENVDIR)/Environment.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-obj/runtime/interpreter/Interpreter.o: runtime/interpreter/Interpreter.cpp
+$(OBJDIR)/runtime/interpreter/Interpreter.o: $(INTERPRETERDIR)/Interpreter.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-obj/runtime/values/Values.o: runtime/values/Values.cpp
+$(OBJDIR)/runtime/interpreter/expression/EvaluateExpression.o: $(INTERPRETERDIR)/expression/EvaluateExpression.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-obj/main.o: main.cpp
+$(OBJDIR)/runtime/interpreter/statement/EvaluateStatement.o: $(INTERPRETERDIR)/statement/EvaluateStatement.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJDIR)/runtime/values/Values.o: $(VALUESDIR)/Values.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJDIR)/main.o: $(SRCDIR)/main.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf obj bin/*
+	rm -rf $(OBJDIR) $(BINDIR)
 
 .PHONY: all clean
+

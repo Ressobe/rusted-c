@@ -127,8 +127,8 @@ void testLexer() {
 }
 
 int main() {
-    // repl();
-    run();
+    repl();
+    // run();
     // testLexer();
     // testIf();
     return 0;
