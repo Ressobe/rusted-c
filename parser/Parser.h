@@ -21,6 +21,7 @@ private:
 public:
     Program produceAST(std::vector<Token> tokens);
     Stmt* parse_stmt();
+    Stmt* parse_if_statement();
     Stmt* parse_var_declaration();
     Stmt* parse_function_declaration();
     Expr* parse_expr();
@@ -28,6 +29,7 @@ public:
     Expr* parse_multiplicative_expr();
     Expr* parse_primary_expr();
     Expr* parse_assignment_expr();
+    Expr* parse_comprasion_expr();
     Expr* parse_call_member_expr();
     Expr* parse_call_expr(Expr* caller);
     std::vector<Expr*> parse_arguments_list();

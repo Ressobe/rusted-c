@@ -28,8 +28,12 @@ CallExpr::CallExpr(Expr* caller, std::vector<Expr*> args) : Expr(NodeType::CallE
 FunctionDeclaration::FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b) 
     : Stmt(NodeType::FunctionDeclaration), parameters(param), name(n), body(b) {}
 
+IfStatement::IfStatement(Expr* cond, Stmt* ifB, Stmt* elseB)
+    : Stmt(NodeType::IfStatement), condition(cond), ifBody(ifB), elseBody(elseB) {}
+
 void printProgram(const Program& program, const std::string& indent) {
-    std::cout << indent << "\"Program\": {\n";
+    std::cout << std::endl;
+    std::cout << indent << " \"Program\": {\n";
     for (const Stmt* stmt : program.body) {
         printStatement(*stmt, indent + "  ");
         if (stmt != program.body.back()) {
@@ -38,6 +42,7 @@ void printProgram(const Program& program, const std::string& indent) {
         std::cout << "\n";
     }
     std::cout << indent << "}";
+    std::cout << "\n}\n";
 }
 
 
@@ -111,6 +116,19 @@ void printStatement(const Stmt& stmt, const std::string& indent) {
         }
         std::cout << indent << "  ]";
     }
+    else if (stmt.kind == NodeType::IfStatement) {
+        const IfStatement& ifStmt = static_cast<const IfStatement&>(stmt);
+        std::cout << indent << "  \"Condition\": ";
+        printStatement(*ifStmt.condition, indent + "    ");
+        std::cout << ",\n";
+        std::cout << indent << "  \"IfBody\": ";
+        printStatement(*ifStmt.ifBody, indent + "    ");
+        if (ifStmt.elseBody) {
+            std::cout << ",\n";
+            std::cout << indent << "  \"ElseBody\": ";
+            printStatement(*ifStmt.elseBody, indent + "    ");
+        }
+    }
 
     std::cout << "\n" << indent << "}";
 }
@@ -138,6 +156,9 @@ std::string NodeTypeToString(NodeType type) {
         break;
     case NodeType::FunctionDeclaration:
         value = "FunctionDeclaration";
+        break;
+    case NodeType::IfStatement:
+        value = "IfStatement";
         break;
     case NodeType::Null:
         value = "Null";

@@ -9,6 +9,27 @@ RuntimeVal*  Interpreter::eval_program(Program* program, Environment* env) {
     return lastEvaluated;
 }
 
+RuntimeVal* Interpreter::eval_if_statement(IfStatement* ifStmt, Environment* env) {
+    RuntimeVal* conditionValue = evaluate(ifStmt->condition, env);
+
+    if (conditionValue->type == ValueType::NumberValue) {
+        NumberVal* numCondition = dynamic_cast<NumberVal*>(conditionValue);
+
+        if (numCondition->value != 0) {
+            // Evaluate the "if" body when the condition is true
+            return evaluate(ifStmt->ifBody, env);
+        } else if (ifStmt->elseBody) {
+            // Evaluate the "else" body when the condition is false, if it exists
+            return evaluate(ifStmt->elseBody, env);
+        }
+    } else {
+        std::cerr << "If statement condition must evaluate to a numeric value." << std::endl;
+        std::exit(1);
+    }
+
+    return NullVal::MK_NULL();
+}
+
 RuntimeVal* Interpreter::eval_binary_expr(BinaryExpr* binop, Environment* env) {
     RuntimeVal* lhs = evaluate(binop->left, env);
     RuntimeVal* rhs = evaluate(binop->right, env);
@@ -111,7 +132,9 @@ RuntimeVal* Interpreter::evaluate(Stmt* astNode, Environment* env) {
     else if (astNode->kind == NodeType::FunctionDeclaration) {
         return eval_function_declaration(dynamic_cast<FunctionDeclaration*>(astNode), env);
     }
-
+    else if (astNode->kind == NodeType::IfStatement) {
+        return eval_if_statement(dynamic_cast<IfStatement*>(astNode), env);
+    }
 
     else {
         std::cerr << "This AST Node has not yet been set up for interpretation." << std::endl;

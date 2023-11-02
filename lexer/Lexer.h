@@ -17,7 +17,6 @@ enum TokenType {
   StringLiteral,
   FloatLiteral,
 
-
   // KEYWORDS
 	Null,
   Let,
@@ -38,7 +37,8 @@ enum TokenType {
   LessEqual,     // <=
   GreaterThan,   // >
   GreaterEqual,  // >= 
-                 
+
+  // Operations
   BinaryOperator, // + - * / %
             
   // Logical operators
@@ -46,7 +46,7 @@ enum TokenType {
   Or,       // ||
   Not,      // !
 
-
+  // Other characters
 	Semicolon, // ;
   OpenParen, // (
   CloseParen, // )
@@ -55,8 +55,9 @@ enum TokenType {
 	OpenBracket, // [
 	CloseBracket, // ]
 	Comma, // ,
-
-	EOFToken, // End of file
+         
+  // End of file token
+	EOFToken, 
 };
 
 class Token {

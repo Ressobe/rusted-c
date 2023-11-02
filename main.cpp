@@ -11,15 +11,37 @@
 // 2. Parser
 // 3. Interpreter
 
+void testIf() {
+    // Tokenize your code
+    std::string sourceCode =  "if (1) { x = 42; } else { x = 0; }";
+
+    Lexer lexer = Lexer(sourceCode);
+    Parser parser;
+    Environment env;
+
+    // Parse and evaluate the code
+    Program program = parser.produceAST(lexer.tokenize());
+
+    Interpreter::evaluate(&program, &env);
+
+    // RuntimeVal* result = env.lookupVar("x");
+    // if (result->type == ValueType::NumberValue) {
+    //     NumberVal* numberResult = dynamic_cast<NumberVal*>(result);
+    //     std::cout << "Value of 'x' is: " << numberResult->value << std::endl;
+    // } else {
+    //     std::cout << "'x' is not a numeric value." << std::endl;
+    // }
+}
+
 void repl() {
     Parser parser;
     Environment env;
     env.createGlobalEnv();
 
-    std::cout << "\nRustedC v0.1" << std::endl;
+    std::cout << "RustedC v0.1" << std::endl;
     while (true) {
         std::string input;
-        std::cout << "> ";
+        std::cout << ">>> ";
         std::getline(std::cin, input);
 
         // Check for "exit" keyword.
@@ -32,16 +54,12 @@ void repl() {
         // Produce AST From source code
         Program program = parser.produceAST(lexer.tokenize());
 
-        std::cout << "{\n";
-        printProgram(program, "  ");
-        std::cout << "\n}\n";
-
         Interpreter::evaluate(&program, &env);
     }
 }
 
 void run() {
-    std::ifstream inputFile("code.txt");
+    std::ifstream inputFile("./examples/code.rc");
 
     if (!inputFile.is_open()) {
         std::cerr << "Failed to open the file." << std::endl;
@@ -69,9 +87,7 @@ void run() {
     Parser parser;
     Program program = parser.produceAST(lexer.tokenize());
 
-    // std::cout << "{\n";
     // printProgram(program, "  ");
-    // std::cout << "\n}\n";
 
     Environment env;
     env.createGlobalEnv();
@@ -111,8 +127,9 @@ void testLexer() {
 }
 
 int main() {
-    repl();
-    // run();
+    // repl();
+    run();
     // testLexer();
+    // testIf();
     return 0;
 }

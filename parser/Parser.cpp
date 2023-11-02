@@ -31,14 +31,63 @@ Stmt* Parser::parse_stmt() {
 
     if (at().getType() == TokenType::Func) {
         return parse_function_declaration();
+    } 
+
+    if (at().getType() == TokenType::If) {
+        return parse_if_statement();
     }
 
     return parse_expr();
 }
 
+Stmt* Parser::parse_if_statement() {
+    eat(); // Consume the "if" keyword
+           //
+    expect(TokenType::OpenParen, "Expected '(' after 'if'");
+
+    Expr* condition = parse_expr();
+
+    expect(TokenType::CloseParen, "Expected ')' after 'if' condition");
+
+
+    expect(TokenType::OpenBrace, "Expected '{' open 'if' body");
+    Stmt* ifBody = parse_stmt(); // Parse the body of the "if" statement
+    expect(TokenType::CloseBrace, "Expected '}' close 'if' body");
+
+    Stmt* elseBody = nullptr;
+
+    if (at().getType() == TokenType::Else) {
+
+        eat(); // Consume the "else" keyword
+               
+        expect(TokenType::OpenBrace, "Expected '{' open 'else' body");
+        elseBody = parse_stmt(); // Parse the body of the "else" statement
+        expect(TokenType::CloseBrace, "Expected '}' close 'else' body");
+    }
+
+    return new IfStatement(condition, ifBody, elseBody);
+}
+
 
 Expr* Parser::parse_expr() {
-    return parse_assignment_expr();
+    return parse_comprasion_expr();
+}
+
+Expr* Parser::parse_comprasion_expr() {
+    Expr* left = parse_additive_expr();
+
+    if (at().getType() == TokenType::LessThan ||
+        at().getType() == TokenType::LessEqual ||
+        at().getType() == TokenType::GreaterThan ||
+        at().getType() == TokenType::GreaterEqual ||
+        at().getType() == TokenType::EqualEqual ||
+        at().getType() == TokenType::NotEqual) {
+        std::string comparisonOperator = eat().getValue();
+        Expr* right = parse_additive_expr();
+        left = new BinaryExpr(left, right, comparisonOperator);
+    }
+
+    return left;
 }
 
 

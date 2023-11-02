@@ -11,7 +11,8 @@ enum class NodeType {
 	// Statements
   Program,
 	VarDeclaration,
-	FunctionDeclaration,
+	FunctionDeclaration,    
+  IfStatement,
 
 
 	// Expressions
@@ -105,6 +106,14 @@ class NullLiteral : public Expr {
 	public:
 		std::string value;
 		NullLiteral(const std::string& value);
+};
+
+class IfStatement : public Stmt {
+  public:
+    Expr* condition;
+    Stmt* ifBody;
+    Stmt* elseBody;
+    IfStatement(Expr* cond, Stmt* ifB, Stmt* elseB = nullptr);
 };
 
 // Convert enum numbers to string
