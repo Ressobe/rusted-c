@@ -9,17 +9,17 @@
 
 enum class NodeType {
 	// Statements
-    Program,
+  Program,
 	VarDeclaration,
 	FunctionDeclaration,
 
 
 	// Expressions
 	AssignmentExpr,
-    NumericLiteral,
+  NumericLiteral,
 	Null,
-    Identifier,
-    BinaryExpr,
+  Identifier,
+  BinaryExpr,
 	CallExpr,
 };
 

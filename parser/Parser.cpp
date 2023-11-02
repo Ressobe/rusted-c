@@ -50,7 +50,7 @@ Expr* Parser::parse_primary_expr() {
 		case TokenType::Identifier:
 			value = new IdentifierExpr(eat().getValue());
             break;
-		case TokenType::Number:
+		case TokenType::NumberLiteral:
 			value = new NumericLiteral(std::stod(eat().getValue()));
             break;
 		case TokenType::Null:
@@ -71,9 +71,8 @@ Expr* Parser::parse_primary_expr() {
     return value;
 }
 
-Program Parser::produceAST(const std::string& sourceCode) {
-    Lexer lexer(sourceCode);
-    this->tokens = lexer.tokenize();
+Program Parser::produceAST(std::vector<Token> tokens) {
+    this->tokens = tokens;
 
     Program program;
     program.kind = NodeType::Program;
@@ -87,6 +86,7 @@ Program Parser::produceAST(const std::string& sourceCode) {
 
 Stmt* Parser::parse_var_declaration() {
     bool isConstant = this->eat().getType() == TokenType::Const;
+
     std::string identifier = expect(TokenType::Identifier, "Expected identifier name following let | const keywords.").getValue();
 
     if (this->at().getType() == TokenType::Semicolon) {

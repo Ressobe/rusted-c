@@ -78,6 +78,8 @@ class Lexer {
 		bool isSkippable(char c) const;
 		bool isInt(char c) const;
     void unrecognizedChar(char c) const;
+    char peek() const;
+    char eat();
 };
 
 #endif

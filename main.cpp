@@ -7,6 +7,10 @@
 #include "runtime/environment/Environment.h"
 
 
+// 1. Lexer
+// 2. Parser
+// 3. Interpreter
+
 void repl() {
     Parser parser;
     Environment env;
@@ -23,8 +27,10 @@ void repl() {
             break;
         }
 
+        Lexer lexer = Lexer(input);
+
         // Produce AST From source code
-        Program program = parser.produceAST(input);
+        Program program = parser.produceAST(lexer.tokenize());
 
         std::cout << "{\n";
         printProgram(program, "  ");
@@ -35,7 +41,6 @@ void repl() {
 }
 
 void run() {
-
     std::ifstream inputFile("code.txt");
 
     if (!inputFile.is_open()) {
@@ -56,15 +61,22 @@ void run() {
     // Close the file
     inputFile.close();
 
+    // 1.
+    Lexer lexer = Lexer(fileContent);
+
+
+    // 2.
     Parser parser;
-    Environment env;
-    env.createGlobalEnv();
-    Program program = parser.produceAST(fileContent);
+    Program program = parser.produceAST(lexer.tokenize());
 
     // std::cout << "{\n";
     // printProgram(program, "  ");
     // std::cout << "\n}\n";
 
+    Environment env;
+    env.createGlobalEnv();
+
+    // 3.
     Interpreter::evaluate(&program, &env);
 }
 
@@ -99,8 +111,8 @@ void testLexer() {
 }
 
 int main() {
-    //repl();
+    repl();
     // run();
-    testLexer();
+    // testLexer();
     return 0;
 }

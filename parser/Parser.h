@@ -19,7 +19,7 @@ private:
     Token expect(TokenType type, const std::string& err);
 
 public:
-    Program produceAST(const std::string& sourceCode);
+    Program produceAST(std::vector<Token> tokens);
     Stmt* parse_stmt();
     Stmt* parse_var_declaration();
     Stmt* parse_function_declaration();

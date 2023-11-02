@@ -30,8 +30,7 @@ std::vector<Token> Lexer::tokenize() {
     src = std::vector<char>(sourceCode.begin(), sourceCode.end());
 
     while (!src.empty()) {
-        char currentChar = src[0];
-        src.erase(src.begin());
+        char currentChar = this->eat();
 
         if (this->isSkippable(currentChar)) {
             continue;
@@ -43,13 +42,12 @@ std::vector<Token> Lexer::tokenize() {
             
             int amountOfDots = 0;
 
-            while (!src.empty() && (std::isdigit(src[0]) || src[0] == '.' )) {
-                if (src[0] == '.') amountOfDots++;
+            while (!src.empty() && (std::isdigit(this->peek()) || this->peek() == '.' )) {
+                if (this->peek() == '.') amountOfDots++;
 
                 if (amountOfDots > 1) this->unrecognizedChar(currentChar);
 
-                num += src[0];
-                src.erase(src.begin());
+                num += this->eat();
             }
 
             if (amountOfDots == 0) {
@@ -61,9 +59,8 @@ std::vector<Token> Lexer::tokenize() {
         } else if (this->isAlpha(currentChar)) {
             std::string ident;
             ident += currentChar;
-            while (!src.empty() && (std::isalnum(src[0]) || src[0] == '_')) {
-                ident += src[0];
-                src.erase(src.begin());
+            while (!src.empty() && (std::isalnum(peek()) || peek() == '_')) {
+                ident += this->eat();
             }
 
             auto it = KEYWORDS.find(ident);
@@ -106,50 +103,50 @@ std::vector<Token> Lexer::tokenize() {
                     tokens.push_back(Token(";", Semicolon));
                     break;
                 case '&':
-                    if (!src.empty() && src[0] == '&') {
+                    if (!src.empty() && this->peek() == '&') {
                         tokens.push_back(Token("&&", TokenType::And));
-                        src.erase(src.begin()); // Consume the second '&' character
+                        this->eat();
                     } else {
                         this->unrecognizedChar(currentChar);
                     }
                     break;
                 case '|':
-                    if (!src.empty() && src[0] == '|') {
+                    if (!src.empty() && this->peek() == '|') {
                         tokens.push_back(Token("||", TokenType::Or));
-                        src.erase(src.begin()); // Consume the second '|' character
+                        this->eat();
                     } else {
                         this->unrecognizedChar(currentChar);
                     }
                     break;
                 case '!':
-                    if (!src.empty() && src[0] == '=') {
+                    if (!src.empty() && peek() == '=') {
                         tokens.push_back(Token("!=", TokenType::NotEqual));
-                        src.erase(src.begin()); // Consume the second '=' character
+                        this->eat();
                     } else {
                       tokens.push_back(Token("!", TokenType::Not));
                     }
                     break;
                 case '=':
-                    if (!src.empty() && src[0] == '=') {
+                    if (!src.empty() && peek() == '=') {
                         tokens.push_back(Token("==", TokenType::EqualEqual));
-                        src.erase(src.begin()); // Consume the second '=' character
+                        this->eat();
                     } else {
                         tokens.push_back(Token("=", TokenType::Equals));
                     }
                     break;
                 case '<':
-                    if (!src.empty() && src[0] == '=') {
+                    if (!src.empty() && peek() == '=') {
                       tokens.push_back(Token("<=", TokenType::LessEqual));
-                      src.erase(src.begin()); // Consume the second '=' character
+                      this->eat();
                     }
                     else {
                       tokens.push_back(Token("<", TokenType::LessThan));
                     }
                     break;
                 case '>':
-                    if (!src.empty() && src[0] == '=') {
+                    if (!src.empty() && peek() == '=') {
                       tokens.push_back(Token(">=", TokenType::GreaterEqual));
-                      src.erase(src.begin()); // Consume the second '=' character
+                      this->eat();
                     }
                     else {
                       tokens.push_back(Token(">", TokenType::GreaterThan));
@@ -159,9 +156,8 @@ std::vector<Token> Lexer::tokenize() {
                     if (isAlpha(src[0]))  {
                       std::string stringLiteral;
 
-                      while(!src.empty() && (this->isAlpha(src[0]) || src[0] == ' ') ) {
-                        stringLiteral += src[0];
-                        src.erase(src.begin());
+                      while(!src.empty() && (this->isAlpha(peek()) || peek() == ' ') ) {
+                        stringLiteral += this->eat();
                       }
 
                       if (src[0] == '"') {
@@ -182,6 +178,16 @@ std::vector<Token> Lexer::tokenize() {
 
     tokens.push_back(Token("EndOfFile", EOFToken));
     return tokens;
+}
+
+char Lexer::eat() {
+    char currentChar = this->src[0];
+    this->src.erase(this->src.begin());
+    return currentChar;
+}
+
+char Lexer::peek() const {
+    return this->src[0];
 }
 
 bool Lexer::isAlpha(char c) const {
