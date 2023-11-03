@@ -12,6 +12,7 @@ class EvaluateStatement {
     static RuntimeVal* eval_program(Program* program, Environment* env);
     static RuntimeVal* eval_if_statement(IfStatement* ifStmt, Environment* env);
     static RuntimeVal* eval_function_declaration(FunctionDeclaration* declaration, Environment* env);
+    static RuntimeVal* eval_return_statement(ReturnStatement* returnStmt, Environment* env);
     static RuntimeVal* eval_var_declaration(VarDeclaration* declaration, Environment* env);
 };
 

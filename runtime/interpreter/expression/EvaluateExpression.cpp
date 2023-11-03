@@ -39,8 +39,12 @@ RuntimeVal* EvaluateExpression::eval_call_expr(CallExpr* expr, Environment* env)
             }
         }
         RuntimeVal* result = NullVal::MK_NULL();
+
         for (Stmt* stmt : func->body) {
             result = Interpreter::evaluate(stmt, scope);
+            if (result->type == ValueType::ReturnValue) {
+                return result; 
+            }
         }
 
         return result;
@@ -57,17 +61,17 @@ RuntimeVal*  EvaluateExpression::eval_binary_expr(BinaryExpr* binop, Environment
         NumberVal* rightNumber = dynamic_cast<NumberVal*>(rhs);
 
         if (binop->binaryOperator == "+") {
-            return NumberVal::MK_NUMBER(leftNumber->value + rightNumber->value);
+            return new NumberVal(leftNumber->value + rightNumber->value);
         }
         else if (binop->binaryOperator == "-") {
-            return NumberVal::MK_NUMBER(leftNumber->value - rightNumber->value);
+            return new NumberVal(leftNumber->value - rightNumber->value);
         }
         else if (binop->binaryOperator == "*") {
-            return NumberVal::MK_NUMBER(leftNumber->value * rightNumber->value);
+            return new NumberVal(leftNumber->value * rightNumber->value);
         }
         else if (binop->binaryOperator == "/") {
             if (rightNumber->value != 0) {
-                return  NumberVal::MK_NUMBER(leftNumber->value / rightNumber->value);
+                return  new NumberVal(leftNumber->value / rightNumber->value);
             }
             else {
                 std::cerr << "Division by zero error" << std::endl;
@@ -76,7 +80,7 @@ RuntimeVal*  EvaluateExpression::eval_binary_expr(BinaryExpr* binop, Environment
         }
         else if (binop->binaryOperator == "%") {
             if (rightNumber->value != 0) {
-                return NumberVal::MK_NUMBER(fmod(leftNumber->value, rightNumber->value));
+                return new NumberVal(fmod(leftNumber->value, rightNumber->value));
             }
             else {
                 std::cerr << "Modulo by zero error" << std::endl;

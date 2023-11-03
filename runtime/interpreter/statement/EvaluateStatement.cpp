@@ -9,6 +9,15 @@ RuntimeVal* EvaluateStatement::eval_program(Program* program, Environment* env) 
     return lastEvaluated;
 }
 
+RuntimeVal* EvaluateStatement::eval_return_statement(ReturnStatement* stmt, Environment* env) {
+    if (stmt->returnValue) {
+        RuntimeVal* result  = Interpreter::evaluate(stmt->returnValue, env);
+        return new ReturnValue(result);
+    } else {
+        return NullVal::MK_NULL();
+    }
+}
+
 
 RuntimeVal* EvaluateStatement::eval_if_statement(IfStatement* ifStmt, Environment* env) {
     RuntimeVal* conditionValue = Interpreter::evaluate(ifStmt->condition, env);

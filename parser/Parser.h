@@ -12,18 +12,19 @@
 class Parser {
 private:
     std::vector<Token> tokens;
+    bool eof();
 
-    bool not_eof();
     Token at();
     Token eat();
     Token expect(TokenType type, const std::string& err);
+    Token lookahead(size_t num);
 
-public:
-    Program produceAST(std::vector<Token> tokens);
     Stmt* parse_stmt();
     Stmt* parse_if_statement();
+    Stmt* parse_return_statement();
     Stmt* parse_var_declaration();
     Stmt* parse_function_declaration();
+
     Expr* parse_expr();
     Expr* parse_additive_expr();
     Expr* parse_multiplicative_expr();
@@ -32,8 +33,12 @@ public:
     Expr* parse_comprasion_expr();
     Expr* parse_call_member_expr();
     Expr* parse_call_expr(Expr* caller);
+
     std::vector<Expr*> parse_arguments_list();
     std::vector<Expr*> parse_args();
+
+public:
+    Program produceAST(std::vector<Token> tokens);
 };
 
 #endif

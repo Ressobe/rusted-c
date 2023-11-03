@@ -12,7 +12,8 @@ enum class NodeType {
   Program,
 	VarDeclaration,
 	FunctionDeclaration,    
-  IfStatement,
+  IfStatement,    
+  ReturnStatement,
 
 
 	// Expressions
@@ -65,12 +66,20 @@ class VarDeclaration : public Stmt {
 		VarDeclaration(bool isConst, const std::string& id, Expr* val = nullptr);
 };
 
+class ReturnStatement : public Stmt {
+  public:
+    Expr* returnValue;
+    ReturnStatement(Expr* value);
+};
+
+
 class FunctionDeclaration : public Stmt {
 	public:
 		std::vector<std::string> parameters;
 		std::string name;
-		std::vector<Stmt*> body;
-		FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b);
+		std::vector<Stmt*> body;    
+    ReturnStatement* returnStatement; // Dodane pole
+		FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b, ReturnStatement* retStmt = nullptr);
 };
 
 
@@ -115,6 +124,7 @@ class IfStatement : public Stmt {
     Stmt* elseBody;
     IfStatement(Expr* cond, Stmt* ifB, Stmt* elseB = nullptr);
 };
+
 
 // Convert enum numbers to string
 std::string NodeTypeToString(NodeType type);

@@ -1,8 +1,8 @@
 #include "Parser.h"
 
 
-bool Parser::not_eof() {
-    return tokens[0].getType() != TokenType::EOFToken;
+bool Parser::eof() {
+    return tokens[0].getType() == TokenType::EOFToken;
 }
 
 Token Parser::at() {
@@ -15,6 +15,16 @@ Token Parser::eat() {
     return prev;
 }
 
+
+Token Parser::lookahead(size_t num) {
+    if (num >= tokens.size()) {
+        return Token("", TokenType::EOFToken);
+    }
+
+    return tokens[num];
+}
+
+
 Token Parser::expect(TokenType type, const std::string& err) {
     Token prev = this->eat();
     if (prev.getType() != type) {
@@ -25,8 +35,12 @@ Token Parser::expect(TokenType type, const std::string& err) {
 }
 
 Stmt* Parser::parse_stmt() {
+    std::cout << "parse_stmt" << std::endl;
+
     if (at().getType() == TokenType::Let || at().getType() == TokenType::Const) {
-        return parse_var_declaration();
+        Stmt* varStmt = parse_var_declaration();        
+        expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
+        return varStmt;
     }
 
     if (at().getType() == TokenType::Func) {
@@ -37,10 +51,40 @@ Stmt* Parser::parse_stmt() {
         return parse_if_statement();
     }
 
+    if (at().getType() == TokenType::Return) {
+        Stmt* returnStmt = parse_return_statement();        
+        expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
+        return returnStmt;
+    }
+
+    // if (at().getType() == TokenType::Identifier && lookahead(1).getType() == TokenType::Equals) {
+    //     Stmt* assignmentStmt = parse_assignment_expr();
+    //
+    //     expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
+    //     return assignmentStmt;
+    // }
+
     return parse_expr();
 }
 
+Stmt* Parser::parse_return_statement() {
+    eat(); // Consume the "return" keyword
+
+    if (at().getType() == TokenType::Semicolon) {
+        // Return statement without a value
+        eat(); // Consume the semicolon
+        return new ReturnStatement(nullptr);
+    } else {
+        // Return statement with a value
+        Expr* value = parse_expr();
+        expect(TokenType::Semicolon, "Return statement must end with a semicolon.");
+        return new ReturnStatement(value);
+    }
+}
+
 Stmt* Parser::parse_if_statement() {
+    std::cout << "parse_if_statement" << std::endl;
+
     eat(); // Consume the "if" keyword
            //
     expect(TokenType::OpenParen, "Expected '(' after 'if'");
@@ -70,10 +114,14 @@ Stmt* Parser::parse_if_statement() {
 
 
 Expr* Parser::parse_expr() {
-    return parse_comprasion_expr();
+    std::cout << "parse_expr" << std::endl;
+
+    return parse_assignment_expr();
 }
 
 Expr* Parser::parse_comprasion_expr() {
+    std::cout << "parse_comprasion_expr" << std::endl;
+
     Expr* left = parse_additive_expr();
 
     if (at().getType() == TokenType::LessThan ||
@@ -92,6 +140,8 @@ Expr* Parser::parse_comprasion_expr() {
 
 
 Expr* Parser::parse_primary_expr() {
+    std::cout << "parse_primary_expr" << std::endl;
+
     TokenType tk = at().getType();
     Expr* value = nullptr;
 
@@ -107,9 +157,9 @@ Expr* Parser::parse_primary_expr() {
             value = new NullLiteral("null");
             break;
 		case TokenType::OpenParen:
-			eat();
-			value = parse_expr();
-			expect(TokenType::CloseParen, "Unexpected token found inside parenthesized expression. Expected closing parenthesis.");
+            eat();
+            value = parse_expr();
+            expect(TokenType::CloseParen, "Unexpected token found inside parenthesized expression. Expected closing parenthesis.");
             break;
 		default:
       value = nullptr; // Initialize value as nullptr in the default case
@@ -121,19 +171,24 @@ Expr* Parser::parse_primary_expr() {
 }
 
 Program Parser::produceAST(std::vector<Token> tokens) {
+    std::cout << "produceAST" << std::endl;
+
     this->tokens = tokens;
 
     Program program;
     program.kind = NodeType::Program;
 
-    while (not_eof()) {
+    while (!eof()) {
         program.body.push_back(parse_stmt());
     }
 
     return program;
 }
 
+
 Stmt* Parser::parse_var_declaration() {
+    std::cout << "parse_var_declaration" << std::endl;
+
     bool isConstant = this->eat().getType() == TokenType::Const;
 
     std::string identifier = expect(TokenType::Identifier, "Expected identifier name following let | const keywords.").getValue();
@@ -153,12 +208,14 @@ Stmt* Parser::parse_var_declaration() {
     Expr* value = this->parse_expr();
     Stmt* declaration = new VarDeclaration(isConstant, identifier, value);
 
-    expect(TokenType::Semicolon, "Variable declaration statement must end with semicolon.");
 
     return declaration;
 }
 
+
 Stmt* Parser::parse_function_declaration() {
+    std::cout << "parse_function_declaration" << std::endl;
+
     this->eat();
     std::string name = this->expect(TokenType::Identifier, "Expected function name following fn keyword").getValue();
     std::vector<Expr*> args = this->parse_args();
@@ -189,6 +246,7 @@ Stmt* Parser::parse_function_declaration() {
 }
 
 Expr* Parser::parse_additive_expr() {
+    std::cout << "parse_additive_expr" << std::endl;
     Expr* left = this->parse_multiplicative_expr();
 
     while (this->at().getValue() == "+" || this->at().getValue() == "-") {
@@ -201,6 +259,8 @@ Expr* Parser::parse_additive_expr() {
 }
 
 Expr* Parser::parse_multiplicative_expr() {
+    std::cout << "parse_multiplicative_expr" << std::endl;
+
     Expr* left = this->parse_call_member_expr();
 
     while (at().getValue() == "/" || at().getValue() == "*" || at().getValue() == "%") {
@@ -214,21 +274,16 @@ Expr* Parser::parse_multiplicative_expr() {
 
 
 Expr* Parser::parse_assignment_expr() {
+    std::cout << "parse_assigment_expr" << std::endl;
+
     Expr* left = this->parse_additive_expr();
+
+
 
     if (this->at().getType() == TokenType::Equals) {
         this->eat();
         Expr* value = this->parse_assignment_expr();
 
-        // Check for a semicolon
-        if (this->at().getType() != TokenType::Semicolon) {
-            // Raise an error if a semicolon is missing
-            std::cerr << "Expected a semicolon at the end of the assignment expression." << std::endl;
-            std::exit(1);
-        }
-        
-        // Consume the semicolon
-        this->eat();
 
         Expr* assignmentExpr = new AssignmentExpr(left, value);
 
@@ -239,7 +294,10 @@ Expr* Parser::parse_assignment_expr() {
 
 }
 
+
 Expr* Parser::parse_call_member_expr() {
+    std::cout << "parse_call_member_expr" << std::endl;
+
     Expr* caller = this->parse_primary_expr();
 
     while (this->at().getType() == TokenType::OpenParen) {
@@ -259,7 +317,6 @@ Expr* Parser::parse_call_member_expr() {
 
 
         expect(TokenType::CloseParen, "Expected a closing parenthesis in the function call.");
-        // expect(TokenType::Semicolon, "Call expresion  must end with semicolon.");
 
 
         // Create the call expression
@@ -270,6 +327,7 @@ Expr* Parser::parse_call_member_expr() {
 }
 
 Expr* Parser::parse_call_expr(Expr* caller) {
+    std::cout << "parse_call_expr" << std::endl;
     Expr* call_expr = new CallExpr(caller,this->parse_args());
 
     while (this->at().getType() == TokenType::OpenParen) {
@@ -281,6 +339,8 @@ Expr* Parser::parse_call_expr(Expr* caller) {
 
 
 std::vector<Expr*> Parser::parse_args() {
+    std::cout << "parse_args" << std::endl;
+
     this->expect(TokenType::OpenParen, "Expected open parenthesis");
     std::vector<Expr*> args;
 
@@ -293,6 +353,8 @@ std::vector<Expr*> Parser::parse_args() {
 }
 
 std::vector<Expr*> Parser::parse_arguments_list() {
+    std::cout << "parse_arguments_list" << std::endl;
+
     std::vector<Expr*> args;
     args.push_back(this->parse_assignment_expr());
 

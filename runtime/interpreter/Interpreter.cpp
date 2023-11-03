@@ -32,6 +32,9 @@ RuntimeVal* Interpreter::evaluate(Stmt* astNode, Environment* env) {
     else if (astNode->kind == NodeType::IfStatement) {
         return EvaluateStatement::eval_if_statement(dynamic_cast<IfStatement*>(astNode), env);
     }
+    else if (astNode->kind == NodeType::ReturnStatement) {
+        return EvaluateStatement::eval_return_statement(dynamic_cast<ReturnStatement*>(astNode), env);
+    }
     else {
         std::cerr << "This AST Node has not yet been set up for interpretation." << std::endl;
         std::exit(1);
