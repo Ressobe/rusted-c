@@ -14,6 +14,9 @@ RuntimeVal* Interpreter::evaluate(Stmt* astNode, Environment* env) {
     else if (astNode->kind == NodeType::BinaryExpr) {
         return EvaluateExpression::eval_binary_expr(dynamic_cast<BinaryExpr*>(astNode), env);
     }
+    else if (astNode->kind == NodeType::UnaryExpr) {
+        return EvaluateExpression::eval_unary_expr(dynamic_cast<UnaryExpr*>(astNode), env);
+    }
     else if (astNode->kind == NodeType::Program) {
         return EvaluateStatement::eval_program(dynamic_cast<Program*>(astNode), env);
     }

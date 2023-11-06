@@ -23,6 +23,7 @@ enum class NodeType {
   Identifier,
   BinaryExpr,
 	CallExpr,
+  UnaryExpr,
 };
 
 
@@ -78,7 +79,7 @@ class FunctionDeclaration : public Stmt {
 		std::vector<std::string> parameters;
 		std::string name;
 		std::vector<Stmt*> body;    
-    ReturnStatement* returnStatement; // Dodane pole
+    ReturnStatement* returnStatement;
 		FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b, ReturnStatement* retStmt = nullptr);
 };
 
@@ -89,6 +90,15 @@ class BinaryExpr : public Expr {
 		Expr* right;
 		std::string binaryOperator;
 		BinaryExpr(Expr* left, Expr* right, const std::string& op);
+};
+
+
+class UnaryExpr : public Expr {
+  public:
+    Expr* right;
+    std::string op;
+
+    UnaryExpr(Expr* right, const std::string& op);
 };
 
 class CallExpr : public Expr {

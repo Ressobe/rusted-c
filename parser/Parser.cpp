@@ -139,26 +139,31 @@ Expr* Parser::parse_primary_expr() {
     TokenType tk = at().getType();
     Expr* value = nullptr;
 
-    switch (tk) {
-		case TokenType::Identifier:
-			      value = new IdentifierExpr(eat().getValue());
-            break;
-		case TokenType::NumberLiteral:
-			      value = new NumericLiteral(std::stod(eat().getValue()));
-            break;
-		case TokenType::Null:
-            eat();
-            value = new NullLiteral("null");
-            break;
-		case TokenType::OpenParen:
-            eat();
-            value = parse_expr();
-            expect(TokenType::CloseParen, "Unexpected token found inside parenthesized expression. Expected closing parenthesis.");
-            break;
-		default:
-      value = nullptr; // Initialize value as nullptr in the default case
-			std::cerr << "Unexpected token found during parsing!" << at().getValue() << std::endl;
-			std::exit(1);
+    if (tk == TokenType::Not) {
+        this->eat();
+        value = new UnaryExpr(parse_primary_expr(), "!");
+    } else {
+        switch (tk) {
+        case TokenType::Identifier:
+                value = new IdentifierExpr(eat().getValue());
+                break;
+        case TokenType::NumberLiteral:
+                value = new NumericLiteral(std::stod(eat().getValue()));
+                break;
+        case TokenType::Null:
+                eat();
+                value = new NullLiteral("null");
+                break;
+        case TokenType::OpenParen:
+                eat();
+                value = parse_expr();
+                expect(TokenType::CloseParen, "Unexpected token found inside parenthesized expression. Expected closing parenthesis.");
+                break;
+        default:
+          value = nullptr; // Initialize value as nullptr in the default case
+          std::cerr << "Unexpected token found during parsing!" << at().getValue() << std::endl;
+          std::exit(1);
+        }
     }
 
     return value;

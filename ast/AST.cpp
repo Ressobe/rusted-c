@@ -14,6 +14,8 @@ VarDeclaration::VarDeclaration(bool isConst, const std::string& id, Expr* val)
 BinaryExpr::BinaryExpr(Expr* left, Expr* right, const std::string& op)
     : Expr(NodeType::BinaryExpr), left(left), right(right), binaryOperator(op) {}
 
+UnaryExpr::UnaryExpr(Expr* right, const std::string& op) : Expr(NodeType::UnaryExpr), right(right), op(op) {}
+
 IdentifierExpr::IdentifierExpr(const std::string& symbol) : Expr(NodeType::Identifier), symbol(symbol) {}
 
 NumericLiteral::NumericLiteral(double value) : Expr(NodeType::NumericLiteral), value(value) {}

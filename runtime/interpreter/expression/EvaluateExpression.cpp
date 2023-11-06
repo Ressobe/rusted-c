@@ -52,6 +52,17 @@ RuntimeVal* EvaluateExpression::eval_call_expr(CallExpr* expr, Environment* env)
     throw "Cannot call value that is not a function";
 }
 
+RuntimeVal* EvaluateExpression::eval_unary_expr(UnaryExpr* expr, Environment* env) {
+    RuntimeVal* rightValue = Interpreter::evaluate(expr->right, env);
+
+    if (expr->op == "!") {
+        return new NumberVal(!rightValue);
+    }
+
+    std::cerr << "Unsupported unary operator: " << expr->op << std::endl;
+    std::exit(1);
+}
+
 RuntimeVal*  EvaluateExpression::eval_binary_expr(BinaryExpr* binop, Environment* env) {
     RuntimeVal* lhs = Interpreter::evaluate(binop->left, env);
     RuntimeVal* rhs = Interpreter::evaluate(binop->right, env);

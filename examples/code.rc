@@ -1,5 +1,5 @@
 func math(x, y) {
-  if (x != 10) {
+  if (!x) {
     print(x + y);
   }
   else {

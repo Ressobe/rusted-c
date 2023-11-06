@@ -13,6 +13,7 @@ class EvaluateExpression {
       static RuntimeVal* eval_call_expr(CallExpr* call, Environment* env);
       static RuntimeVal* eval_identifer(IdentifierExpr* ident, Environment* env);
       static RuntimeVal* eval_binary_expr(BinaryExpr* binop, Environment* env);
+      static RuntimeVal* eval_unary_expr(UnaryExpr* expr, Environment* env);
 };
 
 
