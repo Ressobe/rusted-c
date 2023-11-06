@@ -82,12 +82,14 @@ void run() {
     // 1.
     Lexer lexer = Lexer(fileContent);
 
+    lexer.printTokens();
+
 
     // 2.
     Parser parser;
     Program program = parser.produceAST(lexer.tokenize());
 
-    // printProgram(program, "  ");
+    printProgram(program, "  ");
 
     Environment env;
     env.createGlobalEnv();

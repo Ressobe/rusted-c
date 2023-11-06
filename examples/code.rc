@@ -1,2 +1,10 @@
-let x = 10;
+func math(x, y) {
+  if (x != 10) {
+    print(x + y);
+  }
+  else {
+    print(x - y);
+  }
+}
 
+math(10, 5);

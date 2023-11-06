@@ -1,0 +1,155 @@
+[ 
+Let, 
+Identifier, 
+Equals, 
+NumberLiteral, 
+Semicolon, 
+If, 
+OpenParen, 
+Identifier, 
+GreaterThan, 
+NumberLiteral, 
+CloseParen, 
+OpenBrace, 
+Identifier, 
+OpenParen, 
+Identifier, 
+BinaryOperator, 
+NumberLiteral, 
+CloseParen, 
+Semicolon, 
+CloseBrace, 
+Else, 
+OpenBrace, 
+Identifier, 
+OpenParen, 
+Identifier, 
+BinaryOperator, 
+NumberLiteral, 
+CloseParen, 
+Semicolon, 
+CloseBrace, 
+EOFToken, 
+ ]
+produceAST
+parse_stmt
+parse_var_declaration
+parse_expr
+parse_assigment_expr
+parse_additive_expr
+parse_multiplicative_expr
+parse_call_member_expr
+parse_primary_expr
+parse_stmt
+parse_if_statement
+parse_comprasion_expr
+parse_additive_expr
+parse_multiplicative_expr
+parse_call_member_expr
+parse_primary_expr
+parse_additive_expr
+parse_multiplicative_expr
+parse_call_member_expr
+parse_primary_expr
+parse_stmt
+parse_expr
+parse_assigment_expr
+parse_additive_expr
+parse_multiplicative_expr
+parse_call_member_expr
+parse_primary_expr
+parse_expr
+parse_assigment_expr
+parse_additive_expr
+parse_multiplicative_expr
+parse_call_member_expr
+parse_primary_expr
+parse_multiplicative_expr
+parse_call_member_expr
+parse_primary_expr
+parse_stmt
+parse_expr
+parse_assigment_expr
+parse_additive_expr
+parse_multiplicative_expr
+parse_call_member_expr
+parse_primary_expr
+parse_expr
+parse_assigment_expr
+parse_additive_expr
+parse_multiplicative_expr
+parse_call_member_expr
+parse_primary_expr
+parse_multiplicative_expr
+parse_call_member_expr
+parse_primary_expr
+
+   "Program": {
+    {
+      "Statement": "VarDeclaration",
+      "Constant": false,
+      "Identifier": "x",
+      "Value":         {
+          "Statement": "NumericLiteral",
+          "Value": 10
+        }
+    },
+    {
+      "Statement": "IfStatement",
+      "Condition":         {
+          "Statement": "BinaryExpr",
+          "BinaryOperator": ">",
+          "Left":             {
+              "Statement": "Identifier",
+              "Symbol": "x"
+            },
+          "Right":             {
+              "Statement": "NumericLiteral",
+              "Value": 10
+            }
+        },
+      "IfBody":         {
+          "Statement": "CallExpr",
+          "Caller":             {
+              "Statement": "Identifier",
+              "Symbol": "print"
+            },
+          "Arguments": [
+            {
+              "Statement": "BinaryExpr",
+              "BinaryOperator": "+",
+              "Left":                 {
+                  "Statement": "Identifier",
+                  "Symbol": "x"
+                },
+              "Right":                 {
+                  "Statement": "NumericLiteral",
+                  "Value": 5
+                }
+            }
+          ]
+        },
+      "ElseBody":         {
+          "Statement": "CallExpr",
+          "Caller":             {
+              "Statement": "Identifier",
+              "Symbol": "print"
+            },
+          "Arguments": [
+            {
+              "Statement": "BinaryExpr",
+              "BinaryOperator": "-",
+              "Left":                 {
+                  "Statement": "Identifier",
+                  "Symbol": "x"
+                },
+              "Right":                 {
+                  "Statement": "NumericLiteral",
+                  "Value": 5
+                }
+            }
+          ]
+        }
+    }
+  }
+}

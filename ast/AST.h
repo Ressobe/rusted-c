@@ -111,6 +111,12 @@ class NumericLiteral : public Expr {
 		NumericLiteral(double value);
 };
 
+class FloatLiteral : public Expr {
+	public:
+		double value;
+		FloatLiteral(double value);
+};
+
 class NullLiteral : public Expr {
 	public:
 		std::string value;

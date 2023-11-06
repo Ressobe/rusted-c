@@ -38,9 +38,7 @@ Stmt* Parser::parse_stmt() {
     std::cout << "parse_stmt" << std::endl;
 
     if (at().getType() == TokenType::Let || at().getType() == TokenType::Const) {
-        Stmt* varStmt = parse_var_declaration();        
-        expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
-        return varStmt;
+        return parse_var_declaration();        
     }
 
     if (at().getType() == TokenType::Func) {
@@ -57,12 +55,6 @@ Stmt* Parser::parse_stmt() {
         return returnStmt;
     }
 
-    // if (at().getType() == TokenType::Identifier && lookahead(1).getType() == TokenType::Equals) {
-    //     Stmt* assignmentStmt = parse_assignment_expr();
-    //
-    //     expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
-    //     return assignmentStmt;
-    // }
 
     return parse_expr();
 }
@@ -86,10 +78,10 @@ Stmt* Parser::parse_if_statement() {
     std::cout << "parse_if_statement" << std::endl;
 
     eat(); // Consume the "if" keyword
-           //
+           
     expect(TokenType::OpenParen, "Expected '(' after 'if'");
 
-    Expr* condition = parse_expr();
+    Expr* condition = parse_comprasion_expr();
 
     expect(TokenType::CloseParen, "Expected ')' after 'if' condition");
 
@@ -114,6 +106,8 @@ Stmt* Parser::parse_if_statement() {
 
 
 Expr* Parser::parse_expr() {
+
+    
     std::cout << "parse_expr" << std::endl;
 
     return parse_assignment_expr();
@@ -147,10 +141,10 @@ Expr* Parser::parse_primary_expr() {
 
     switch (tk) {
 		case TokenType::Identifier:
-			value = new IdentifierExpr(eat().getValue());
+			      value = new IdentifierExpr(eat().getValue());
             break;
 		case TokenType::NumberLiteral:
-			value = new NumericLiteral(std::stod(eat().getValue()));
+			      value = new NumericLiteral(std::stod(eat().getValue()));
             break;
 		case TokenType::Null:
             eat();
@@ -208,9 +202,12 @@ Stmt* Parser::parse_var_declaration() {
     Expr* value = this->parse_expr();
     Stmt* declaration = new VarDeclaration(isConstant, identifier, value);
 
+    expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
+
 
     return declaration;
 }
+
 
 
 Stmt* Parser::parse_function_declaration() {
@@ -223,20 +220,21 @@ Stmt* Parser::parse_function_declaration() {
     std::vector<std::string> params;
 
     for (auto arg : args) {
-            if (arg->kind != NodeType::Identifier) {
-                std::cout << "Inside function declaration expected parameters to be of type string." << std::endl;
-                std::exit(1);
-            }
+        if (arg->kind == NodeType::Identifier) {
             params.push_back(static_cast<IdentifierExpr*>(arg)->symbol);
+        } else {
+            std::cerr << "Inside function declaration expected parameters to be of type Identifier." << std::endl;
+            std::exit(1);
+        }
     }
 
     expect(TokenType::OpenBrace, "Expected function body following declaration");
 
     std::vector<Stmt*> body;
 
-	while (this->at().getType() != TokenType::EOFToken && this->at().getType() != TokenType::CloseBrace) {
-		body.push_back(parse_stmt());
-	}
+    while (this->at().getType() != TokenType::EOFToken && this->at().getType() != TokenType::CloseBrace) {
+        body.push_back(parse_stmt());
+    }
 
     expect(TokenType::CloseBrace, "Closing brace expected inside function declaration");
 
@@ -244,6 +242,7 @@ Stmt* Parser::parse_function_declaration() {
 
     return fn;
 }
+
 
 Expr* Parser::parse_additive_expr() {
     std::cout << "parse_additive_expr" << std::endl;
@@ -285,6 +284,9 @@ Expr* Parser::parse_assignment_expr() {
         Expr* value = this->parse_assignment_expr();
 
 
+        expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
+
+
         Expr* assignmentExpr = new AssignmentExpr(left, value);
 
         return assignmentExpr;
@@ -317,6 +319,15 @@ Expr* Parser::parse_call_member_expr() {
 
 
         expect(TokenType::CloseParen, "Expected a closing parenthesis in the function call.");
+
+        // Oczekiwanie na srednik po wywołaniu funkcji, ale jest opcjonalny
+        if (this->at().getType() == TokenType::Semicolon) {
+            this->eat(); // Konsumowanie srednika
+        } else if (this->at().getType() != TokenType::Semicolon && this->at().getType() != TokenType::CloseParen) {
+            std::cerr << "Parser Error:\nExpected a semicolon (;) at the end of the line or a closing parenthesis after function call." << std::endl;
+            std::exit(1);
+        }
+
 
 
         // Create the call expression

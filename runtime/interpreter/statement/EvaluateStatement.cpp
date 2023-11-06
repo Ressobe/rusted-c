@@ -20,7 +20,9 @@ RuntimeVal* EvaluateStatement::eval_return_statement(ReturnStatement* stmt, Envi
 
 
 RuntimeVal* EvaluateStatement::eval_if_statement(IfStatement* ifStmt, Environment* env) {
+
     RuntimeVal* conditionValue = Interpreter::evaluate(ifStmt->condition, env);
+
 
     if (conditionValue->type == ValueType::NumberValue) {
         NumberVal* numCondition = dynamic_cast<NumberVal*>(conditionValue);

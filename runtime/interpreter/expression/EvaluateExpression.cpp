@@ -69,6 +69,24 @@ RuntimeVal*  EvaluateExpression::eval_binary_expr(BinaryExpr* binop, Environment
         else if (binop->binaryOperator == "*") {
             return new NumberVal(leftNumber->value * rightNumber->value);
         }
+        else if (binop->binaryOperator == ">") {
+            return new NumberVal(leftNumber->value > rightNumber->value);
+        }
+        else if (binop->binaryOperator == "<") {
+            return new NumberVal(leftNumber->value < rightNumber->value);
+        }
+        else if (binop->binaryOperator == ">=") {
+            return new NumberVal(leftNumber->value >= rightNumber->value);
+        }
+        else if (binop->binaryOperator == ">=") {
+            return new NumberVal(leftNumber->value >= rightNumber->value);
+        }
+        else if (binop->binaryOperator == "<=") {
+            return new NumberVal(leftNumber->value >= rightNumber->value);
+        }
+        else if (binop->binaryOperator == "!=") {
+            return new NumberVal(leftNumber->value != rightNumber->value);
+        }
         else if (binop->binaryOperator == "/") {
             if (rightNumber->value != 0) {
                 return  new NumberVal(leftNumber->value / rightNumber->value);
