@@ -1,4 +1,5 @@
 #include "Lexer.h"
+#include <iostream>
 #include <unordered_map>
 #include <cctype>
 
@@ -249,4 +250,12 @@ std::string Token::getTokeTypeName() {
     } else {
         return "Unknown";
     }
+}
+
+void Lexer::printTokens() {
+  std::cout << "[ " << std::endl;
+  for (Token& token: this->tokenize()) {
+    std::cout<<  token.getTokeTypeName() << ", " << std::endl;
+  }
+  std::cout << " ]" << std::endl;
 }

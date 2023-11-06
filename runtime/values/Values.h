@@ -14,7 +14,8 @@ enum class ValueType {
   NumberValue,
 	BooleanValue,
 	NativeFunction,
-	Function,
+	Function,    
+  ReturnValue,
 };
 
 
@@ -64,4 +65,18 @@ class NumberVal : public RuntimeVal {
       return std::to_string(value);
     }
 };
+
+class ReturnValue : public RuntimeVal {
+  public:
+    RuntimeVal* value;
+
+    ReturnValue(RuntimeVal* val) : value(val) {
+        type = ValueType::ReturnValue;
+    }
+
+    std::string toString() const override {
+        return value->toString();
+    }
+};
+
 #endif

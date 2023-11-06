@@ -12,7 +12,8 @@ enum class NodeType {
   Program,
 	VarDeclaration,
 	FunctionDeclaration,    
-  IfStatement,
+  IfStatement,    
+  ReturnStatement,
 
 
 	// Expressions
@@ -22,6 +23,7 @@ enum class NodeType {
   Identifier,
   BinaryExpr,
 	CallExpr,
+  UnaryExpr,
 };
 
 
@@ -65,12 +67,20 @@ class VarDeclaration : public Stmt {
 		VarDeclaration(bool isConst, const std::string& id, Expr* val = nullptr);
 };
 
+class ReturnStatement : public Stmt {
+  public:
+    Expr* returnValue;
+    ReturnStatement(Expr* value);
+};
+
+
 class FunctionDeclaration : public Stmt {
 	public:
 		std::vector<std::string> parameters;
 		std::string name;
-		std::vector<Stmt*> body;
-		FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b);
+		std::vector<Stmt*> body;    
+    ReturnStatement* returnStatement;
+		FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b, ReturnStatement* retStmt = nullptr);
 };
 
 
@@ -80,6 +90,15 @@ class BinaryExpr : public Expr {
 		Expr* right;
 		std::string binaryOperator;
 		BinaryExpr(Expr* left, Expr* right, const std::string& op);
+};
+
+
+class UnaryExpr : public Expr {
+  public:
+    Expr* right;
+    std::string op;
+
+    UnaryExpr(Expr* right, const std::string& op);
 };
 
 class CallExpr : public Expr {
@@ -102,6 +121,12 @@ class NumericLiteral : public Expr {
 		NumericLiteral(double value);
 };
 
+class FloatLiteral : public Expr {
+	public:
+		double value;
+		FloatLiteral(double value);
+};
+
 class NullLiteral : public Expr {
 	public:
 		std::string value;
@@ -115,6 +140,7 @@ class IfStatement : public Stmt {
     Stmt* elseBody;
     IfStatement(Expr* cond, Stmt* ifB, Stmt* elseB = nullptr);
 };
+
 
 // Convert enum numbers to string
 std::string NodeTypeToString(NodeType type);

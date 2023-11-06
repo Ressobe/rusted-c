@@ -1,3 +1,10 @@
-let x = 20;
+func math(x, y) {
+  if (!x) {
+    print(x + y);
+  }
+  else {
+    print(x - y);
+  }
+}
 
-print(x)
+math(10, 5);

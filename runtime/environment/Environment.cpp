@@ -82,6 +82,11 @@ RuntimeVal* printFunction(const std::vector<RuntimeVal*> args, Environment* env)
     return NullVal::MK_NULL();
 }
 
+RuntimeVal* exitFunction(const std::vector<RuntimeVal*> args, Environment* env) {
+    exit(1);
+    return NullVal::MK_NULL();
+}
+
 void Environment::createGlobalEnv() {
 
     // Create Default Global Environment
@@ -89,4 +94,5 @@ void Environment::createGlobalEnv() {
     this->declareVar("false", BooleanVal::MK_BOOL(false), true);
     this->declareVar("null", NullVal::MK_NULL(), true);
     this->declareVar("print", NativeFnVal::MK_NATIVE_FN(printFunction), true);
+    this->declareVar("exit", NativeFnVal::MK_NATIVE_FN(exitFunction), true);
 }

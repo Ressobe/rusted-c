@@ -76,6 +76,7 @@ class Lexer {
 	public:
 		Lexer(const std::string& sourceCode);
 		std::vector<Token> tokenize();
+    void printTokens();
 
 	private:
 		std::string sourceCode;

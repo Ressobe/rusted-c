@@ -14,6 +14,8 @@ VarDeclaration::VarDeclaration(bool isConst, const std::string& id, Expr* val)
 BinaryExpr::BinaryExpr(Expr* left, Expr* right, const std::string& op)
     : Expr(NodeType::BinaryExpr), left(left), right(right), binaryOperator(op) {}
 
+UnaryExpr::UnaryExpr(Expr* right, const std::string& op) : Expr(NodeType::UnaryExpr), right(right), op(op) {}
+
 IdentifierExpr::IdentifierExpr(const std::string& symbol) : Expr(NodeType::Identifier), symbol(symbol) {}
 
 NumericLiteral::NumericLiteral(double value) : Expr(NodeType::NumericLiteral), value(value) {}
@@ -25,11 +27,13 @@ AssignmentExpr::AssignmentExpr(Expr* assigne, Expr* val)
 
 CallExpr::CallExpr(Expr* caller, std::vector<Expr*> args) : Expr(NodeType::CallExpr), caller(caller), args(args) {}
 
-FunctionDeclaration::FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b) 
-    : Stmt(NodeType::FunctionDeclaration), parameters(param), name(n), body(b) {}
+FunctionDeclaration::FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b , ReturnStatement* retStmt) 
+    : Stmt(NodeType::FunctionDeclaration), parameters(param), name(n), body(b), returnStatement(retStmt) {}
 
 IfStatement::IfStatement(Expr* cond, Stmt* ifB, Stmt* elseB)
     : Stmt(NodeType::IfStatement), condition(cond), ifBody(ifB), elseBody(elseB) {}
+
+ReturnStatement::ReturnStatement(Expr* value) : Stmt(NodeType::ReturnStatement), returnValue(value) {}
 
 void printProgram(const Program& program, const std::string& indent) {
     std::cout << std::endl;
@@ -129,6 +133,11 @@ void printStatement(const Stmt& stmt, const std::string& indent) {
             printStatement(*ifStmt.elseBody, indent + "    ");
         }
     }
+    else if (stmt.kind == NodeType::ReturnStatement) {
+        const ReturnStatement& returnStmt = static_cast<const ReturnStatement&>(stmt);
+        std::cout << indent << "  \"ReturnValue\": ";
+        printStatement(*returnStmt.returnValue, indent + "    ");
+    }
 
     std::cout << "\n" << indent << "}";
 }
@@ -160,11 +169,14 @@ std::string NodeTypeToString(NodeType type) {
     case NodeType::IfStatement:
         value = "IfStatement";
         break;
+    case NodeType::ReturnStatement:
+        value = "ReturnStatement";
+        break;
     case NodeType::Null:
         value = "Null";
         break;
 		default:
-			value = "Unknown"; // Handle unknown enum values
+			value = "Unknown";
 			break;
 	}
 	return value;

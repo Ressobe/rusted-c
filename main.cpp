@@ -82,18 +82,22 @@ void run() {
     // 1.
     Lexer lexer = Lexer(fileContent);
 
+    lexer.printTokens();
+
 
     // 2.
     Parser parser;
     Program program = parser.produceAST(lexer.tokenize());
 
-    // printProgram(program, "  ");
+    printProgram(program, "  ");
 
     Environment env;
     env.createGlobalEnv();
 
     // 3.
-    Interpreter::evaluate(&program, &env);
+    RuntimeVal*  val = Interpreter::evaluate(&program, &env);
+
+    std::cout << "Result: " << val->toString() << std::endl;
 }
 
 void testLexer() {
