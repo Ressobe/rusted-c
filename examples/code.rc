@@ -1,6 +1,6 @@
 let y = 10;
 
-while (y < 15) {
+while (y >= 0) {
   print(y);
-  y = y + 1;
+  y = y - 1;
 }

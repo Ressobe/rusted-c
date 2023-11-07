@@ -12,7 +12,7 @@ VALUESDIR = $(SRCDIR)/runtime/values
 
 all: $(BINDIR)/rusted-c
 
-$(BINDIR)/rusted-c: $(OBJDIR)/ast/AST.o $(OBJDIR)/lexer/Lexer.o $(OBJDIR)/parser/Parser.o $(OBJDIR)/runtime/environment/Environment.o $(OBJDIR)/runtime/interpreter/Interpreter.o $(OBJDIR)/runtime/interpreter/expression/EvaluateExpression.o $(OBJDIR)/runtime/interpreter/statement/EvaluateStatement.o $(OBJDIR)/runtime/values/Values.o $(OBJDIR)/main.o
+$(BINDIR)/rusted-c: $(OBJDIR)/ast/AST.o $(OBJDIR)/lexer/Lexer.o $(OBJDIR)/parser/Parser.o $(OBJDIR)/parser/ParserStmt.o $(OBJDIR)/parser/ParserExpr.o $(OBJDIR)/runtime/environment/Environment.o $(OBJDIR)/runtime/interpreter/Interpreter.o $(OBJDIR)/runtime/interpreter/expression/EvaluateExpression.o $(OBJDIR)/runtime/interpreter/statement/EvaluateStatement.o $(OBJDIR)/runtime/values/Values.o $(OBJDIR)/main.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(OBJDIR)/ast/AST.o: $(ASTDIR)/AST.cpp
@@ -24,6 +24,14 @@ $(OBJDIR)/lexer/Lexer.o: $(LEXERDIR)/Lexer.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 $(OBJDIR)/parser/Parser.o: $(PARSERDIR)/Parser.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJDIR)/parser/ParserStmt.o: $(PARSERDIR)/ParserStmt.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJDIR)/parser/ParserExpr.o: $(PARSERDIR)/ParserExpr.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
@@ -55,4 +63,3 @@ clean:
 	rm -rf $(OBJDIR) $(BINDIR)
 
 .PHONY: all clean
-
