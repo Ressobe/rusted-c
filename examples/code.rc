@@ -1,10 +1,6 @@
-func math(x, y) {
-  if (!x) {
-    print(x + y);
-  }
-  else {
-    print(x - y);
-  }
-}
+let y = 10;
 
-math(10, 5);
+while (y < 15) {
+  print(y);
+  y = y + 1;
+}

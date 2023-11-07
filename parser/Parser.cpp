@@ -49,6 +49,10 @@ Stmt* Parser::parse_stmt() {
         return parse_if_statement();
     }
 
+    if (at().getType() == TokenType::While) {
+      return parse_while_statement();
+    }
+
     if (at().getType() == TokenType::Return) {
         Stmt* returnStmt = parse_return_statement();        
         expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
@@ -57,6 +61,27 @@ Stmt* Parser::parse_stmt() {
 
 
     return parse_expr();
+}
+
+Stmt* Parser::parse_while_statement() {
+    eat();
+
+    expect(TokenType::OpenParen, "Expected '(' after 'while'");
+
+    Expr* condition = parse_comprasion_expr();    
+
+    expect(TokenType::CloseParen, "Expected ')' after 'while' condition");    
+
+    expect(TokenType::OpenBrace, "Expected '{' open 'while' body");
+
+    std::vector<Stmt*> loopBody;
+    while (at().getType() != TokenType::CloseBrace) {
+          loopBody.push_back(parse_stmt());
+    }
+
+    expect(TokenType::CloseBrace, "Expected '}' close 'while' body");
+
+    return new WhileLoop(condition, loopBody);
 }
 
 Stmt* Parser::parse_return_statement() {
@@ -78,27 +103,38 @@ Stmt* Parser::parse_if_statement() {
     std::cout << "parse_if_statement" << std::endl;
 
     eat(); // Consume the "if" keyword
-           
     expect(TokenType::OpenParen, "Expected '(' after 'if'");
 
     Expr* condition = parse_comprasion_expr();
 
     expect(TokenType::CloseParen, "Expected ')' after 'if' condition");
 
+    std::vector<Stmt*> ifBody;
 
     expect(TokenType::OpenBrace, "Expected '{' open 'if' body");
-    Stmt* ifBody = parse_stmt(); // Parse the body of the "if" statement
-    expect(TokenType::CloseBrace, "Expected '}' close 'if' body");
 
-    Stmt* elseBody = nullptr;
+    while (at().getType() != TokenType::CloseBrace) {
+            ifBody.push_back(parse_stmt());
+    }
+
+
+    std::cout << tokens[0].getTokeTypeName() << std::endl;
+
+    expect(TokenType::CloseBrace, "Expected '}' close 'if' body");
+    
+    std::vector<Stmt*> elseBody;    
 
     if (at().getType() == TokenType::Else) {
+        eat();                
 
-        eat(); // Consume the "else" keyword
-               
         expect(TokenType::OpenBrace, "Expected '{' open 'else' body");
-        elseBody = parse_stmt(); // Parse the body of the "else" statement
+
+        while (at().getType() != TokenType::CloseBrace) {
+                    elseBody.push_back(parse_stmt());
+        }                
+
         expect(TokenType::CloseBrace, "Expected '}' close 'else' body");
+
     }
 
     return new IfStatement(condition, ifBody, elseBody);

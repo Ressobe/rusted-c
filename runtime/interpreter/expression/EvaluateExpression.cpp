@@ -7,7 +7,7 @@ RuntimeVal* EvaluateExpression::eval_identifer(IdentifierExpr* ident, Environmen
 
 RuntimeVal* EvaluateExpression::eval_assignment(AssignmentExpr* node, Environment* env) {
     if (node->assigne->kind != NodeType::Identifier) {
-        throw "Invalid LHS inside assignment expr";
+        throw std::runtime_error("Invalid LHS inside assignment expr");
     }
 
     IdentifierExpr* ident = dynamic_cast<IdentifierExpr*>(node->assigne);
@@ -49,14 +49,17 @@ RuntimeVal* EvaluateExpression::eval_call_expr(CallExpr* expr, Environment* env)
 
         return result;
     }
-    throw "Cannot call value that is not a function";
+    throw std::runtime_error("Cannot call value that is not a function");
 }
 
 RuntimeVal* EvaluateExpression::eval_unary_expr(UnaryExpr* expr, Environment* env) {
     RuntimeVal* rightValue = Interpreter::evaluate(expr->right, env);
 
     if (expr->op == "!") {
-        return new NumberVal(!rightValue);
+        if (rightValue->type == ValueType::NumberValue) {
+          NumberVal* number = dynamic_cast<NumberVal*>(rightValue);
+          return new NumberVal(!number->value);
+        }
     }
 
     std::cerr << "Unsupported unary operator: " << expr->op << std::endl;
@@ -94,6 +97,9 @@ RuntimeVal*  EvaluateExpression::eval_binary_expr(BinaryExpr* binop, Environment
         }
         else if (binop->binaryOperator == "<=") {
             return new NumberVal(leftNumber->value >= rightNumber->value);
+        }
+        else if (binop->binaryOperator == "==") {
+            return new NumberVal(leftNumber->value == rightNumber->value);
         }
         else if (binop->binaryOperator == "!=") {
             return new NumberVal(leftNumber->value != rightNumber->value);
