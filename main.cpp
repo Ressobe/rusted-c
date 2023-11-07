@@ -95,9 +95,9 @@ void run() {
     env.createGlobalEnv();
 
     // 3.
-    RuntimeVal*  val = Interpreter::evaluate(&program, &env);
+    Interpreter::evaluate(&program, &env);
 
-    std::cout << "Result: " << val->toString() << std::endl;
+    // std::cout << "Result: " << val->toString() << std::endl;
 }
 
 void testLexer() {
