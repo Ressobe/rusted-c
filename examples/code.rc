@@ -1,10 +1,8 @@
-func math(x, y) {
-  if (!x) {
-    print(x + y);
-  }
-  else {
-    print(x - y);
-  }
-}
+let x = 2;
 
-math(10, 5);
+if (x >= 1) {
+  print(69);
+}
+else {
+  print(666);
+}

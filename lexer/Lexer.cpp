@@ -37,6 +37,7 @@ std::vector<Token> Lexer::tokenize() {
             continue;
         }
 
+
         if (std::isdigit(currentChar)) {
             std::string num;
             num += currentChar;

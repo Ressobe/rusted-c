@@ -56,7 +56,10 @@ RuntimeVal* EvaluateExpression::eval_unary_expr(UnaryExpr* expr, Environment* en
     RuntimeVal* rightValue = Interpreter::evaluate(expr->right, env);
 
     if (expr->op == "!") {
-        return new NumberVal(!rightValue);
+        if (rightValue->type == ValueType::NumberValue) {
+          NumberVal* number = dynamic_cast<NumberVal*>(rightValue);
+          return new NumberVal(!number->value);
+        }
     }
 
     std::cerr << "Unsupported unary operator: " << expr->op << std::endl;
