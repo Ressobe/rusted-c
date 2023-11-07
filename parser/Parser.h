@@ -21,6 +21,7 @@ private:
 
     Stmt* parse_stmt();
     Stmt* parse_if_statement();
+    Stmt* parse_while_statement();
     Stmt* parse_return_statement();
     Stmt* parse_var_declaration();
     Stmt* parse_function_declaration();

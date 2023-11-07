@@ -13,12 +13,14 @@ enum class NodeType {
 	VarDeclaration,
 	FunctionDeclaration,    
   IfStatement,    
+  WhileLoop,
   ReturnStatement,
 
 
 	// Expressions
 	AssignmentExpr,
   NumericLiteral,
+  StrLiteral,
 	Null,
   Identifier,
   BinaryExpr,
@@ -121,6 +123,12 @@ class NumericLiteral : public Expr {
 		NumericLiteral(double value);
 };
 
+class StrLiteral : public Expr {
+	public:
+    std::string value;
+		StrLiteral(std::string value);
+};
+
 class FloatLiteral : public Expr {
 	public:
 		double value;
@@ -136,9 +144,16 @@ class NullLiteral : public Expr {
 class IfStatement : public Stmt {
   public:
     Expr* condition;
-    Stmt* ifBody;
-    Stmt* elseBody;
-    IfStatement(Expr* cond, Stmt* ifB, Stmt* elseB = nullptr);
+    std::vector<Stmt*> ifBody;
+    std::vector<Stmt*> elseBody;
+    IfStatement(Expr* cond, const std::vector<Stmt*>& ifB, const std::vector<Stmt*>& elseB = std::vector<Stmt*>());
+};
+
+class WhileLoop : public Stmt {
+  public:
+    Expr* condition;
+    std::vector<Stmt*> loopBody;
+    WhileLoop(Expr* cond, const std::vector<Stmt*>& bd);
 };
 
 

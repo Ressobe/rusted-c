@@ -1,8 +1,6 @@
-let x = 2;
+let y = 10;
 
-if (x >= 1) {
-  print(69);
-}
-else {
-  print(666);
+while (y < 15) {
+  print(y);
+  y = y + 1;
 }

@@ -20,6 +20,8 @@ IdentifierExpr::IdentifierExpr(const std::string& symbol) : Expr(NodeType::Ident
 
 NumericLiteral::NumericLiteral(double value) : Expr(NodeType::NumericLiteral), value(value) {}
 
+StrLiteral::StrLiteral(std::string value) : Expr(NodeType::StrLiteral), value(value) {}
+
 NullLiteral::NullLiteral(const std::string& value) : Expr(NodeType::Null), value(value) {}
 
 AssignmentExpr::AssignmentExpr(Expr* assigne, Expr* val)
@@ -30,8 +32,11 @@ CallExpr::CallExpr(Expr* caller, std::vector<Expr*> args) : Expr(NodeType::CallE
 FunctionDeclaration::FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b , ReturnStatement* retStmt) 
     : Stmt(NodeType::FunctionDeclaration), parameters(param), name(n), body(b), returnStatement(retStmt) {}
 
-IfStatement::IfStatement(Expr* cond, Stmt* ifB, Stmt* elseB)
-    : Stmt(NodeType::IfStatement), condition(cond), ifBody(ifB), elseBody(elseB) {}
+IfStatement::IfStatement(Expr* cond, const std::vector<Stmt*>& ifB, const std::vector<Stmt*>& elseB) 
+  : Stmt(NodeType::IfStatement), condition(cond), ifBody(ifB), elseBody(elseB) {}
+
+WhileLoop::WhileLoop(Expr* cond, const std::vector<Stmt*>& bd)
+  : Stmt(NodeType::WhileLoop), condition(cond), loopBody(bd) {}
 
 ReturnStatement::ReturnStatement(Expr* value) : Stmt(NodeType::ReturnStatement), returnValue(value) {}
 
@@ -120,19 +125,35 @@ void printStatement(const Stmt& stmt, const std::string& indent) {
         }
         std::cout << indent << "  ]";
     }
+    /*
     else if (stmt.kind == NodeType::IfStatement) {
         const IfStatement& ifStmt = static_cast<const IfStatement&>(stmt);
         std::cout << indent << "  \"Condition\": ";
         printStatement(*ifStmt.condition, indent + "    ");
         std::cout << ",\n";
-        std::cout << indent << "  \"IfBody\": ";
-        printStatement(*ifStmt.ifBody, indent + "    ");
+        std::cout << indent << "  \"IfBody\": [\n";
+        for (const Stmt* ifBodyStmt : ifStmt.ifBody) {
+            printStatement(*ifBodyStmt, indent + "    ");
+            if (ifBodyStmt != ifStmt.ifBody.back()) {
+                std::cout << ",";
+            }
+            std::cout << "\n";
+        }
+        std::cout << indent << "  ]";
+
         if (ifStmt.elseBody) {
             std::cout << ",\n";
-            std::cout << indent << "  \"ElseBody\": ";
-            printStatement(*ifStmt.elseBody, indent + "    ");
+            std::cout << indent << "  \"ElseBody\": [\n";
+            for (const Stmt* elseBodyStmt : ifStmt.elseBody.value()) {
+                printStatement(*elseBodyStmt, indent + "    ");
+                if (elseBodyStmt != ifStmt.elseBody.value().back()) {
+                    std::cout << ",";
+                }
+                std::cout << "\n";
+            }
+            std::cout << indent << "  ]";
         }
-    }
+    } */
     else if (stmt.kind == NodeType::ReturnStatement) {
         const ReturnStatement& returnStmt = static_cast<const ReturnStatement&>(stmt);
         std::cout << indent << "  \"ReturnValue\": ";
@@ -151,6 +172,9 @@ std::string NodeTypeToString(NodeType type) {
 		case NodeType::NumericLiteral:
 			value = "NumericLiteral";
 			break;
+    case NodeType::StrLiteral:
+      value = "StrLiteral";
+      break;
 		case NodeType::Identifier:
 			value =  "Identifier";
 			break;
@@ -168,6 +192,9 @@ std::string NodeTypeToString(NodeType type) {
         break;
     case NodeType::IfStatement:
         value = "IfStatement";
+        break;
+    case NodeType::WhileLoop:
+        value = "WhileLoop";
         break;
     case NodeType::ReturnStatement:
         value = "ReturnStatement";
