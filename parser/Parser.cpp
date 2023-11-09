@@ -1,5 +1,18 @@
 #include "Parser.h"
 
+Program Parser::produceAST(std::vector<Token> tokens) {
+    this->tokens = tokens;
+
+    Program program;
+    program.kind = NodeType::Program;
+
+    while (!eof()) {
+        program.body.push_back(parse_stmt());
+    }
+
+    return program;
+}
+
 
 bool Parser::eof() {
     return tokens[0].getType() == TokenType::EOFToken;
@@ -35,40 +48,5 @@ Token Parser::expect(TokenType type, const std::string& err) {
 }
 
 
-Program Parser::produceAST(std::vector<Token> tokens) {
-    this->tokens = tokens;
-
-    Program program;
-    program.kind = NodeType::Program;
-
-    while (!eof()) {
-        program.body.push_back(parse_stmt());
-    }
-
-    return program;
-}
 
 
-std::vector<Expr*> Parser::parse_args() {
-    this->expect(TokenType::OpenParen, "Expected open parenthesis");
-    std::vector<Expr*> args;
-
-    if (this->at().getType() != TokenType::CloseParen) {
-        args = this->parse_arguments_list();
-    }
-
-    this->expect(TokenType::CloseParen, "Missing closing parenthesis inside arguments list");
-    return args;
-}
-
-
-std::vector<Expr*> Parser::parse_arguments_list() {
-    std::vector<Expr*> args;
-    args.push_back(this->parse_assignment_expr());
-
-    while (this->at().getType() == TokenType::Comma) {
-        this->eat();
-        args.push_back(this->parse_assignment_expr());
-    }
-    return args;
-}

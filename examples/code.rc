@@ -1,6 +1,7 @@
-let y = 10;
-
-while (y >= 0) {
-  print(y);
-  y = y - 1;
+func add(x, y) {
+  print(x + y);
 }
+
+
+add(20, 30);
+add(20, 30);

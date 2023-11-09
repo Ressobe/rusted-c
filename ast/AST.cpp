@@ -3,47 +3,54 @@
 Stmt::Stmt(NodeType kind) {
     this->kind = kind;
 }
-
 Expr::Expr(NodeType kind) : Stmt(kind) {}
 
 Program::Program() : Stmt(NodeType::Program) {}
 
-VarDeclaration::VarDeclaration(bool isConst, const std::string& id, Expr* val)
-    : Stmt(NodeType::VarDeclaration), constant(isConst), identifier(id), value(val) {}
+VarDeclaration::VarDeclaration(bool isConst, const std::string& id, std::unique_ptr<Expr> val)
+    : Stmt(NodeType::VarDeclaration), constant(isConst), identifier(id), value(std::move(val)) {}
 
-BinaryExpr::BinaryExpr(Expr* left, Expr* right, const std::string& op)
-    : Expr(NodeType::BinaryExpr), left(left), right(right), binaryOperator(op) {}
+BinaryExpr::BinaryExpr(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right, const std::string& op)
+    : Expr(NodeType::BinaryExpr), left(std::move(left)), right(std::move(right)), binaryOperator(op) {}
 
-UnaryExpr::UnaryExpr(Expr* right, const std::string& op) : Expr(NodeType::UnaryExpr), right(right), op(op) {}
+UnaryExpr::UnaryExpr(std::unique_ptr<Expr> right, const std::string& op)
+    : Expr(NodeType::UnaryExpr), right(std::move(right)), op(op) {}
 
-IdentifierExpr::IdentifierExpr(const std::string& symbol) : Expr(NodeType::Identifier), symbol(symbol) {}
+IdentifierExpr::IdentifierExpr(const std::string& symbol)
+    : Expr(NodeType::Identifier), symbol(symbol) {}
 
-NumericLiteral::NumericLiteral(double value) : Expr(NodeType::NumericLiteral), value(value) {}
+NumericLiteral::NumericLiteral(double value)
+    : Expr(NodeType::NumericLiteral), value(value) {}
 
-StrLiteral::StrLiteral(std::string value) : Expr(NodeType::StrLiteral), value(value) {}
+StrLiteral::StrLiteral(std::string value)
+    : Expr(NodeType::StrLiteral), value(value) {}
 
-NullLiteral::NullLiteral(const std::string& value) : Expr(NodeType::Null), value(value) {}
+NullLiteral::NullLiteral(const std::string& value)
+    : Expr(NodeType::Null), value(value) {}
 
-AssignmentExpr::AssignmentExpr(Expr* assigne, Expr* val)
-    : Expr(NodeType::AssignmentExpr), assigne(assigne), value(val) {}
+AssignmentExpr::AssignmentExpr(std::unique_ptr<Expr> assigne, std::unique_ptr<Expr> val)
+    : Expr(NodeType::AssignmentExpr), assigne(std::move(assigne)), value(std::move(val)) {}
 
-CallExpr::CallExpr(Expr* caller, std::vector<Expr*> args) : Expr(NodeType::CallExpr), caller(caller), args(args) {}
+CallExpr::CallExpr(std::unique_ptr<Expr> caller, std::vector<std::unique_ptr<Expr>> args)
+    : Expr(NodeType::CallExpr), caller(std::move(caller)), args(std::move(args)) {}
 
-FunctionDeclaration::FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b , ReturnStatement* retStmt) 
-    : Stmt(NodeType::FunctionDeclaration), parameters(param), name(n), body(b), returnStatement(retStmt) {}
+FunctionDeclaration::FunctionDeclaration(
+    std::vector<std::string> param, std::string n, std::vector<std::unique_ptr<Stmt>> b, std::unique_ptr<ReturnStatement> retStmt)
+    : Stmt(NodeType::FunctionDeclaration), parameters(param), name(n), body(std::move(b)), returnStatement(std::move(retStmt)) {}
 
-IfStatement::IfStatement(Expr* cond, const std::vector<Stmt*>& ifB, const std::vector<Stmt*>& elseB) 
-  : Stmt(NodeType::IfStatement), condition(cond), ifBody(ifB), elseBody(elseB) {}
+IfStatement::IfStatement(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stmt>> ifB, std::vector<std::unique_ptr<Stmt>> elseB)
+    : Stmt(NodeType::IfStatement), condition(std::move(cond)), ifBody(std::move(ifB)), elseBody(std::move(elseB)) {}
 
-WhileLoop::WhileLoop(Expr* cond, const std::vector<Stmt*>& bd)
-  : Stmt(NodeType::WhileLoop), condition(cond), loopBody(bd) {}
+WhileLoop::WhileLoop(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stmt>> bd)
+    : Stmt(NodeType::WhileLoop), condition(std::move(cond)), loopBody(std::move(bd)) {}
 
-ReturnStatement::ReturnStatement(Expr* value) : Stmt(NodeType::ReturnStatement), returnValue(value) {}
+ReturnStatement::ReturnStatement(std::unique_ptr<Expr> value)
+    : Stmt(NodeType::ReturnStatement), returnValue(std::move(value)) {}
 
 void printProgram(const Program& program, const std::string& indent) {
     std::cout << std::endl;
     std::cout << indent << " \"Program\": {\n";
-    for (const Stmt* stmt : program.body) {
+    for (const auto& stmt : program.body) {
         printStatement(*stmt, indent + "  ");
         if (stmt != program.body.back()) {
             std::cout << ",";
@@ -54,60 +61,53 @@ void printProgram(const Program& program, const std::string& indent) {
     std::cout << "\n}\n";
 }
 
-
 void printStatement(const Stmt& stmt, const std::string& indent) {
     std::cout << indent << "{\n";
     std::cout << indent << "  \"Statement\": \"" << NodeTypeToString(stmt.kind) << "\",\n";
 
     if (stmt.kind == NodeType::Identifier) {
-        const IdentifierExpr& id = static_cast<const IdentifierExpr&>(stmt);
+        const auto& id = static_cast<const IdentifierExpr&>(stmt);
         std::cout << indent << "  \"Symbol\": \"" << id.symbol << "\"";
-    }
-    else if (stmt.kind == NodeType::NumericLiteral) {
-        const NumericLiteral& numLit = static_cast<const NumericLiteral&>(stmt);
+    } else if (stmt.kind == NodeType::NumericLiteral) {
+        const auto& numLit = static_cast<const NumericLiteral&>(stmt);
         std::cout << indent << "  \"Value\": " << numLit.value;
-    }
-    else if (stmt.kind == NodeType::BinaryExpr) {
-        const BinaryExpr& binaryExpr = static_cast<const BinaryExpr&>(stmt);
+    } else if (stmt.kind == NodeType::BinaryExpr) {
+        const auto& binaryExpr = static_cast<const BinaryExpr&>(stmt);
         std::cout << indent << "  \"BinaryOperator\": \"" << binaryExpr.binaryOperator << "\",\n";
         std::cout << indent << "  \"Left\": ";
         printStatement(*binaryExpr.left, indent + "    ");
         std::cout << ",\n";
         std::cout << indent << "  \"Right\": ";
         printStatement(*binaryExpr.right, indent + "    ");
-    }
-    else if (stmt.kind == NodeType::VarDeclaration) {
-        const VarDeclaration& varDecl = static_cast<const VarDeclaration&>(stmt);
+    } else if (stmt.kind == NodeType::VarDeclaration) {
+        const auto& varDecl = static_cast<const VarDeclaration&>(stmt);
         std::cout << indent << "  \"Constant\": " << (varDecl.constant ? "true" : "false") << ",\n";
         std::cout << indent << "  \"Identifier\": \"" << varDecl.identifier << "\",\n";
         std::cout << indent << "  \"Value\": ";
         if (varDecl.value) {
             printStatement(*varDecl.value, indent + "    ");
-        }
-        else {
+        } else {
             std::cout << "null";
         }
-    }
-    else if (stmt.kind == NodeType::CallExpr) {
-        const CallExpr& callExpr = static_cast<const CallExpr&>(stmt);
+    } else if (stmt.kind == NodeType::CallExpr) {
+        const auto& callExpr = static_cast<const CallExpr&>(stmt);
         std::cout << indent << "  \"Caller\": ";
         printStatement(*callExpr.caller, indent + "    ");
         std::cout << ",\n";
         std::cout << indent << "  \"Arguments\": [\n";
-        for (const Expr* arg : callExpr.args) {
+        for (const auto& arg : callExpr.args) {
             printStatement(*arg, indent + "    ");
-            if (arg != callExpr.args.back()) {
+            if (&arg != &callExpr.args.back()) {
                 std::cout << ",";
             }
             std::cout << "\n";
         }
         std::cout << indent << "  ]";
-    }
-    else if (stmt.kind == NodeType::FunctionDeclaration) {
-        const FunctionDeclaration& funcDecl = static_cast<const FunctionDeclaration&>(stmt);
+    } else if (stmt.kind == NodeType::FunctionDeclaration) {
+        const auto& funcDecl = static_cast<const FunctionDeclaration&>(stmt);
         std::cout << indent << "  \"Name\": \"" << funcDecl.name << "\",\n";
         std::cout << indent << "  \"Parameters\": [\n";
-        for (const std::string& param : funcDecl.parameters) {
+        for (const auto& param : funcDecl.parameters) {
             std::cout << indent << "    \"" << param << "\"";
             if (&param != &funcDecl.parameters.back()) {
                 std::cout << ",";
@@ -116,46 +116,53 @@ void printStatement(const Stmt& stmt, const std::string& indent) {
         }
         std::cout << indent << "  ],\n";
         std::cout << indent << "  \"Body\": [\n";
-        for (const Stmt* bodyStmt : funcDecl.body) {
+        for (const auto& bodyStmt : funcDecl.body) {
             printStatement(*bodyStmt, indent + "    ");
-            if (bodyStmt != funcDecl.body.back()) {
+            if (&bodyStmt != &funcDecl.body.back()) {
                 std::cout << ",";
             }
             std::cout << "\n";
         }
         std::cout << indent << "  ]";
-    }
-    /*
-    else if (stmt.kind == NodeType::IfStatement) {
-        const IfStatement& ifStmt = static_cast<const IfStatement&>(stmt);
+    } else if (stmt.kind == NodeType::IfStatement) {
+        const auto& ifStmt = static_cast<const IfStatement&>(stmt);
         std::cout << indent << "  \"Condition\": ";
         printStatement(*ifStmt.condition, indent + "    ");
         std::cout << ",\n";
         std::cout << indent << "  \"IfBody\": [\n";
-        for (const Stmt* ifBodyStmt : ifStmt.ifBody) {
+        for (const auto& ifBodyStmt : ifStmt.ifBody) {
             printStatement(*ifBodyStmt, indent + "    ");
-            if (ifBodyStmt != ifStmt.ifBody.back()) {
+            if (&ifBodyStmt != &ifStmt.ifBody.back()) {
+                std::cout << ",";
+            }
+            std::cout << "\n";
+        }
+        std::cout << indent << "  ],\n";
+        std::cout << indent << "  \"ElseBody\": [\n";
+        for (const auto& elseBodyStmt : ifStmt.elseBody) {
+            printStatement(*elseBodyStmt, indent + "    ");
+            if (&elseBodyStmt != &ifStmt.elseBody.back()) {
                 std::cout << ",";
             }
             std::cout << "\n";
         }
         std::cout << indent << "  ]";
-
-        if (ifStmt.elseBody) {
-            std::cout << ",\n";
-            std::cout << indent << "  \"ElseBody\": [\n";
-            for (const Stmt* elseBodyStmt : ifStmt.elseBody.value()) {
-                printStatement(*elseBodyStmt, indent + "    ");
-                if (elseBodyStmt != ifStmt.elseBody.value().back()) {
-                    std::cout << ",";
-                }
-                std::cout << "\n";
+    } else if (stmt.kind == NodeType::WhileLoop) {
+        const auto& whileLoop = static_cast<const WhileLoop&>(stmt);
+        std::cout << indent << "  \"Condition\": ";
+        printStatement(*whileLoop.condition, indent + "    ");
+        std::cout << ",\n";
+        std::cout << indent << "  \"LoopBody\": [\n";
+        for (const auto& loopBodyStmt : whileLoop.loopBody) {
+            printStatement(*loopBodyStmt, indent + "    ");
+            if (&loopBodyStmt != &whileLoop.loopBody.back()) {
+                std::cout << ",";
             }
-            std::cout << indent << "  ]";
+            std::cout << "\n";
         }
-    } */
-    else if (stmt.kind == NodeType::ReturnStatement) {
-        const ReturnStatement& returnStmt = static_cast<const ReturnStatement&>(stmt);
+        std::cout << indent << "  ]";
+    } else if (stmt.kind == NodeType::ReturnStatement) {
+        const auto& returnStmt = static_cast<const ReturnStatement&>(stmt);
         std::cout << indent << "  \"ReturnValue\": ";
         printStatement(*returnStmt.returnValue, indent + "    ");
     }
@@ -164,47 +171,32 @@ void printStatement(const Stmt& stmt, const std::string& indent) {
 }
 
 std::string NodeTypeToString(NodeType type) {
-	std::string value;
-	switch (type) {
-		case NodeType::Program:
-			value = "Program";
-			break;
-		case NodeType::NumericLiteral:
-			value = "NumericLiteral";
-			break;
-    case NodeType::StrLiteral:
-      value = "StrLiteral";
-      break;
-		case NodeType::Identifier:
-			value =  "Identifier";
-			break;
-		case NodeType::BinaryExpr:
-			value =  "BinaryExpr";
-			break;
-    case NodeType::VarDeclaration:
-        value = "VarDeclaration";
-        break;
-    case NodeType::CallExpr:
-        value = "CallExpr";
-        break;
-    case NodeType::FunctionDeclaration:
-        value = "FunctionDeclaration";
-        break;
-    case NodeType::IfStatement:
-        value = "IfStatement";
-        break;
-    case NodeType::WhileLoop:
-        value = "WhileLoop";
-        break;
-    case NodeType::ReturnStatement:
-        value = "ReturnStatement";
-        break;
-    case NodeType::Null:
-        value = "Null";
-        break;
-		default:
-			value = "Unknown";
-			break;
-	}
-	return value;
+    switch (type) {
+        case NodeType::Program:
+            return "Program";
+        case NodeType::NumericLiteral:
+            return "NumericLiteral";
+        case NodeType::StrLiteral:
+            return "StrLiteral";
+        case NodeType::Identifier:
+            return "Identifier";
+        case NodeType::BinaryExpr:
+            return "BinaryExpr";
+        case NodeType::VarDeclaration:
+            return "VarDeclaration";
+        case NodeType::CallExpr:
+            return "CallExpr";
+        case NodeType::FunctionDeclaration:
+            return "FunctionDeclaration";
+        case NodeType::IfStatement:
+            return "IfStatement";
+        case NodeType::WhileLoop:
+            return "WhileLoop";
+        case NodeType::ReturnStatement:
+            return "ReturnStatement";
+        case NodeType::Null:
+            return "Null";
+        default:
+            return "Unknown";
+    }
 }

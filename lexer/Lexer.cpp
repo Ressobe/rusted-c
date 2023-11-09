@@ -256,7 +256,7 @@ std::string Token::getTokeTypeName() {
 void Lexer::printTokens() {
   std::cout << "[ " << std::endl;
   for (Token& token: this->tokenize()) {
-    std::cout<<  token.getTokeTypeName() << ", " << std::endl;
+    std::cout<< token.getTokeTypeName() << ", " << std::endl;
   }
   std::cout << " ]" << std::endl;
 }
