@@ -1,6 +1,6 @@
-#include "EvaluateExpression.h"
+#include "Interpreter.h"
 
-RuntimeVal* EvaluateExpression::eval_identifer(IdentifierExpr* ident, Environment* env) {
+RuntimeVal* Interpreter::eval_identifer(IdentifierExpr* ident, Environment* env) {
     RuntimeVal* val = env->lookupVar(ident->symbol);
     return val;
 }

@@ -1,25 +1,5 @@
-let x;
+const PI = 3.14;
 
-let z = 10;
+let x = "hello world";
 
-x = 20;
-
-func add(x, y) {
-  let z = 10;
-
-  while(z > 0) {
-    if (z > 5) {
-      print(x + 5);
-    }
-    else {
-      print(y + 2);
-    }
-    z = z - 1;
-  }
-
-  print(x + y);
-}
-
-
-add(20, 30);
-add(20, 30);
+let y = 20.45;

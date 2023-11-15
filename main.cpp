@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <fstream>
+#include <memory>
 #include "lexer/Lexer.h"
 #include "parser/Parser.h"
 // #include "runtime/interpreter/Interpreter.h"
@@ -14,7 +15,7 @@
 
 void repl() {
     Parser parser;
-    Program* program;
+    std::unique_ptr<Program> program;
 
     std::cout << "RustedC v0.1" << std::endl;
     while (true) {
@@ -32,8 +33,6 @@ void repl() {
         // Produce AST From source code
         program = parser.produceAST(lexer.tokenize());
     }
-
-    delete program;
 }
 
 void run() {
@@ -65,11 +64,10 @@ void run() {
 
     // 2.
     Parser parser;
-    Program* program = parser.produceAST(lexer.tokenize());
+    std::unique_ptr<Program> program = parser.produceAST(lexer.tokenize());
 
-    printProgram(program, "  ");
+    printProgram(std::move(program), "  ");
 
-    delete program;
     // 3.
     //Interpreter::evaluate(&program, &env);
 

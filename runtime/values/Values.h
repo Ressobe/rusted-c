@@ -24,47 +24,54 @@ class RuntimeVal {
 		ValueType type ;
 		virtual ~RuntimeVal() = default;
     virtual std::string toString() const {
-        // Implement the conversion logic here.
-        // Return the string representation of your RuntimeVal.
-        return "RuntimeVal"; // Replace with your actual implementation.
+        return "RuntimeVal";
     }
 };
 
 
 class NullVal : public RuntimeVal {
-public:
-	NullVal();
-	static NullVal* MK_NULL();
-	const std::string value = "null";
+  public:
+    const std::string value = "null";
 
-  std::string toString() const override {
-    return value;
-  }
+    NullVal() {
+        type = ValueType::NullValue;
+    }
+
+    std::string toString() const override {
+      return value;
+    }
+
 };
 
 
 class BooleanVal : public RuntimeVal {
 	public:
 		bool value;
-		BooleanVal(bool b = true);
-		static BooleanVal* MK_BOOL(bool b = true);
+
+    BooleanVal(bool b = true) : value(b) {
+        type = ValueType::BooleanValue;
+    }
 
     std::string toString() const override {
       return std::to_string(value);
     }
 
 };
+
 
 class NumberVal : public RuntimeVal {
 	public:
 		double value;
-		NumberVal(double n = 0);
-		static NumberVal* MK_NUMBER(double n = 0);
+
+    NumberVal(double n = 0) : value(n) {
+        type = ValueType::NumberValue;
+    }
 
     std::string toString() const override {
       return std::to_string(value);
     }
 };
+
 
 class ReturnValue : public RuntimeVal {
   public:
@@ -78,5 +85,7 @@ class ReturnValue : public RuntimeVal {
         return value->toString();
     }
 };
+
+
 
 #endif

@@ -3,10 +3,10 @@
 RuntimeVal* Interpreter::evaluate(Stmt* astNode, Environment* env) {
     if (astNode->kind == NodeType::NumericLiteral) {
         NumericLiteral* numLiteral = dynamic_cast<NumericLiteral*>(astNode);
-        return NumberVal::MK_NUMBER(numLiteral->value);
+        return new NumberVal(numLiteral->value);
     }
     else if (astNode->kind == NodeType::Null) {
-        return NullVal::MK_NULL();
+        return new NullVal;
     }
     else if (astNode->kind == NodeType::Identifier) {
         return EvaluateExpression::eval_identifer(dynamic_cast<IdentifierExpr*>(astNode), env);

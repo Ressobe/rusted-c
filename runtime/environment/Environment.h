@@ -22,6 +22,7 @@ class Environment {
 		RuntimeVal* assignVar(const std::string& varName, RuntimeVal* value);
 		RuntimeVal* lookupVar(const std::string& varName);
 		Environment* resolve(const std::string& varName);
+
 		void createGlobalEnv();
 		bool isConstant(const std::string& varname);
 };
@@ -37,8 +38,8 @@ class NativeFnVal : public RuntimeVal {
 };
 
 class FnVal : public RuntimeVal {
-public:
-	std::string name;
+  public:
+	  std::string name;
     std::vector<std::string> parameters;
     Environment* declarationEnv;
     std::vector<Stmt *> body;
