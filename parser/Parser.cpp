@@ -1,9 +1,10 @@
 #include "Parser.h"
 
-Program* Parser::produceAST(std::vector<Token> tokens) {
+
+std::unique_ptr<Program> Parser::produceAST(std::vector<Token> tokens) {
     this->tokens = tokens;
 
-    Program* program = new Program();
+    std::unique_ptr<Program> program = std::make_unique<Program>();
     program->kind = NodeType::Program;
 
     while (!eof()) {

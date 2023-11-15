@@ -41,6 +41,12 @@ std::unique_ptr<Expr> Parser::parse_primary_expr() {
         case TokenType::NumberLiteral:
             value = std::make_unique<NumericLiteral>(std::stod(eat().getValue()));
             break;
+        case TokenType::FloatLiteral:
+            value = std::make_unique<NumericLiteral>(std::stod(eat().getValue()));
+            break;
+        case TokenType::StringLiteral:
+            value = std::make_unique<StrLiteral>(eat().getValue());
+            break;
         case TokenType::Null:
             eat();
             value = std::make_unique<NullLiteral>("null");

@@ -40,7 +40,7 @@ private:
     std::vector<std::unique_ptr<Expr>> parse_args();
 
 public:
-    Program* produceAST(std::vector<Token> tokens);
+    std::unique_ptr<Program> produceAST(std::vector<Token> tokens);
 };
 
 #endif

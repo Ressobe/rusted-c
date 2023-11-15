@@ -47,7 +47,7 @@ WhileLoop::WhileLoop(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stm
 ReturnStatement::ReturnStatement(std::unique_ptr<Expr> value)
     : Stmt(NodeType::ReturnStatement), returnValue(std::move(value)) {}
 
-void printProgram(Program* program, const std::string& indent) {
+void printProgram(std::unique_ptr<Program> program, const std::string& indent) {
     std::cout << '{' << std::endl;
     std::cout << indent << " \"Program\": {\n";
     for (const auto& stmt : program->body) {
@@ -72,6 +72,9 @@ void printStatement(const Stmt& stmt, const std::string& indent) {
     } else if (stmt.kind == NodeType::NumericLiteral) {
         const auto& numLit = static_cast<const NumericLiteral&>(stmt);
         std::cout << indent << "  \"Value\": " << numLit.value;
+    } else if (stmt.kind == NodeType::StrLiteral) {
+        const auto& strLit = static_cast<const StrLiteral&>(stmt);
+        std::cout << indent << "  \"Value\": \"" << strLit.value << "\"";
     } else if (stmt.kind == NodeType::BinaryExpr) {
         const auto& binaryExpr = static_cast<const BinaryExpr&>(stmt);
         std::cout << indent << "  \"BinaryOperator\": \"" << binaryExpr.binaryOperator << "\",\n";

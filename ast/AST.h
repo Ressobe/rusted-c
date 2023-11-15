@@ -126,7 +126,6 @@ public:
 class StrLiteral : public Expr {
 public:
     std::string value;
-
     StrLiteral(std::string value);
 };
 
@@ -163,7 +162,7 @@ public:
 std::string NodeTypeToString(NodeType type);
 
 // Function to print the program and its body recursively
-void printProgram(Program* program, const std::string& indent);
+void printProgram(std::unique_ptr<Program> program, const std::string& indent);
 
 // Function to print a statement and its body recursively
 void printStatement(const Stmt& stmt, const std::string& indent);
