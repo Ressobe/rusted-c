@@ -116,6 +116,9 @@ StmtPtr Parser::parse_var_declaration() {
     expect(TokenType::Equals, "Expected equals token following identifier in var declaration.");
 
     ExprPtr value = this->parse_expr();
+
+    expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
+
     return std::make_unique<VarDeclaration>(isConstant, identifier, std::move(value));
 }
 

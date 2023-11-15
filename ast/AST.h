@@ -163,7 +163,7 @@ public:
 std::string NodeTypeToString(NodeType type);
 
 // Function to print the program and its body recursively
-void printProgram(const Program& program, const std::string& indent);
+void printProgram(Program* program, const std::string& indent);
 
 // Function to print a statement and its body recursively
 void printStatement(const Stmt& stmt, const std::string& indent);

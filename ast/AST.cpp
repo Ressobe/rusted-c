@@ -47,19 +47,20 @@ WhileLoop::WhileLoop(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stm
 ReturnStatement::ReturnStatement(std::unique_ptr<Expr> value)
     : Stmt(NodeType::ReturnStatement), returnValue(std::move(value)) {}
 
-void printProgram(const Program& program, const std::string& indent) {
-    std::cout << std::endl;
+void printProgram(Program* program, const std::string& indent) {
+    std::cout << '{' << std::endl;
     std::cout << indent << " \"Program\": {\n";
-    for (const auto& stmt : program.body) {
+    for (const auto& stmt : program->body) {
         printStatement(*stmt, indent + "  ");
-        if (stmt != program.body.back()) {
-            std::cout << ",";
+        if (stmt != program->body.back()) {
+            std::cout << ',';
         }
-        std::cout << "\n";
+        std::cout << '\n';
     }
-    std::cout << indent << "}";
+    std::cout << indent << '}';
     std::cout << "\n}\n";
 }
+
 
 void printStatement(const Stmt& stmt, const std::string& indent) {
     std::cout << indent << "{\n";
@@ -79,6 +80,7 @@ void printStatement(const Stmt& stmt, const std::string& indent) {
         std::cout << ",\n";
         std::cout << indent << "  \"Right\": ";
         printStatement(*binaryExpr.right, indent + "    ");
+
     } else if (stmt.kind == NodeType::VarDeclaration) {
         const auto& varDecl = static_cast<const VarDeclaration&>(stmt);
         std::cout << indent << "  \"Constant\": " << (varDecl.constant ? "true" : "false") << ",\n";
@@ -165,7 +167,15 @@ void printStatement(const Stmt& stmt, const std::string& indent) {
         const auto& returnStmt = static_cast<const ReturnStatement&>(stmt);
         std::cout << indent << "  \"ReturnValue\": ";
         printStatement(*returnStmt.returnValue, indent + "    ");
+    } else if (stmt.kind == NodeType::AssignmentExpr) {
+        const auto& assignmentExpr = static_cast<const AssignmentExpr&>(stmt);
+        std::cout << indent << "  \"Assignee\": ";
+        printStatement(*assignmentExpr.assigne, indent + "    ");
+        std::cout << ",\n";
+        std::cout << indent << "  \"Value\": ";
+        printStatement(*assignmentExpr.value, indent + "    ");
     }
+
 
     std::cout << "\n" << indent << "}";
 }
@@ -182,6 +192,8 @@ std::string NodeTypeToString(NodeType type) {
             return "Identifier";
         case NodeType::BinaryExpr:
             return "BinaryExpr";
+        case NodeType::AssignmentExpr:
+            return "AssigmentExpr";
         case NodeType::VarDeclaration:
             return "VarDeclaration";
         case NodeType::CallExpr:

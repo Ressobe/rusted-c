@@ -1,13 +1,13 @@
 #include "Parser.h"
 
-Program Parser::produceAST(std::vector<Token> tokens) {
+Program* Parser::produceAST(std::vector<Token> tokens) {
     this->tokens = tokens;
 
-    Program program;
-    program.kind = NodeType::Program;
+    Program* program = new Program();
+    program->kind = NodeType::Program;
 
     while (!eof()) {
-        program.body.push_back(parse_stmt());
+        program->body.push_back(parse_stmt());
     }
 
     return program;
@@ -18,9 +18,11 @@ bool Parser::eof() {
     return tokens[0].getType() == TokenType::EOFToken;
 }
 
+
 Token Parser::at() {
     return tokens[0];
 }
+
 
 Token Parser::eat() {
     Token prev = tokens[0];
@@ -46,7 +48,3 @@ Token Parser::expect(TokenType type, const std::string& err) {
     }
     return prev;
 }
-
-
-
-
