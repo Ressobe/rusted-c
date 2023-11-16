@@ -12,7 +12,7 @@ VALUESDIR = $(SRCDIR)/runtime/values
 
 all: $(BINDIR)/rusted-c
 
-$(BINDIR)/rusted-c: $(OBJDIR)/ast/AST.o $(OBJDIR)/lexer/Lexer.o $(OBJDIR)/parser/Parser.o $(OBJDIR)/parser/ParserStmt.o $(OBJDIR)/parser/ParserExpr.o  $(OBJDIR)/main.o
+$(BINDIR)/rusted-c: $(OBJDIR)/ast/AST.o $(OBJDIR)/lexer/Lexer.o $(OBJDIR)/parser/Parser.o $(OBJDIR)/parser/ParserStmt.o $(OBJDIR)/parser/ParserExpr.o $(OBJDIR)/runtime/environment/Environment.o  $(OBJDIR)/runtime/values/Values.o $(OBJDIR)/runtime/interpreter/Interpreter.o $(OBJDIR)/runtime/interpreter/InterpreterExpr.o $(OBJDIR)/main.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(OBJDIR)/ast/AST.o: $(ASTDIR)/AST.cpp
@@ -35,6 +35,21 @@ $(OBJDIR)/parser/ParserExpr.o: $(PARSERDIR)/ParserExpr.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+$(OBJDIR)/runtime/environment/Environment.o: $(ENVDIR)/Environment.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJDIR)/runtime/interpreter/Interpreter.o: $(INTERPRETERDIR)/Interpreter.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJDIR)/runtime/interpreter/InterpreterExpr.o: $(INTERPRETERDIR)/InterpreterExpr.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJDIR)/runtime/values/Values.o: $(VALUESDIR)/Values.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 $(OBJDIR)/main.o: $(SRCDIR)/main.cpp
 	@mkdir -p $(@D)

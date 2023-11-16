@@ -8,19 +8,20 @@
 #include "../values/Values.h"
 #include <set>
 #include <functional>
+#include <memory>
 
 
 class Environment {
 	private:
 		Environment* parent;
-		std::unordered_map<std::string, RuntimeVal*> variables;
+    std::unordered_map<std::string, std::unique_ptr<RuntimeVal>> variables;
 		std::set<std::string> constants;
 
 	public:
 		Environment(Environment* parentEnv = nullptr);
-		RuntimeVal* declareVar(const std::string& varName, RuntimeVal* value, bool isConst);
-		RuntimeVal* assignVar(const std::string& varName, RuntimeVal* value);
-		RuntimeVal* lookupVar(const std::string& varName);
+    std::unique_ptr<RuntimeVal> declareVar(const std::string& varName, std::unique_ptr<RuntimeVal> value, bool isConst);
+    std::unique_ptr<RuntimeVal> assignVar(const std::string& varName, std::unique_ptr<RuntimeVal> value);
+    std::unique_ptr<RuntimeVal> lookupVar(const std::string& varName);
 		Environment* resolve(const std::string& varName);
 
 		void createGlobalEnv();
@@ -34,7 +35,7 @@ class NativeFnVal : public RuntimeVal {
 	public:
 		FunctionType call;
 		NativeFnVal(FunctionType c);
-		static NativeFnVal* MK_NATIVE_FN(FunctionType c);
+    std::unique_ptr<RuntimeVal> clone() const override;
 };
 
 class FnVal : public RuntimeVal {
@@ -42,10 +43,11 @@ class FnVal : public RuntimeVal {
 	  std::string name;
     std::vector<std::string> parameters;
     Environment* declarationEnv;
-    std::vector<Stmt *> body;
+
+    std::vector<Stmt*> body; 
+
 	  FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b);
+    std::unique_ptr<RuntimeVal> clone() const override;
 };
 
 #endif
-
-

@@ -3,9 +3,9 @@
 #include <memory>
 #include "lexer/Lexer.h"
 #include "parser/Parser.h"
-// #include "runtime/interpreter/Interpreter.h"
-// #include "runtime/values/Values.h"
-// #include "runtime/environment/Environment.h"
+#include "runtime/interpreter/Interpreter.h"
+#include "runtime/values/Values.h"
+#include "runtime/environment/Environment.h"
 
 
 // 1. Lexer
@@ -68,8 +68,11 @@ void run() {
 
     printProgram(std::move(program), "  ");
 
+    Environment env;
+    env.createGlobalEnv();
+
     // 3.
-    //Interpreter::evaluate(&program, &env);
+    Interpreter::evaluate(std::move(program), &env);
 
     // std::cout << "Result: " << val->toString() << std::endl;
 }

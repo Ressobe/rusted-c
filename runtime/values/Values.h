@@ -1,91 +1,75 @@
 #pragma once
 
-
 #ifndef VALUES_H
 #define VALUES_H
 
 #include <iostream>
 #include <functional>
+#include <memory>
 #include "../../ast/AST.h"
 
 // Enum to represent value types
 enum class ValueType {
-  NullValue,
-  NumberValue,
-	BooleanValue,
-	NativeFunction,
-	Function,    
-  ReturnValue,
+    NullValue,
+    NumberValue,
+    BooleanValue,
+    NativeFunction,
+    Function,
+    ReturnValue,
 };
 
-
 class RuntimeVal {
-	public:
-		ValueType type ;
-		virtual ~RuntimeVal() = default;
+public:
+    ValueType type;
+    virtual ~RuntimeVal() = default;
     virtual std::string toString() const {
         return "RuntimeVal";
     }
+    virtual std::unique_ptr<RuntimeVal> clone() const = 0;
 };
-
 
 class NullVal : public RuntimeVal {
-  public:
+public:
     const std::string value = "null";
 
-    NullVal() {
-        type = ValueType::NullValue;
-    }
+    NullVal();
 
-    std::string toString() const override {
-      return value;
-    }
+    std::string toString() const override;
 
+    std::unique_ptr<RuntimeVal> clone() const override;
 };
-
 
 class BooleanVal : public RuntimeVal {
-	public:
-		bool value;
+public:
+    bool value;
 
-    BooleanVal(bool b = true) : value(b) {
-        type = ValueType::BooleanValue;
-    }
+    BooleanVal(bool b = true);
 
-    std::string toString() const override {
-      return std::to_string(value);
-    }
+    std::string toString() const override;
 
+    std::unique_ptr<RuntimeVal> clone() const override;
 };
-
 
 class NumberVal : public RuntimeVal {
-	public:
-		double value;
+public:
+    double value;
 
-    NumberVal(double n = 0) : value(n) {
-        type = ValueType::NumberValue;
-    }
+    NumberVal(double n = 0);
 
-    std::string toString() const override {
-      return std::to_string(value);
-    }
+    std::string toString() const override;
+
+    std::unique_ptr<RuntimeVal> clone() const override;
 };
-
 
 class ReturnValue : public RuntimeVal {
-  public:
+public:
     RuntimeVal* value;
 
-    ReturnValue(RuntimeVal* val) : value(val) {
-        type = ValueType::ReturnValue;
-    }
+    ReturnValue(RuntimeVal* val);
 
-    std::string toString() const override {
-        return value->toString();
-    }
+    std::string toString() const override;
+
+    std::unique_ptr<RuntimeVal> clone() const override;
 };
-
-
 
 #endif
