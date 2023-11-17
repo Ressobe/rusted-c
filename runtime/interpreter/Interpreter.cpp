@@ -1,24 +1,26 @@
 #include "Interpreter.h"
 
 
-std::unique_ptr<RuntimeVal> Interpreter::evaluate(std::unique_ptr<Stmt> astNode, Environment* env) {
-  std::cout << "yeea" << std::endl;
+RuntimeVal* Interpreter::evaluate(std::unique_ptr<Stmt> astNode, Environment* env) {
+    std::cout << "fuck me" << std::endl;
     if (astNode->kind == NodeType::NumericLiteral) {
         NumericLiteral* numLiteral = dynamic_cast<NumericLiteral*>(astNode.get());
-        return std::make_unique<NumberVal>(numLiteral->value);
+        return new NumberVal(numLiteral->value);
     }
     else if (astNode->kind == NodeType::Null) {
-        return std::make_unique<NullVal>();
+        return new NullVal();
     }
     else if (astNode->kind == NodeType::Identifier) {
-        return eval_identifer(std::unique_ptr<IdentifierExpr>(dynamic_cast<IdentifierExpr*>(astNode.release())), env);
+        auto ident = dynamic_cast<IdentifierExpr*>(astNode.get());
+        return eval_identifer(ident, env);
     }
     else if (astNode->kind == NodeType::BinaryExpr) {
-        return eval_binary_expr(std::unique_ptr<BinaryExpr>(dynamic_cast<BinaryExpr*>(astNode.release())), env);
+        auto binary = dynamic_cast<BinaryExpr*>(astNode.get());
+        return eval_binary_expr(binary, env);
     }
-    else if (astNode->kind == NodeType::UnaryExpr) {
-        return eval_unary_expr(std::unique_ptr<UnaryExpr>(dynamic_cast<UnaryExpr*>(astNode.release())), env);
-    }
+    // else if (astNode->kind == NodeType::UnaryExpr) {
+    //     return eval_unary_expr(std::unique_ptr<UnaryExpr>(dynamic_cast<UnaryExpr*>(astNode.release())), env);
+    // }
     // else if (astNode->kind == NodeType::Program) {
     //     return eval_program(std::unique_ptr<Program>(dynamic_cast<Program*>(astNode.release())), env);
     // }

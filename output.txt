@@ -1,8 +1,65 @@
-[ 
-Let, 
-Identifier, 
-Equals, 
-StringLiteral, 
-Semicolon, 
-EOFToken, 
- ]
+{
+   "Program": {
+    {
+      "Statement": "VarDeclaration",
+      "Constant": false,
+      "Identifier": "x",
+      "Value":         {
+          "Statement": "NumericLiteral",
+          "Value": 10
+        }
+    },
+    {
+      "Statement": "IfStatement",
+      "Condition":         {
+          "Statement": "BinaryExpr",
+          "BinaryOperator": "<",
+          "Left":             {
+              "Statement": "Identifier",
+              "Symbol": "x"
+            },
+          "Right":             {
+              "Statement": "NumericLiteral",
+              "Value": 10
+            }
+        },
+      "IfBody": [
+        {
+          "Statement": "VarDeclaration",
+          "Constant": false,
+          "Identifier": "a",
+          "Value": null
+        },
+        {
+          "Statement": "VarDeclaration",
+          "Constant": false,
+          "Identifier": "b",
+          "Value": null
+        },
+        {
+          "Statement": "CallExpr",
+          "Caller":             {
+              "Statement": "Identifier",
+              "Symbol": "print"
+            },
+          "Arguments": [
+            {
+              "Statement": "BinaryExpr",
+              "BinaryOperator": "+",
+              "Left":                 {
+                  "Statement": "Identifier",
+                  "Symbol": "a"
+                },
+              "Right":                 {
+                  "Statement": "Identifier",
+                  "Symbol": "b"
+                }
+            }
+          ]
+        }
+      ],
+      "ElseBody": [
+      ]
+    }
+  }
+}

@@ -29,30 +29,30 @@ enum class NodeType {
 };
 
 class Node {
-public:
+  public:
     NodeType kind;
 };
 
 class Stmt : public Node {
-public:
+  public:
     Stmt(NodeType kind);
-    virtual ~Stmt() = default;
+    virtual ~Stmt() = default;        
 };
 
 class Expr : public Stmt {
-public:
+  public:
     Expr(NodeType kind);
-    virtual ~Expr() = default;
+    virtual ~Expr() = default;        
 };
 
 class Program : public Stmt {
-public:
+  public:
     std::vector<std::unique_ptr<Stmt>> body;
     Program();
 };
 
 class AssignmentExpr : public Expr {
-public:
+  public:
     std::unique_ptr<Expr> assigne;
     std::unique_ptr<Expr> value;
 
@@ -60,7 +60,7 @@ public:
 };
 
 class VarDeclaration : public Stmt {
-public:
+  public:
     bool constant;
     std::string identifier;
     std::unique_ptr<Expr> value;
@@ -69,14 +69,13 @@ public:
 };
 
 class ReturnStatement : public Stmt {
-public:
+  public:
     std::unique_ptr<Expr> returnValue;
-
     ReturnStatement(std::unique_ptr<Expr> value);
 };
 
 class FunctionDeclaration : public Stmt {
-public:
+  public:
     std::vector<std::string> parameters;
     std::string name;
     std::vector<std::unique_ptr<Stmt>> body;    
@@ -86,7 +85,7 @@ public:
 };
 
 class BinaryExpr : public Expr {
-public:
+  public:
     std::unique_ptr<Expr> left;
     std::unique_ptr<Expr> right;
     std::string binaryOperator;
@@ -94,7 +93,7 @@ public:
 };
 
 class UnaryExpr : public Expr {
-public:
+  public:
     std::unique_ptr<Expr> right;
     std::string op;
 
@@ -102,7 +101,7 @@ public:
 };
 
 class CallExpr : public Expr {
-public:
+  public:
     std::unique_ptr<Expr> caller;
     std::vector<std::unique_ptr<Expr>> args;
 
@@ -110,41 +109,41 @@ public:
 };
 
 class IdentifierExpr : public Expr {
-public:
+  public:
     std::string symbol;
 
     IdentifierExpr(const std::string& symbol);
 };
 
 class NumericLiteral : public Expr {
-public:
+  public:
     double value;
 
     NumericLiteral(double value);
 };
 
 class StrLiteral : public Expr {
-public:
+  public:
     std::string value;
     StrLiteral(std::string value);
 };
 
 class FloatLiteral : public Expr {
-public:
+  public:
     double value;
 
     FloatLiteral(double value);
 };
 
 class NullLiteral : public Expr {
-public:
+  public:
     std::string value;
 
     NullLiteral(const std::string& value);
 };
 
 class IfStatement : public Stmt {
-public:
+  public:
     std::unique_ptr<Expr> condition;
     std::vector<std::unique_ptr<Stmt>> ifBody;
     std::vector<std::unique_ptr<Stmt>> elseBody;
@@ -152,7 +151,7 @@ public:
 };
 
 class WhileLoop : public Stmt {
-public:
+  public:
     std::unique_ptr<Expr> condition;
     std::vector<std::unique_ptr<Stmt>> loopBody;    
     WhileLoop(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stmt>> bd);

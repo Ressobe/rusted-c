@@ -59,21 +59,21 @@ void run() {
     // 1.
     Lexer lexer = Lexer(fileContent);
 
-    lexer.printTokens();
+    // lexer.printTokens();
 
 
     // 2.
     Parser parser;
     std::unique_ptr<Program> program = parser.produceAST(lexer.tokenize());
 
-    printProgram(std::move(program), "  ");
+    // printProgram(std::move(program), "  ");
 
     Environment env;
     env.createGlobalEnv();
 
     // 3.
-    Interpreter::evaluate(std::move(program), &env);
-
+    std::unique_ptr<RuntimeVal> val =  Interpreter::evaluate(std::move(program), &env);
+    //
     // std::cout << "Result: " << val->toString() << std::endl;
 }
 
