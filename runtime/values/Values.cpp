@@ -51,3 +51,15 @@ std::string ReturnValue::toString() const {
 std::unique_ptr<RuntimeVal> ReturnValue::clone() const {
     return std::make_unique<ReturnValue>(*this);
 }
+
+StringVal::StringVal(const std::string& str) : value(str) {
+    type = ValueType::StringValue;
+}
+
+std::string StringVal::toString() const {
+    return value;
+}
+
+std::unique_ptr<RuntimeVal> StringVal::clone() const {
+    return std::make_unique<StringVal>(*this);
+}

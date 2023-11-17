@@ -72,7 +72,7 @@ void run() {
     env.createGlobalEnv();
 
     // 3.
-    std::unique_ptr<RuntimeVal> val =  Interpreter::evaluate(std::move(program), &env);
+    Interpreter::evaluate(program.get(), &env);
     //
     // std::cout << "Result: " << val->toString() << std::endl;
 }

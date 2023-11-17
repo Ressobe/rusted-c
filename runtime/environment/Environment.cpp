@@ -1,67 +1,50 @@
 #include "Environment.h"
 #include "../values/Values.h"
 
-
 Environment::Environment(Environment* parentEnv) : parent(parentEnv) {}
 
 
-std::unique_ptr<RuntimeVal> Environment::declareVar(const std::string& varname, std::unique_ptr<RuntimeVal> value, bool constant) {
-    if (variables.find(varname) != variables.end()) {
-        throw std::runtime_error("Cannot declare variable " + varname + ". It is already defined.");
+RuntimeVal* Environment::declareVar(const std::string& varName, RuntimeVal* value, bool isConst) {
+    if (variables.find(varName) != variables.end()) {
+        throw std::runtime_error("Cannot declare variable " + varName + ". It is already defined.");
     }
 
-    variables[varname] = std::move(value);
-    if (constant) {
-        constants.insert(varname);
+    variables[varName] = value;
+
+    if (isConst) {
+        constants.insert(varName);
     }
 
-    // Zwracamy std::unique_ptr<RuntimeVal>, ponieważ zmienna jest przechowywana jako unikalny wskaźnik.
-    return variables[varname]->clone();
+    return value;
 }
 
+RuntimeVal* Environment::assignVar(const std::string& varName, RuntimeVal* value) {
+    Environment* env = resolve(varName);
 
-std::unique_ptr<RuntimeVal> Environment::assignVar(const std::string& varname, std::unique_ptr<RuntimeVal> value) {
-    Environment* env = resolve(varname);
-
-    // Cannot assign to constant
-    if (env->isConstant(varname)) {
-        throw std::runtime_error("Cannot reassign to variable " + varname + " as it was declared constant.");
+    if (isConstant(varName)) { 
+        throw std::runtime_error("Cannot reassign to variable " + varName + " as it was declared constant.");
     }
 
-    // Przenosimy wartość do zmiennej w środowisku.
-    env->variables[varname] = std::move(value);
-
-    // Zwracamy std::unique_ptr<RuntimeVal>, ponieważ zmienna jest przechowywana jako unikalny wskaźnik.
-    return env->variables[varname]->clone();
+    env->variables[varName] = value;
+    return value;
 }
 
-
-std::unique_ptr<RuntimeVal> Environment::lookupVar(const std::string& varname) {
-    Environment* env = resolve(varname);
-    
-    auto it = env->variables.find(varname);
-    if (it != env->variables.end()) {
-        // Zwracamy klon wartości, aby uniknąć bezpośredniego dostępu do obiektów w środowisku.
-        return it->second->clone();
-    } else {
-        // Rzucamy wyjątek, jeśli zmienna nie istnieje w środowisku.
-        throw std::runtime_error("Variable " + varname + " not found.");
-    }
+RuntimeVal* Environment::lookupVar(const std::string& varName) {
+    Environment* env = resolve(varName);
+    return env->variables[varName];
 }
 
-
-Environment* Environment::resolve(const std::string& varname) {
-    if (variables.find(varname) != variables.end()) {
+Environment* Environment::resolve(const std::string& varName) {
+    if (variables.find(varName) != variables.end()) {
         return this;
     }
 
     if (parent == nullptr) {
-        throw std::runtime_error("Cannot resolve '" + varname + "' as it does not exist.");
+        throw std::runtime_error("Cannot resolve '" + varName + "' as it does not exist.");
     }
 
-    return parent->resolve(varname);
+    return parent->resolve(varName);
 }
-
 
 bool Environment::isConstant(const std::string& varname) {
     return constants.find(varname) != constants.end();
@@ -70,32 +53,39 @@ bool Environment::isConstant(const std::string& varname) {
 
 NativeFnVal::NativeFnVal(FunctionType c) : call(c) {
     type = ValueType::NativeFunction;
-} 
+}
 
+
+// FnVal::FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b) : name(n), parameters(p), declarationEnv(d), body(b) {
+//     type = ValueType::Function;
+// }
+
+
+// FnVal::FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<std::unique_ptr<Stmt>>& b)
+//     : name(std::move(n)), parameters(std::move(p)), declarationEnv(d), body(std::move(b)) {}
 
 std::unique_ptr<RuntimeVal> NativeFnVal::clone() const {
         return std::make_unique<NativeFnVal>(*this);
 }
 
 
-FnVal::FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b)
-    : name(n), parameters(p), declarationEnv(d), body(std::move(b)) {
-    type = ValueType::Function;
-}
+// std::unique_ptr<RuntimeVal> FnVal::clone() const {
+//     return std::make_unique<FnVal>(*this);
+// }
 
-
-std::unique_ptr<RuntimeVal> FnVal::clone() const {
-    return std::make_unique<FnVal>(*this);
-}
 
 RuntimeVal* printFunction(const std::vector<RuntimeVal*> args, Environment* env) {
 
+    std::cout << "heel";
     for (auto arg : args) {
         if (arg->type == ValueType::BooleanValue) {
             std::cout << (static_cast<BooleanVal*>(arg)->value ? "true" : "false") << " ";
         }
         else if (arg->type == ValueType::NumberValue) {
             std::cout << static_cast<NumberVal*>(arg)->value << " ";
+        }
+        else if (arg->type == ValueType::StringValue) {
+            std::cout << static_cast<StringVal*>(arg)->value << " ";
         }
     }
 
@@ -104,17 +94,15 @@ RuntimeVal* printFunction(const std::vector<RuntimeVal*> args, Environment* env)
     return new NullVal;
 }
 
-
 RuntimeVal* exitFunction(const std::vector<RuntimeVal*> args, Environment* env) {
     exit(1);
     return new NullVal;
 }
 
-
 void Environment::createGlobalEnv() {
-    this->declareVar("true",  std::make_unique<BooleanVal>(true), true);
-    this->declareVar("false", std::make_unique<BooleanVal>(false), true);
-    this->declareVar("null",  std::make_unique<NullVal>(), true);
-    this->declareVar("print", std::make_unique<NativeFnVal>(printFunction), true);
-    this->declareVar("exit",  std::make_unique<NativeFnVal>(exitFunction), true);
+    this->declareVar("true", new BooleanVal(true), true);
+    this->declareVar("false",new BooleanVal(false), true);
+    this->declareVar("null", new NullVal(), true);
+    this->declareVar("print", new NativeFnVal(printFunction), true);
+    this->declareVar("exit", new NativeFnVal(exitFunction), true);
 }
