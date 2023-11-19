@@ -36,18 +36,18 @@ class NativeFnVal : public RuntimeVal {
     std::unique_ptr<RuntimeVal> clone() const override;
 };
 
-// class FnVal : public RuntimeVal {
-// public:
-// 	  std::string name;
-//     std::vector<std::string> parameters;
-//     Environment* declarationEnv;
-//    std::vector<std::unique_ptr<Stmt>> body;
-//
-//     // FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<std::unique_ptr<Stmt>>& b);  // Zmiana tutaj
-// 	  // FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b);    
-//
-//     std::unique_ptr<RuntimeVal> clone() const override;
-// };
+class FnVal : public RuntimeVal {
+	public:
+ 		std::string name;
+		std::vector<std::string> parameters;
+		Environment* declarationEnv;
+		std::vector<Stmt*> body;
+
+
+		FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b);
+
+		std::unique_ptr<RuntimeVal> clone() const override;
+ };
 
 #endif
 

@@ -32,9 +32,9 @@ RuntimeVal* Interpreter::evaluate(Stmt* astNode, Environment* env) {
     else if (astNode->kind == NodeType::CallExpr) {
         return Interpreter::eval_call_expr(dynamic_cast<CallExpr*>(astNode), env);
     }
-    // else if (astNode->kind == NodeType::FunctionDeclaration) {
-    //     return Interpreter::eval_function_declaration(dynamic_cast<FunctionDeclaration*>(astNode), env);
-    // }
+    else if (astNode->kind == NodeType::FunctionDeclaration) {
+         return Interpreter::eval_function_declaration(dynamic_cast<FunctionDeclaration*>(astNode), env);
+    }
     else if (astNode->kind == NodeType::IfStatement) {
         return Interpreter::eval_if_statement(dynamic_cast<IfStatement*>(astNode), env);
     }

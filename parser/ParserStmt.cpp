@@ -3,6 +3,7 @@
 using ExprPtr = std::unique_ptr<Expr>;
 using StmtPtr = std::unique_ptr<Stmt>;
 
+
 StmtPtr Parser::parse_stmt() {
     if (at().getType() == TokenType::Let || at().getType() == TokenType::Const) {
         return parse_var_declaration();        
@@ -21,9 +22,7 @@ StmtPtr Parser::parse_stmt() {
     }
 
     if (at().getType() == TokenType::Return) {
-        StmtPtr returnStmt = parse_return_statement();        
-        expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
-        return returnStmt;
+        return parse_return_statement();
     }
 
     return parse_expr();
@@ -140,13 +139,13 @@ StmtPtr Parser::parse_function_declaration() {
 
     expect(TokenType::OpenBrace, "Expected function body following declaration");
 
-    std::vector<StmtPtr> body;
+    std::vector<Stmt*> body;
 
     while (this->at().getType() != TokenType::EOFToken && this->at().getType() != TokenType::CloseBrace) {
-        body.push_back(parse_stmt());
+        body.push_back(parse_stmt().release());
     }
 
     expect(TokenType::CloseBrace, "Closing brace expected inside function declaration");
 
-    return std::make_unique<FunctionDeclaration>(std::move(params), name, std::move(body));
+    return std::make_unique<FunctionDeclaration>(std::move(params), name, body);
 }

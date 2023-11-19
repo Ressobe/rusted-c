@@ -18,7 +18,8 @@ RuntimeVal* Interpreter::eval_assignment(AssignmentExpr* node, Environment* env)
 
 RuntimeVal* Interpreter::eval_call_expr(CallExpr* expr, Environment* env) {
     std::vector<RuntimeVal*> args;
-    
+
+         
     for (auto& arg : expr->args) {
         args.push_back(Interpreter::evaluate(arg.get(), env));
     }
@@ -32,22 +33,24 @@ RuntimeVal* Interpreter::eval_call_expr(CallExpr* expr, Environment* env) {
 
     if (fn->type == ValueType::Function) {
         FnVal* func = dynamic_cast<FnVal*>(fn);
-        Environment* scope(func->declarationEnv);
+        Environment* functionEnv = new Environment(env);
 
         for (size_t i = 0; i < func->parameters.size(); ++i) {
             if (i < args.size()) {
-                scope->declareVar(func->parameters[i], args[i], false);
+                functionEnv->declareVar(func->parameters[i], args[i], false);
             }
         }
         RuntimeVal* result = new NullVal;
 
         for (Stmt* stmt : func->body) {
-            result = Interpreter::evaluate(stmt, scope);
+            result = Interpreter::evaluate(stmt, functionEnv);
             if (result->type == ValueType::ReturnValue) {
                 return result; 
             }
         }
 
+
+        delete functionEnv; // Zwalnianie pamiêci po œrodowisku funkcji
         return result;
     }
     throw std::runtime_error("Cannot call value that is not a function");

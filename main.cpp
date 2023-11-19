@@ -44,8 +44,8 @@ void run() {
     }
 
     // Create a string to store the file content
-    std::string fileContent;
     std::string line;
+    std::string fileContent;
 
     // Read and append the contents of the file to the string
     while (std::getline(inputFile, line)) {
@@ -53,11 +53,13 @@ void run() {
     }
 
 
-    // Close the file
+    //Close the file
     inputFile.close();
 
+    std::string sourceCode = "func add(x, y) { return x + y; } add(3, 4);";
+
     // 1.
-    Lexer lexer = Lexer(fileContent);
+    Lexer lexer = Lexer(sourceCode);
 
     // lexer.printTokens();
 
@@ -72,9 +74,8 @@ void run() {
     env.createGlobalEnv();
 
     // 3.
-    Interpreter::evaluate(program.get(), &env);
-    //
-    // std::cout << "Result: " << val->toString() << std::endl;
+    RuntimeVal* val =  Interpreter::evaluate(program.get(), &env);
+     std::cout << "Result: " << val->toString() << std::endl;
 }
 
 void testLexer() {

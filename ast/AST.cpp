@@ -35,7 +35,7 @@ CallExpr::CallExpr(std::unique_ptr<Expr> caller, std::vector<std::unique_ptr<Exp
     : Expr(NodeType::CallExpr), caller(std::move(caller)), args(std::move(args)) {}
 
 FunctionDeclaration::FunctionDeclaration(
-    std::vector<std::string> param, std::string n, std::vector<std::unique_ptr<Stmt>> b, std::unique_ptr<ReturnStatement> retStmt)
+    std::vector<std::string> param, std::string n, std::vector<Stmt*> b, std::unique_ptr<ReturnStatement> retStmt)
     : Stmt(NodeType::FunctionDeclaration), parameters(param), name(n), body(std::move(b)), returnStatement(std::move(retStmt)) {}
 
 IfStatement::IfStatement(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stmt>> ifB, std::vector<std::unique_ptr<Stmt>> elseB)

@@ -78,10 +78,10 @@ class FunctionDeclaration : public Stmt {
   public:
     std::vector<std::string> parameters;
     std::string name;
-    std::vector<std::unique_ptr<Stmt>> body;    
+    std::vector<Stmt*> body;    
     std::unique_ptr<ReturnStatement> returnStatement;
 
-    FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<std::unique_ptr<Stmt>> b, std::unique_ptr<ReturnStatement> retStmt = nullptr);
+    FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b, std::unique_ptr<ReturnStatement> retStmt = nullptr);
 };
 
 class BinaryExpr : public Expr {

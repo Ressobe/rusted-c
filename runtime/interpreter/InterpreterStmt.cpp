@@ -55,6 +55,7 @@ RuntimeVal* Interpreter::eval_if_statement(IfStatement* ifStmt, Environment* env
     return new NullVal;
 }
 
+
 RuntimeVal* Interpreter::eval_while_statement(WhileLoop* loop, Environment* env) {
     RuntimeVal* result = new NullVal;
 
@@ -87,7 +88,7 @@ RuntimeVal* Interpreter::eval_var_declaration(VarDeclaration* declaration, Envir
 }
 
 
-// RuntimeVal* Interpreter::eval_function_declaration(FunctionDeclaration* declaration, Environment* env) {
-//     FnVal* fn = new FnVal(declaration->name, declaration->parameters, env, std::move(declaration->body));
-//     return env->declareVar(declaration->name, fn, true);
-// }
+ RuntimeVal* Interpreter::eval_function_declaration(FunctionDeclaration* declaration, Environment* env) {
+    FnVal* fn = new FnVal(declaration->name, declaration->parameters, env, declaration->body);
+    return env->declareVar(declaration->name, fn, true);
+}
