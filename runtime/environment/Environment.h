@@ -32,18 +32,22 @@ typedef std::function<RuntimeVal* (const std::vector<RuntimeVal*>, Environment*)
 class NativeFnVal : public RuntimeVal {
 	public:
 		FunctionType call;
-		NativeFnVal(FunctionType c);
-		static NativeFnVal* MK_NATIVE_FN(FunctionType c);
+		NativeFnVal(FunctionType c);    
+    std::unique_ptr<RuntimeVal> clone() const override;
 };
 
 class FnVal : public RuntimeVal {
-public:
-	std::string name;
-    std::vector<std::string> parameters;
-    Environment* declarationEnv;
-    std::vector<Stmt *> body;
-	  FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b);
-};
+	public:
+ 		std::string name;
+		std::vector<std::string> parameters;
+		Environment* declarationEnv;
+		std::vector<Stmt*> body;
+
+
+		FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b);
+
+		std::unique_ptr<RuntimeVal> clone() const override;
+ };
 
 #endif
 

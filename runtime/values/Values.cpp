@@ -1,28 +1,65 @@
-#include "Values.h" 
+#include "Values.h"
 
-
+// NullVal
 NullVal::NullVal() {
     type = ValueType::NullValue;
 }
 
-
-NullVal* NullVal::MK_NULL() {
-    return new NullVal();
+std::string NullVal::toString() const {
+    return value;
 }
 
+std::unique_ptr<RuntimeVal> NullVal::clone() const {
+    return std::make_unique<NullVal>(*this);
+}
+
+// BooleanVal
 BooleanVal::BooleanVal(bool b) : value(b) {
     type = ValueType::BooleanValue;
 }
 
-BooleanVal* BooleanVal::MK_BOOL(bool b) {
-    return new BooleanVal(b);
+std::string BooleanVal::toString() const {
+    return std::to_string(value);
 }
 
+std::unique_ptr<RuntimeVal> BooleanVal::clone() const {
+    return std::make_unique<BooleanVal>(*this);
+}
+
+// NumberVal
 NumberVal::NumberVal(double n) : value(n) {
     type = ValueType::NumberValue;
 }
 
+std::string NumberVal::toString() const {
+    return std::to_string(value);
+}
 
-NumberVal* NumberVal::MK_NUMBER(double n) {
-    return new NumberVal(n);
+std::unique_ptr<RuntimeVal> NumberVal::clone() const {
+    return std::make_unique<NumberVal>(*this);
+}
+
+// ReturnValue
+ReturnValue::ReturnValue(RuntimeVal* val) : value(val) {
+    type = ValueType::ReturnValue;
+}
+
+std::string ReturnValue::toString() const {
+    return value->toString();
+}
+
+std::unique_ptr<RuntimeVal> ReturnValue::clone() const {
+    return std::make_unique<ReturnValue>(*this);
+}
+
+StringVal::StringVal(const std::string& str) : value(str) {
+    type = ValueType::StringValue;
+}
+
+std::string StringVal::toString() const {
+    return value;
+}
+
+std::unique_ptr<RuntimeVal> StringVal::clone() const {
+    return std::make_unique<StringVal>(*this);
 }

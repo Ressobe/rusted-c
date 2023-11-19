@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall
+CXXFLAGS = -std=c++17 -Wall
 SRCDIR = .
 OBJDIR = obj
 BINDIR = bin
@@ -12,7 +12,7 @@ VALUESDIR = $(SRCDIR)/runtime/values
 
 all: $(BINDIR)/rusted-c
 
-$(BINDIR)/rusted-c: $(OBJDIR)/ast/AST.o $(OBJDIR)/lexer/Lexer.o $(OBJDIR)/parser/Parser.o $(OBJDIR)/parser/ParserStmt.o $(OBJDIR)/parser/ParserExpr.o $(OBJDIR)/runtime/environment/Environment.o $(OBJDIR)/runtime/interpreter/Interpreter.o $(OBJDIR)/runtime/interpreter/expression/EvaluateExpression.o $(OBJDIR)/runtime/interpreter/statement/EvaluateStatement.o $(OBJDIR)/runtime/values/Values.o $(OBJDIR)/main.o
+$(BINDIR)/rusted-c: $(OBJDIR)/ast/AST.o $(OBJDIR)/lexer/Lexer.o $(OBJDIR)/parser/Parser.o $(OBJDIR)/parser/ParserStmt.o $(OBJDIR)/parser/ParserExpr.o $(OBJDIR)/runtime/environment/Environment.o  $(OBJDIR)/runtime/values/Values.o $(OBJDIR)/runtime/interpreter/Interpreter.o $(OBJDIR)/runtime/interpreter/InterpreterExpr.o $(OBJDIR)/runtime/interpreter/InterpreterStmt.o $(OBJDIR)/main.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(OBJDIR)/ast/AST.o: $(ASTDIR)/AST.cpp
@@ -43,11 +43,11 @@ $(OBJDIR)/runtime/interpreter/Interpreter.o: $(INTERPRETERDIR)/Interpreter.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(OBJDIR)/runtime/interpreter/expression/EvaluateExpression.o: $(INTERPRETERDIR)/expression/EvaluateExpression.cpp
+$(OBJDIR)/runtime/interpreter/InterpreterExpr.o: $(INTERPRETERDIR)/InterpreterExpr.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(OBJDIR)/runtime/interpreter/statement/EvaluateStatement.o: $(INTERPRETERDIR)/statement/EvaluateStatement.cpp
+$(OBJDIR)/runtime/interpreter/InterpreterStmt.o: $(INTERPRETERDIR)/InterpreterStmt.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 

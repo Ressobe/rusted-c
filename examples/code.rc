@@ -1,6 +1,1 @@
-let y = 10;
-
-while (y >= 0) {
-  print(y);
-  y = y - 1;
-}
+print("hello world");

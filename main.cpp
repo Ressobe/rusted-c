@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <fstream>
+#include <memory>
 #include "lexer/Lexer.h"
 #include "parser/Parser.h"
 #include "runtime/interpreter/Interpreter.h"
@@ -11,32 +12,10 @@
 // 2. Parser
 // 3. Interpreter
 
-void testIf() {
-    // Tokenize your code
-    std::string sourceCode =  "if (1) { x = 42; } else { x = 0; }";
-
-    Lexer lexer = Lexer(sourceCode);
-    Parser parser;
-    Environment env;
-
-    // Parse and evaluate the code
-    Program program = parser.produceAST(lexer.tokenize());
-
-    Interpreter::evaluate(&program, &env);
-
-    // RuntimeVal* result = env.lookupVar("x");
-    // if (result->type == ValueType::NumberValue) {
-    //     NumberVal* numberResult = dynamic_cast<NumberVal*>(result);
-    //     std::cout << "Value of 'x' is: " << numberResult->value << std::endl;
-    // } else {
-    //     std::cout << "'x' is not a numeric value." << std::endl;
-    // }
-}
 
 void repl() {
     Parser parser;
-    Environment env;
-    env.createGlobalEnv();
+    std::unique_ptr<Program> program;
 
     std::cout << "RustedC v0.1" << std::endl;
     while (true) {
@@ -52,9 +31,7 @@ void repl() {
         Lexer lexer = Lexer(input);
 
         // Produce AST From source code
-        Program program = parser.produceAST(lexer.tokenize());
-
-        Interpreter::evaluate(&program, &env);
+        program = parser.produceAST(lexer.tokenize());
     }
 }
 
@@ -67,8 +44,8 @@ void run() {
     }
 
     // Create a string to store the file content
-    std::string fileContent;
     std::string line;
+    std::string fileContent;
 
     // Read and append the contents of the file to the string
     while (std::getline(inputFile, line)) {
@@ -76,28 +53,29 @@ void run() {
     }
 
 
-    // Close the file
+    //Close the file
     inputFile.close();
 
+    std::string sourceCode = "func add(x, y) { return x + y; } add(3, 4);";
+
     // 1.
-    Lexer lexer = Lexer(fileContent);
+    Lexer lexer = Lexer(sourceCode);
 
     // lexer.printTokens();
 
 
     // 2.
     Parser parser;
-    Program program = parser.produceAST(lexer.tokenize());
+    std::unique_ptr<Program> program = parser.produceAST(lexer.tokenize());
 
-    // printProgram(program, "  ");
+    // printProgram(std::move(program), "  ");
 
     Environment env;
     env.createGlobalEnv();
 
     // 3.
-    Interpreter::evaluate(&program, &env);
-
-    // std::cout << "Result: " << val->toString() << std::endl;
+    RuntimeVal* val =  Interpreter::evaluate(program.get(), &env);
+     std::cout << "Result: " << val->toString() << std::endl;
 }
 
 void testLexer() {
@@ -133,7 +111,5 @@ void testLexer() {
 int main() {
     // repl();
     run();
-    // testLexer();
-    // testIf();
     return 0;
 }

@@ -1,28 +1,30 @@
-#include "EvaluateExpression.h"
+#include "Interpreter.h"
 
-RuntimeVal* EvaluateExpression::eval_identifer(IdentifierExpr* ident, Environment* env) {
+
+RuntimeVal* Interpreter::eval_identifer(IdentifierExpr* ident, Environment* env) {
     RuntimeVal* val = env->lookupVar(ident->symbol);
     return val;
 }
 
-RuntimeVal* EvaluateExpression::eval_assignment(AssignmentExpr* node, Environment* env) {
+RuntimeVal* Interpreter::eval_assignment(AssignmentExpr* node, Environment* env) {
     if (node->assigne->kind != NodeType::Identifier) {
         throw std::runtime_error("Invalid LHS inside assignment expr");
     }
 
-    IdentifierExpr* ident = dynamic_cast<IdentifierExpr*>(node->assigne);
+    IdentifierExpr* ident = dynamic_cast<IdentifierExpr*>(node->assigne.get());
     const std::string varname = ident->symbol;
-    return env->assignVar(varname, Interpreter::evaluate(node->value, env));
+    return env->assignVar(varname, Interpreter::evaluate(node->value.get(), env));
 }
 
-RuntimeVal* EvaluateExpression::eval_call_expr(CallExpr* expr, Environment* env) {
+RuntimeVal* Interpreter::eval_call_expr(CallExpr* expr, Environment* env) {
     std::vector<RuntimeVal*> args;
-    
-    for (auto arg : expr->args) {
-        args.push_back(Interpreter::evaluate(arg, env));
+
+         
+    for (auto& arg : expr->args) {
+        args.push_back(Interpreter::evaluate(arg.get(), env));
     }
     
-    RuntimeVal* fn = Interpreter::evaluate(expr->caller, env);
+    RuntimeVal* fn = Interpreter::evaluate(expr->caller.get(), env);
 
     if (fn->type == ValueType::NativeFunction) {
         NativeFnVal* nativeFn = dynamic_cast<NativeFnVal*>(fn);
@@ -31,29 +33,31 @@ RuntimeVal* EvaluateExpression::eval_call_expr(CallExpr* expr, Environment* env)
 
     if (fn->type == ValueType::Function) {
         FnVal* func = dynamic_cast<FnVal*>(fn);
-        Environment* scope(func->declarationEnv);
+        Environment* functionEnv = new Environment(env);
 
         for (size_t i = 0; i < func->parameters.size(); ++i) {
             if (i < args.size()) {
-                scope->declareVar(func->parameters[i], args[i], false);
+                functionEnv->declareVar(func->parameters[i], args[i], false);
             }
         }
-        RuntimeVal* result = NullVal::MK_NULL();
+        RuntimeVal* result = new NullVal;
 
         for (Stmt* stmt : func->body) {
-            result = Interpreter::evaluate(stmt, scope);
+            result = Interpreter::evaluate(stmt, functionEnv);
             if (result->type == ValueType::ReturnValue) {
                 return result; 
             }
         }
 
+
+        delete functionEnv; // Zwalnianie pamiêci po œrodowisku funkcji
         return result;
     }
     throw std::runtime_error("Cannot call value that is not a function");
 }
 
-RuntimeVal* EvaluateExpression::eval_unary_expr(UnaryExpr* expr, Environment* env) {
-    RuntimeVal* rightValue = Interpreter::evaluate(expr->right, env);
+RuntimeVal* Interpreter::eval_unary_expr(UnaryExpr* expr, Environment* env) {
+    RuntimeVal* rightValue = Interpreter::evaluate(expr->right.get(), env);
 
     if (expr->op == "!") {
         if (rightValue->type == ValueType::NumberValue) {
@@ -66,9 +70,9 @@ RuntimeVal* EvaluateExpression::eval_unary_expr(UnaryExpr* expr, Environment* en
     std::exit(1);
 }
 
-RuntimeVal*  EvaluateExpression::eval_binary_expr(BinaryExpr* binop, Environment* env) {
-    RuntimeVal* lhs = Interpreter::evaluate(binop->left, env);
-    RuntimeVal* rhs = Interpreter::evaluate(binop->right, env);
+RuntimeVal*  Interpreter::eval_binary_expr(BinaryExpr* binop, Environment* env) {
+    RuntimeVal* lhs = Interpreter::evaluate(binop->left.get(), env);
+    RuntimeVal* rhs = Interpreter::evaluate(binop->right.get(), env);
 
     if (lhs->type == ValueType::NumberValue && rhs->type == ValueType::NumberValue) {
         NumberVal* leftNumber = dynamic_cast<NumberVal*>(lhs);
@@ -123,5 +127,5 @@ RuntimeVal*  EvaluateExpression::eval_binary_expr(BinaryExpr* binop, Environment
             }
         }
     }
-    return NullVal::MK_NULL();
+    return new NullVal;
 }

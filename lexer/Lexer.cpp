@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <cctype>
 
+
 std::unordered_map<std::string, TokenType> KEYWORDS = {
     {"null", Null},
     {"let", Let},
@@ -14,17 +15,22 @@ std::unordered_map<std::string, TokenType> KEYWORDS = {
     {"return", Return}
 };
 
+
 Token::Token(const std::string& value, TokenType type) : value(value), type(type) {}
+
 
 std::string Token::getValue() const {
     return value;
 }
 
+
 TokenType Token::getType() const {
     return type;
 }
 
+
 Lexer::Lexer(const std::string& sourceCode) : sourceCode(sourceCode) {}
+
 
 std::vector<Token> Lexer::tokenize() {
     std::vector<Token> tokens;
@@ -256,7 +262,7 @@ std::string Token::getTokeTypeName() {
 void Lexer::printTokens() {
   std::cout << "[ " << std::endl;
   for (Token& token: this->tokenize()) {
-    std::cout<<  token.getTokeTypeName() << ", " << std::endl;
+    std::cout<< token.getTokeTypeName() << ", " << std::endl;
   }
   std::cout << " ]" << std::endl;
 }

@@ -1,45 +1,48 @@
 #include "Interpreter.h"
 
+
 RuntimeVal* Interpreter::evaluate(Stmt* astNode, Environment* env) {
     if (astNode->kind == NodeType::NumericLiteral) {
         NumericLiteral* numLiteral = dynamic_cast<NumericLiteral*>(astNode);
-        return NumberVal::MK_NUMBER(numLiteral->value);
-    }
-    else if (astNode->kind == NodeType::Null) {
-        return NullVal::MK_NULL();
+        return new NumberVal(numLiteral->value);
+    } else if (astNode->kind == NodeType::Null) {
+        return new NullVal();
+    } else if (astNode->kind == NodeType::StrLiteral) {
+      StrLiteral* strLiteral = dynamic_cast<StrLiteral*>(astNode);
+      return new StringVal(strLiteral->value);
     }
     else if (astNode->kind == NodeType::Identifier) {
-        return EvaluateExpression::eval_identifer(dynamic_cast<IdentifierExpr*>(astNode), env);
+        return Interpreter::eval_identifer(dynamic_cast<IdentifierExpr*>(astNode), env);
     }
     else if (astNode->kind == NodeType::BinaryExpr) {
-        return EvaluateExpression::eval_binary_expr(dynamic_cast<BinaryExpr*>(astNode), env);
+        return Interpreter::eval_binary_expr(dynamic_cast<BinaryExpr*>(astNode), env);
     }
     else if (astNode->kind == NodeType::UnaryExpr) {
-        return EvaluateExpression::eval_unary_expr(dynamic_cast<UnaryExpr*>(astNode), env);
+        return Interpreter::eval_unary_expr(dynamic_cast<UnaryExpr*>(astNode), env);
     }
     else if (astNode->kind == NodeType::Program) {
-        return EvaluateStatement::eval_program(dynamic_cast<Program*>(astNode), env);
+        return Interpreter::eval_program(dynamic_cast<Program*>(astNode), env);
     }
     else if (astNode->kind == NodeType::VarDeclaration) {
-      return  EvaluateStatement::eval_var_declaration(dynamic_cast<VarDeclaration*>(astNode), env);
+      return  Interpreter::eval_var_declaration(dynamic_cast<VarDeclaration*>(astNode), env);
     }
     else if (astNode->kind == NodeType::AssignmentExpr) {
-        return EvaluateExpression::eval_assignment(dynamic_cast<AssignmentExpr*>(astNode), env);
+        return Interpreter::eval_assignment(dynamic_cast<AssignmentExpr*>(astNode), env);
     }
     else if (astNode->kind == NodeType::CallExpr) {
-        return EvaluateExpression::eval_call_expr(dynamic_cast<CallExpr*>(astNode), env);
+        return Interpreter::eval_call_expr(dynamic_cast<CallExpr*>(astNode), env);
     }
     else if (astNode->kind == NodeType::FunctionDeclaration) {
-        return EvaluateStatement::eval_function_declaration(dynamic_cast<FunctionDeclaration*>(astNode), env);
+         return Interpreter::eval_function_declaration(dynamic_cast<FunctionDeclaration*>(astNode), env);
     }
     else if (astNode->kind == NodeType::IfStatement) {
-        return EvaluateStatement::eval_if_statement(dynamic_cast<IfStatement*>(astNode), env);
+        return Interpreter::eval_if_statement(dynamic_cast<IfStatement*>(astNode), env);
     }
     else if (astNode->kind == NodeType::WhileLoop) {
-        return EvaluateStatement::eval_while_statement(dynamic_cast<WhileLoop*>(astNode), env);
+        return Interpreter::eval_while_statement(dynamic_cast<WhileLoop*>(astNode), env);
     }
     else if (astNode->kind == NodeType::ReturnStatement) {
-        return EvaluateStatement::eval_return_statement(dynamic_cast<ReturnStatement*>(astNode), env);
+        return Interpreter::eval_return_statement(dynamic_cast<ReturnStatement*>(astNode), env);
     }
     else {
         std::cerr << "This AST Node has not yet been set up for interpretation." << std::endl;
