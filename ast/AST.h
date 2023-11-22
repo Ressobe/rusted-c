@@ -131,7 +131,6 @@ class StrLiteral : public Expr {
 class FloatLiteral : public Expr {
   public:
     double value;
-
     FloatLiteral(double value);
 };
 

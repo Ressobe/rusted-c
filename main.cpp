@@ -8,14 +8,13 @@
 #include "runtime/environment/Environment.h"
 
 
-// 1. Lexer
-// 2. Parser
-// 3. Interpreter
-
-
 void repl() {
     Parser parser;
     std::unique_ptr<Program> program;
+
+    Environment env;
+    env.createGlobalEnv();
+
 
     std::cout << "RustedC v0.1" << std::endl;
     while (true) {
@@ -32,84 +31,75 @@ void repl() {
 
         // Produce AST From source code
         program = parser.produceAST(lexer.tokenize());
+
+        RuntimeVal* val =  Interpreter::evaluate(program.get(), &env);
+        if (val->type == ValueType::NumberValue || val->type == ValueType::StringValue || val->type == ValueType::BooleanValue)
+            std::cout << val->toString() << std::endl;
     }
 }
 
 void run() {
-    std::ifstream inputFile("./examples/code.rc");
+    //std::ifstream inputFile("examples/code.rc");
 
-    if (!inputFile.is_open()) {
-        std::cerr << "Failed to open the file." << std::endl;
-        return;
-    }
+    //if (!inputFile.is_open()) {
+    //    std::cerr << "Failed to open the file." << std::endl;
+    //    return;
+    //}
 
-    // Create a string to store the file content
-    std::string line;
-    std::string fileContent;
+    //// Create a string to store the file content
+    //std::string line;
+    //std::string fileContent;
 
-    // Read and append the contents of the file to the string
-    while (std::getline(inputFile, line)) {
-        fileContent += line + "\n"; // Append each line with a newline character
-    }
+    //// Read and append the contents of the file to the string
+    //while (std::getline(inputFile, line)) {
+    //    fileContent += line + "\n"; // Append each line with a newline character
+    //}
 
 
-    //Close the file
-    inputFile.close();
+    // Close the file
+ 
+    //inputFile.close();
 
-    std::string sourceCode = "func add(x, y) { return x + y; } add(3, 4);";
 
-    // 1.
+    std::string sourceCode = R"(
+	func silnia(n) {
+        if (n == 0) {
+			return 1;
+		}
+
+		let wynik = 1;
+        let i = 2;
+
+        while(i <= n) { 
+			wynik = wynik * i;
+            i = i + 1;
+		}
+
+		return wynik;
+	}
+    
+    let x = silnia(5);
+    print(x)
+)";
+
+    std::string sourceCode2 = "func add(x, y) { return x + y; }  let z = add(3, 3); z = z + 10; print(z)";
+
+  
     Lexer lexer = Lexer(sourceCode);
 
-    // lexer.printTokens();
-
-
-    // 2.
     Parser parser;
     std::unique_ptr<Program> program = parser.produceAST(lexer.tokenize());
-
-    // printProgram(std::move(program), "  ");
 
     Environment env;
     env.createGlobalEnv();
 
-    // 3.
     RuntimeVal* val =  Interpreter::evaluate(program.get(), &env);
-     std::cout << "Result: " << val->toString() << std::endl;
+    delete val;
 }
 
-void testLexer() {
-    std::string testString = "null 100 x \"hello world\" ";
-
-    testString += "3.14";
-    //
-    // // Keywords
-    testString += " let const func if else while return";
-    //
-    // // Comparison operators
-    testString += " == != < <= > >=";
-    //
-    // // Logical operators
-    testString += " && || !";
-    //
-    // // Binary operators
-    testString += " + - * / %";
-    //
-    // // Assignment operator
-    testString += " =";
-    //
-    // // Punctuation
-    testString += " ; ( ) { } [ ] ,";
-
-    Lexer tokenizer = Lexer(testString);
-
-    for (Token& token: tokenizer.tokenize()) {
-      std::cout << token.getValue() << " - " <<  token.getTokeTypeName() << std::endl;
-    }
-}
 
 int main() {
-    // repl();
-    run();
+    repl();
+    //run();
     return 0;
 }

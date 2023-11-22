@@ -84,6 +84,20 @@ RuntimeVal* printFunction(const std::vector<RuntimeVal*> args, Environment* env)
     return new NullVal;
 }
 
+void clearScreen() {
+    #ifdef _WIN32
+        std::system("cls");
+    #else
+        std::system("clear");
+    #endif
+}
+
+RuntimeVal* clearFunction(const std::vector<RuntimeVal*> args, Environment* env) {
+    clearScreen();
+
+    return new NullVal;
+}
+
 RuntimeVal* exitFunction(const std::vector<RuntimeVal*> args, Environment* env) {
     exit(1);
     return new NullVal;
@@ -95,4 +109,5 @@ void Environment::createGlobalEnv() {
     this->declareVar("null", new NullVal(), true);
     this->declareVar("print", new NativeFnVal(printFunction), true);
     this->declareVar("exit", new NativeFnVal(exitFunction), true);
+    this->declareVar("clear", new NativeFnVal(clearFunction), true);
 }
