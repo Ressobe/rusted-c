@@ -118,6 +118,7 @@ StmtPtr Parser::parse_var_declaration() {
 
     expect(TokenType::Semicolon, "Var declaration must end with a semicolon.");
 
+
     return std::make_unique<VarDeclaration>(isConstant, identifier, std::move(value));
 }
 

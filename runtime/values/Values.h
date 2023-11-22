@@ -28,6 +28,10 @@ class RuntimeVal {
         return "RuntimeVal";
     }
     virtual std::unique_ptr<RuntimeVal> clone() const = 0;
+
+    virtual std::string getType() const {
+        return "RuntimeVal";
+    }
 };
 
 
@@ -38,6 +42,9 @@ class NullVal : public RuntimeVal {
 
     std::string toString() const override;
     std::unique_ptr<RuntimeVal> clone() const override;
+    std::string getType() const {
+        return "NullVal";
+    }
 };
 
 
@@ -49,6 +56,9 @@ class BooleanVal : public RuntimeVal {
 
     std::string toString() const override;
     std::unique_ptr<RuntimeVal> clone() const override;
+    std::string getType() const {
+        return "BooleanVal";
+    }
 };
 
 
@@ -59,6 +69,10 @@ class NumberVal : public RuntimeVal {
 
     std::string toString() const override;
     std::unique_ptr<RuntimeVal> clone() const override;
+
+    std::string getType() const {
+        return "NumberVal";
+    }
 };
 
 
@@ -69,6 +83,10 @@ class ReturnValue : public RuntimeVal {
 
     std::string toString() const override;
     std::unique_ptr<RuntimeVal> clone() const override;
+
+    std::string getType() const {
+        return "ReturnVal";
+    }
 };
 
 
@@ -79,6 +97,10 @@ class StringVal : public RuntimeVal {
 
     std::string toString() const override;
     std::unique_ptr<RuntimeVal> clone() const override;
+
+    std::string getType() const {
+        return "StringVal";
+    }
 };
 
 

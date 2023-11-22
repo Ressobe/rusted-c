@@ -8,6 +8,7 @@
 #include "../values/Values.h"
 #include <set>
 #include <functional>
+#include <cstdlib>
 
 
 class Environment {

@@ -74,6 +74,15 @@ RuntimeVal*  Interpreter::eval_binary_expr(BinaryExpr* binop, Environment* env) 
     RuntimeVal* lhs = Interpreter::evaluate(binop->left.get(), env);
     RuntimeVal* rhs = Interpreter::evaluate(binop->right.get(), env);
 
+    if (lhs->type == ValueType::ReturnValue) {
+        lhs = dynamic_cast<ReturnValue*>(lhs)->value;
+    }
+
+    if (rhs->type == ValueType::ReturnValue) {
+        rhs = dynamic_cast<ReturnValue*>(rhs)->value;
+    }
+
+
     if (lhs->type == ValueType::NumberValue && rhs->type == ValueType::NumberValue) {
         NumberVal* leftNumber = dynamic_cast<NumberVal*>(lhs);
         NumberVal* rightNumber = dynamic_cast<NumberVal*>(rhs);
@@ -93,13 +102,10 @@ RuntimeVal*  Interpreter::eval_binary_expr(BinaryExpr* binop, Environment* env) 
         else if (binop->binaryOperator == "<") {
             return new NumberVal(leftNumber->value < rightNumber->value);
         }
-        else if (binop->binaryOperator == ">=") {
-            return new NumberVal(leftNumber->value >= rightNumber->value);
-        }
-        else if (binop->binaryOperator == ">=") {
-            return new NumberVal(leftNumber->value >= rightNumber->value);
-        }
         else if (binop->binaryOperator == "<=") {
+            return new NumberVal(leftNumber->value <= rightNumber->value);
+        }
+        else if (binop->binaryOperator == ">=") {
             return new NumberVal(leftNumber->value >= rightNumber->value);
         }
         else if (binop->binaryOperator == "==") {

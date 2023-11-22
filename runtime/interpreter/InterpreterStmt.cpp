@@ -65,7 +65,7 @@ RuntimeVal* Interpreter::eval_while_statement(WhileLoop* loop, Environment* env)
         if (conditionValue->type == ValueType::NumberValue) {
             NumberVal* numCondition = dynamic_cast<NumberVal*>(conditionValue);
 
-            if (numCondition->value != 0) {
+            if (numCondition->value == 1) {
                 result = Interpreter::eval_stmt_vector(loop->loopBody, env);
             } else {
                 break;
@@ -80,9 +80,7 @@ RuntimeVal* Interpreter::eval_while_statement(WhileLoop* loop, Environment* env)
 
 
 RuntimeVal* Interpreter::eval_var_declaration(VarDeclaration* declaration, Environment* env) {
-    RuntimeVal* value = declaration->value
-        ? Interpreter::evaluate(declaration->value.get(), env)
-        : new NullVal;
+    RuntimeVal* value = Interpreter::evaluate(declaration->value.get(), env);
 
     return env->declareVar(declaration->identifier, value, declaration->constant);
 }

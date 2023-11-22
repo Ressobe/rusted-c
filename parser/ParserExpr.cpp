@@ -1,4 +1,4 @@
-#include "Parser.h"
+ï»¿#include "Parser.h"
 
 
 std::unique_ptr<Expr> Parser::parse_expr() {
@@ -33,7 +33,8 @@ std::unique_ptr<Expr> Parser::parse_primary_expr() {
     if (tk == TokenType::Not) {
         this->eat();
         value = std::make_unique<UnaryExpr>(parse_primary_expr(), "!");
-    } else {
+    }
+    else {
         switch (tk) {
         case TokenType::Identifier:
             value = std::make_unique<IdentifierExpr>(eat().getValue());
@@ -100,16 +101,9 @@ std::unique_ptr<Expr> Parser::parse_assignment_expr() {
         this->eat();
 
         std::unique_ptr<Expr> value = this->parse_assignment_expr();
-
-        // SprawdŸ, czy po wartoœci przypisywanej znajduje siê zmienna lub wywo³anie funkcji
-        if (this->at().getType() != TokenType::Semicolon &&
-            this->at().getType() != TokenType::CloseParen) {
-            std::cerr << "Parser Error:\n"
-                      << "Expected a semicolon (;) at the end of the line or a closing parenthesis after assignment expression."
-                      << std::endl;
-            std::exit(1);
-        }
-
+        
+        this->expect(TokenType::Semicolon, "Expected semicolon at the end of assigment expression");
+        
         return std::make_unique<AssignmentExpr>(std::move(left), std::move(value));
     }
 
@@ -131,26 +125,12 @@ std::unique_ptr<Expr> Parser::parse_call_member_expr() {
             }
         }
 
-        // Usuñ oczekiwanie na œrednik po wywo³aniu funkcji
-        if (this->at().getType() != TokenType::CloseParen) {
-            std::cerr << "Parser Error:\n"
-                      << "Expected a closing parenthesis in the function call."
-                      << std::endl;
-            std::exit(1);
-        }
+        this->expect(TokenType::CloseParen, "Expected a closing parenthesis in the function call");
 
         caller = std::make_unique<CallExpr>(std::move(caller), std::move(arguments));
 
-        // SprawdŸ, czy po wywo³aniu funkcji znajduje siê zmienna lub wywo³anie funkcji
-        if (this->at().getType() != TokenType::Semicolon &&
-            this->at().getType() != TokenType::CloseParen) {
-            std::cerr << "Parser Error:\n"
-                      << "Expected a semicolon (;) at the end of the line or a closing parenthesis after function call."
-                      << std::endl;
-            std::exit(1);
-        }
-    }
 
+    }
     return caller;
 }
 
