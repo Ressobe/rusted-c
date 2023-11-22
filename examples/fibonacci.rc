@@ -1,13 +1,21 @@
 func fibonacci(n) {
-  if (n == 0) {
-    return 0;
+  if (n <= 1) {
+    return n;
   }
 
-  if (n == 1) {
-    return 1;
+  let fibPrev = 0;
+  let fibCurrent = 1;
+  let i = 2;
+  let temp;
+
+  while (i <= n) {
+    temp = fibPrev + fibCurrent;
+    fibPrev = fibCurrent;
+    fibCurrent = temp;
+    i = i + 1;
   }
 
-  return fibonacci(n-1) + fibonacci(n-2);
+  return fibCurrent;
 }
 
-print(fibonacci(5));
+print(fibonacci(10))

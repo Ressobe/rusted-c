@@ -39,53 +39,27 @@ void repl() {
 }
 
 void run() {
-    //std::ifstream inputFile("examples/code.rc");
+    std::ifstream inputFile("examples/fibonacci.rc");
 
-    //if (!inputFile.is_open()) {
-    //    std::cerr << "Failed to open the file." << std::endl;
-    //    return;
-    //}
+    if (!inputFile.is_open()) {
+        std::cerr << "Failed to open the file." << std::endl;
+        return;
+    }
 
-    //// Create a string to store the file content
-    //std::string line;
-    //std::string fileContent;
+    // Create a string to store the file content
+    std::string line;
+    std::string fileContent;
 
-    //// Read and append the contents of the file to the string
-    //while (std::getline(inputFile, line)) {
-    //    fileContent += line + "\n"; // Append each line with a newline character
-    //}
+    // Read and append the contents of the file to the string
+    while (std::getline(inputFile, line)) {
+        fileContent += line + "\n"; // Append each line with a newline character
+    }
 
 
-    // Close the file
  
-    //inputFile.close();
+    inputFile.close();
 
-
-    std::string sourceCode = R"(
-	func silnia(n) {
-        if (n == 0) {
-			return 1;
-		}
-
-		let wynik = 1;
-        let i = 2;
-
-        while(i <= n) { 
-			wynik = wynik * i;
-            i = i + 1;
-		}
-
-		return wynik;
-	}
-    
-    let x = silnia(5);
-    print(x)
-)";
-
-    std::string sourceCode2 = "func add(x, y) { return x + y; }  let z = add(3, 3); z = z + 10; print(z)";
-
-  
-    Lexer lexer = Lexer(sourceCode);
+    Lexer lexer = Lexer(fileContent);
 
     Parser parser;
     std::unique_ptr<Program> program = parser.produceAST(lexer.tokenize());
@@ -99,7 +73,7 @@ void run() {
 
 
 int main() {
-    repl();
-    //run();
+    // repl();
+    run();
     return 0;
 }

@@ -2,26 +2,27 @@ func fizz_buzz(n) {
   let i = 1;
 
   while (i <= n) {
-
-    if (i % 3 == 0 && i % 5 == 0) {
-        print('FizzBuzz');
+    if (i % 3 == 0) {
+        if (i % 5 == 0) {
+          print("FizzBuzz")
+        }
     }
 
     else {
-
       if (i % 3 == 0) {
-        print('Fizz');
+        print("Fizz")
       }
 
       if (i % 5 == 0) {
-        print('Buzz');
+        print("Buzz")
       }
       else {
         print(i)
       }
 
     }
+    i = i + 1;
   }
 }
 
-fizz_buzz(100);
+fizz_buzz(100)
