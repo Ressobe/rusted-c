@@ -9,6 +9,7 @@
 #include <set>
 #include <functional>
 #include <cstdlib>
+#include <math.h>
 
 
 class Environment {
