@@ -14,6 +14,7 @@ RuntimeVal* clearFunction(const std::vector<RuntimeVal*> args, Environment* env)
 RuntimeVal* sqrtFunction(const std::vector<RuntimeVal*> args, Environment* env);
 RuntimeVal* powFunction(const std::vector<RuntimeVal*> args, Environment* env);
 RuntimeVal* roundFunction(const std::vector<RuntimeVal*> args, Environment* env);
+RuntimeVal* floorFunction(const std::vector<RuntimeVal*> args, Environment* env);
 RuntimeVal* minFunction(const std::vector<RuntimeVal*> args, Environment* env);
 RuntimeVal* maxFunction(const std::vector<RuntimeVal*> args, Environment* env);
 RuntimeVal* absFunction(const std::vector<RuntimeVal*> args, Environment* env);

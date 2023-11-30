@@ -74,6 +74,19 @@ RuntimeVal* roundFunction(const std::vector<RuntimeVal*> args, Environment* env)
   return new NumberVal(round(dynamic_cast<NumberVal*>(args[0])->value));
 }
 
+RuntimeVal* floorFunction(const std::vector<RuntimeVal*> args, Environment* env) {
+  if (args.size() != 1) {
+    std::cerr << "Wrong number of arguments in floor function" << std::endl;
+    std::exit(1);
+  }
+
+  if (args[0]->type != ValueType::NumberValue) {
+    std::cerr << "Wrong argument type for floor function" << std::endl;
+    std::exit(1);
+  }
+
+  return new NumberVal(floor(dynamic_cast<NumberVal*>(args[0])->value));
+}
 
 RuntimeVal* minFunction(const std::vector<RuntimeVal*> args, Environment* env) {
   if (args.size() == 0) {

@@ -93,4 +93,5 @@ void Environment::createGlobalEnv() {
     this->declareVar("input", new NativeFnVal(inputFunction), true);
     this->declareVar("num", new NativeFnVal(numberFunction), true);
     this->declareVar("len", new NativeFnVal(lenFunction), true);
+    this->declareVar("floor", new NativeFnVal(floorFunction), true);
 }
