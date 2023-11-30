@@ -34,6 +34,10 @@ std::unique_ptr<Expr> Parser::parse_primary_expr() {
         this->eat();
         value = std::make_unique<UnaryExpr>(parse_primary_expr(), "!");
     }
+    else if (tk == TokenType::BinaryOperator && at().getValue() == "-" ) {
+        this->eat();
+        value = std::make_unique<UnaryExpr>(parse_primary_expr(), "-");
+    }
     else {
         switch (tk) {
         case TokenType::Identifier:

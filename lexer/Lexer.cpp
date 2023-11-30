@@ -100,8 +100,33 @@ std::vector<Token> Lexer::tokenize() {
                 case ',':
                     tokens.push_back(Token(",", Comma));
                     break;
-                case '+':
                 case '-':
+                    if (std::isdigit(this->peek())) {
+                        std::string num;
+                        num += currentChar;
+                        
+                        int amountOfDots = 0;
+
+                        while (!src.empty() && (std::isdigit(this->peek()) || this->peek() == '.' )) {
+                            if (this->peek() == '.') amountOfDots++;
+
+                            if (amountOfDots > 1) this->unrecognizedChar(currentChar);
+
+                            num += this->eat();
+                        }
+
+                        if (amountOfDots == 0) {
+                          tokens.push_back(Token(num, NumberLiteral));
+                        }
+                        else {
+                          tokens.push_back(Token(num, FloatLiteral));
+                        }
+                    }
+                    else {
+                      tokens.push_back(Token(std::string(1, currentChar), BinaryOperator));
+                    }
+                    break;
+                case '+':
                 case '*':
                 case '/':
                 case '%':

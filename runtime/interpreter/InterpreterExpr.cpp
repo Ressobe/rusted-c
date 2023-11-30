@@ -66,6 +66,13 @@ RuntimeVal* Interpreter::eval_unary_expr(UnaryExpr* expr, Environment* env) {
         }
     }
 
+    if (expr->op == "-") {
+        if (rightValue->type == ValueType::NumberValue) {
+          NumberVal* number = dynamic_cast<NumberVal*>(rightValue);
+          return new NumberVal(-number->value);
+        }
+    }
+
     std::cerr << "Unsupported unary operator: " << expr->op << std::endl;
     std::exit(1);
 }
