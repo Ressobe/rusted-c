@@ -1,0 +1,20 @@
+func isPrime(number) {
+    if (number <= 1) {
+      return false;
+    }
+
+    let i = 2;
+
+
+    while (i <= sqrt(number)) {
+      if (number % i == 0) {
+          return false;
+      }
+
+      i = i + 1;
+    }
+
+    return true;
+}
+
+print(isPrime(11))

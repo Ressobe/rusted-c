@@ -1,28 +1,23 @@
 func solveQuadraticEquation(a, b, c) {
-  const delta = b * b - 4 * a * c;
+  const delta = pow(b, 2) - 4 * a * c;
 
   if (delta > 0) {
     const x1 = (-b + sqrt(delta)) / (2 * a);
     const x2 = (-b - sqrt(delta)) / (2 * a);
 
-    print("Wynik", x1, x2)
+    print("Dwa miejsca zerowe", x1, x2)
+    return null;
+  } 
 
-  } else if (delta == 0) {
+  if (delta == 0) {
     const x = -b / (2 * a);
-    print("Wynik", x)
-
+    print("Jedno miejsce zerowe", x)
   } else {
-
-    print("Wynik")
+    print("Brak rozwiazan")
   }
 }
 
-// Przykłady użycia:
-const solutions1 = solveQuadraticEquation(1, -3, 2); // Równanie kwadratowe x^2 - 3x + 2 = 0
-print(solutions1) // Wynik: 1, 2
-
-const solutions2 = solveQuadraticEquation(1, 2, 1); // Równanie kwadratowe x^2 + 2x + 1 = 0
-print(solutions2) // Wynik: -1
-
-const solutions3 = solveQuadraticEquation(1, -1, 1); // Równanie kwadratowe x^2 - x + 1 = 0
-print(solutions3) // Wynik: ""
+const solution1 = solveQuadraticEquation(1, -3, 2);
+const solution2 = solveQuadraticEquation(1, 2, 1);
+const solution3 = solveQuadraticEquation(1, -1, 1);
+const solution4 = solveQuadraticEquation(1, 6, 9);

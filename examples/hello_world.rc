@@ -1,1 +1,3 @@
-print("hello world")
+let x = -30;
+
+print(-x)
