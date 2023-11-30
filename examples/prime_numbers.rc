@@ -5,7 +5,6 @@ func isPrime(number) {
 
     let i = 2;
 
-
     while (i <= sqrt(number)) {
       if (number % i == 0) {
           return false;
@@ -17,4 +16,4 @@ func isPrime(number) {
     return true;
 }
 
-print(isPrime(11))
+print(isPrime(20))
