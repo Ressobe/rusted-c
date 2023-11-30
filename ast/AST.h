@@ -70,8 +70,8 @@ class VarDeclaration : public Stmt {
 
 class ReturnStatement : public Stmt {
   public:
-    std::unique_ptr<Expr> returnValue;
-    ReturnStatement(std::unique_ptr<Expr> value);
+    std::unique_ptr<Stmt> returnValue;
+    ReturnStatement(std::unique_ptr<Stmt> value);
 };
 
 class FunctionDeclaration : public Stmt {

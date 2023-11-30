@@ -44,7 +44,7 @@ IfStatement::IfStatement(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr
 WhileLoop::WhileLoop(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stmt>> bd)
     : Stmt(NodeType::WhileLoop), condition(std::move(cond)), loopBody(std::move(bd)) {}
 
-ReturnStatement::ReturnStatement(std::unique_ptr<Expr> value)
+ReturnStatement::ReturnStatement(std::unique_ptr<Stmt> value)
     : Stmt(NodeType::ReturnStatement), returnValue(std::move(value)) {}
 
 void printProgram(std::unique_ptr<Program> program, const std::string& indent) {
