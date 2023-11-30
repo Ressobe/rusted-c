@@ -131,7 +131,7 @@ RuntimeVal* maxFunction(const std::vector<RuntimeVal*> args, Environment* env) {
 }
 
 
-RuntimeVal* absFuntion(const std::vector<RuntimeVal*> args, Environment* env) {
+RuntimeVal* absFunction(const std::vector<RuntimeVal*> args, Environment* env) {
   if (args.size() != 1) {
     std::cerr << "Wrong number of arguments in abs function" << std::endl;
     std::exit(1);

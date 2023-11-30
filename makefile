@@ -11,60 +11,32 @@ INTERPRETERDIR = $(SRCDIR)/runtime/interpreter
 VALUESDIR = $(SRCDIR)/runtime/values
 STANDARDLIBDIR = $(SRCDIR)/runtime/standard-library
 
+# Lista plików źródłowych
+SOURCES = $(wildcard $(SRCDIR)/*.cpp $(ASTDIR)/*.cpp $(LEXERDIR)/*.cpp $(PARSERDIR)/*.cpp $(ENVDIR)/*.cpp $(INTERPRETERDIR)/*.cpp $(VALUESDIR)/*.cpp $(STANDARDLIBDIR)/*.cpp)
+
+# Lista plików obiektowych
+OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
+
+# Cel główny
 all: $(BINDIR)/rustedc
 
-$(BINDIR)/rustedc: $(OBJDIR)/ast/AST.o $(OBJDIR)/lexer/Lexer.o $(OBJDIR)/parser/Parser.o $(OBJDIR)/parser/ParserStmt.o $(OBJDIR)/parser/ParserExpr.o  $(OBJDIR)/runtime/environment/Environment.o  $(OBJDIR)/runtime/values/Values.o $(OBJDIR)/runtime/standard-library/BuiltinFunctions.o $(OBJDIR)/runtime/interpreter/Interpreter.o $(OBJDIR)/runtime/interpreter/InterpreterExpr.o $(OBJDIR)/runtime/interpreter/InterpreterStmt.o $(OBJDIR)/main.o
+# Cel końcowy
+$(BINDIR)/rustedc: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(OBJDIR)/ast/AST.o: $(ASTDIR)/AST.cpp
+# Reguła dla plików obiektowych
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(OBJDIR)/lexer/Lexer.o: $(LEXERDIR)/Lexer.cpp
+# Reguła dla plików obiektowych z podkatalogów
+$(OBJDIR)/%.o: $(ASTDIR)/%.cpp $(LEXERDIR)/%.cpp $(PARSERDIR)/%.cpp $(ENVDIR)/%.cpp $(INTERPRETERDIR)/%.cpp $(VALUESDIR)/%.cpp $(STANDARDLIBDIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(OBJDIR)/parser/Parser.o: $(PARSERDIR)/Parser.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/parser/ParserStmt.o: $(PARSERDIR)/ParserStmt.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/parser/ParserExpr.o: $(PARSERDIR)/ParserExpr.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/runtime/environment/Environment.o: $(ENVDIR)/Environment.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/runtime/interpreter/Interpreter.o: $(INTERPRETERDIR)/Interpreter.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/runtime/interpreter/InterpreterExpr.o: $(INTERPRETERDIR)/InterpreterExpr.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/runtime/interpreter/InterpreterStmt.o: $(INTERPRETERDIR)/InterpreterStmt.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/runtime/standard-library/BuiltinFunctions.o: $(SRCDIR)/runtime/standard-library/BuiltinFunctions.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/runtime/values/Values.o: $(VALUESDIR)/Values.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/main.o: $(SRCDIR)/main.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
+# Czyszczenie plików tymczasowych
 clean:
 	rm -rf $(OBJDIR) $(BINDIR)
 
+# Oznaczenie celu 'all' oraz 'clean' jako phony, żeby Makefile nie szukał plików o takich nazwach
 .PHONY: all clean
