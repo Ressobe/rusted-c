@@ -58,7 +58,7 @@ StmtPtr Parser::parse_return_statement() {
         return std::make_unique<ReturnStatement>(nullptr);
     } else {
         // Return statement with a value
-        std::unique_ptr<Expr> value = parse_expr();
+        std::unique_ptr<Stmt> value = parse_stmt();
         expect(TokenType::Semicolon, "Return statement must end with a semicolon.");
         return std::make_unique<ReturnStatement>(std::move(value));
     }

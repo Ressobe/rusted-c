@@ -27,14 +27,12 @@ void repl() {
         std::cout << ">>> ";
         std::getline(std::cin, input);
 
-        // Check for "exit" keyword.
         if (input.find("exit") != std::string::npos) {
             break;
         }
 
         Lexer lexer = Lexer(input);
 
-        // Produce AST From source code
         program = parser.produceAST(lexer.tokenize());
 
         RuntimeVal* val =  Interpreter::evaluate(program.get(), &env);
@@ -52,18 +50,12 @@ void run(char* filename) {
         return;
     }
 
-    // Create a string to store the file content
-    std::string line;
-    std::string fileContent;
-
-    // Read and append the contents of the file to the string
-    while (std::getline(inputFile, line)) {
-        fileContent += line + "\n"; // Append each line with a newline character
-    }
+    std::stringstream buffer;
+    buffer << inputFile.rdbuf(); 
  
+    inputFile.close();    
 
- 
-    inputFile.close();
+    std::string fileContent = buffer.str();
 
     Lexer lexer = Lexer(fileContent);
 

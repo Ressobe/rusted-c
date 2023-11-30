@@ -10,6 +10,8 @@
 #include <functional>
 #include <cstdlib>
 #include <math.h>
+#include <cstring>
+
 
 
 class Environment {

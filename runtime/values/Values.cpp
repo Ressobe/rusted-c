@@ -32,6 +32,10 @@ NumberVal::NumberVal(double n) : value(n) {
 }
 
 std::string NumberVal::toString() const {
+    int valueInt = value;
+    if ((value - valueInt) == 0) {
+      return std::to_string(valueInt);
+    }
     return std::to_string(value);
 }
 

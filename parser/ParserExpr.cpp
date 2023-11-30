@@ -128,8 +128,6 @@ std::unique_ptr<Expr> Parser::parse_call_member_expr() {
         this->expect(TokenType::CloseParen, "Expected a closing parenthesis in the function call");
 
         caller = std::make_unique<CallExpr>(std::move(caller), std::move(arguments));
-
-
     }
     return caller;
 }

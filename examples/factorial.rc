@@ -17,5 +17,12 @@ func factorial(n) {
 
   return result;
 }
-  
-print(factorial(6))
+
+
+let i = 0;
+let n = 10;
+
+while(i <= n) {
+  print(factorial(i))
+  i = i + 1;
+}

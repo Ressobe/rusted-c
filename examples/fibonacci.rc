@@ -18,4 +18,11 @@ func fibonacci(n) {
   return fibCurrent;
 }
 
-print(fibonacci(10))
+
+let i = 0;
+let n = 20;
+
+while (i <= n) {
+  print(fibonacci(i))
+  i = i + 1;
+}

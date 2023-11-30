@@ -25,4 +25,4 @@ func fizz_buzz(n) {
   }
 }
 
-fizz_buzz(100)
+fizz_buzz(50)
