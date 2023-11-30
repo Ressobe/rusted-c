@@ -18,4 +18,4 @@ func factorial(n) {
   return result;
 }
   
-print(factorial(5))
+print(factorial(6))
