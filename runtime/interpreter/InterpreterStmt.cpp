@@ -59,16 +59,27 @@ RuntimeVal* Interpreter::eval_if_statement(IfStatement* ifStmt, Environment* env
 RuntimeVal* Interpreter::eval_while_statement(WhileLoop* loop, Environment* env) {
     RuntimeVal* result = new NullVal;
 
-    while (true) {
+    bool conditionMet = true;
+
+    while (conditionMet) {
         RuntimeVal* conditionValue = Interpreter::evaluate(loop->condition.get(), env);
 
         if (conditionValue->type == ValueType::NumberValue) {
             NumberVal* numCondition = dynamic_cast<NumberVal*>(conditionValue);
 
             if (numCondition->value == 1) {
-                result = Interpreter::eval_stmt_vector(loop->loopBody, env);
+                RuntimeVal* loopResult = Interpreter::eval_stmt_vector(loop->loopBody, env);
+
+                if (loopResult->type == ValueType::ReturnValue) {
+                    delete result;  // Zwolnij poprzedni wynik
+                    return loopResult;  // Zwróć ReturnValue
+                }
+
+                delete result;  // Zwolnij poprzedni wynik
+                result = loopResult;
+
             } else {
-                break;
+                conditionMet = false;  // Ustawienie flagi, aby przerwać pętlę
             }
         } else {
             std::cerr << "While loop condition must evaluate to a numeric value." << std::endl;

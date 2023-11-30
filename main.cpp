@@ -2,16 +2,13 @@
 #include <fstream>
 #include <memory>
 #include <filesystem>
+#include <sstream>
 #include "lexer/Lexer.h"
 #include "parser/Parser.h"
 #include "runtime/interpreter/Interpreter.h"
 #include "runtime/values/Values.h"
 #include "runtime/environment/Environment.h"
 
-
-// TODO
-// dodać liczby ujemne
-//
 
 void repl() {
     Parser parser;
@@ -36,27 +33,12 @@ void repl() {
         program = parser.produceAST(lexer.tokenize());
 
         RuntimeVal* val =  Interpreter::evaluate(program.get(), &env);
-        if (val->type == ValueType::NumberValue || val->type == ValueType::StringValue || val->type == ValueType::BooleanValue)
-            std::cout << val->toString() << std::endl;
+        std::cout << val->toString() << std::endl;
     }
 }
 
 
-void run(char* filename) {
-    std::ifstream inputFile(filename);
-
-    if (!inputFile.is_open()) {
-        std::cerr << "Failed to open the file. Probably wrong file name" << std::endl;
-        return;
-    }
-
-    std::stringstream buffer;
-    buffer << inputFile.rdbuf(); 
- 
-    inputFile.close();    
-
-    std::string fileContent = buffer.str();
-
+void run(std::string fileContent) {
     Lexer lexer = Lexer(fileContent);
 
     Parser parser;
@@ -72,10 +54,10 @@ void run(char* filename) {
 
 int main(int argc, char** argv) {
     if (argc == 1) {
-      repl();
+       repl();
     }
 
-    if (argc == 2) {
+   if (argc == 2) {
       std::string filePath = argv[1];    
 
       std::filesystem::path filePathObject(filePath);    
@@ -85,7 +67,7 @@ int main(int argc, char** argv) {
         std::exit(1);
       }
 
-      size_t dotPosition = filePath.find_first_of('.');
+      size_t dotPosition = filePath.find_last_of('.');
 
       if (dotPosition == std::string::npos) {
         std::cout << "Błąd: niepoprawne rozszerzenie podanego pliku" << std::endl;
@@ -99,9 +81,22 @@ int main(int argc, char** argv) {
         std::cout << "Błąd: niepoprawne rozszerzenie podanego pliku" << std::endl;
         std::exit(1);
       }
+      
+      std::ifstream inputFile(filePath);
 
+      if (!inputFile.is_open()) {
+        std::cerr << "Failed to open the file. Probably wrong file name" << std::endl;
+        return 1;
+      }
 
-      run(argv[1]);
+      std::stringstream buffer;
+      buffer << inputFile.rdbuf(); 
+ 
+      inputFile.close();    
+
+      std::string fileContent = buffer.str();
+
+      run(fileContent);
     }
     
     return 0;

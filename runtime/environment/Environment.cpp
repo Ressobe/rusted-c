@@ -1,6 +1,7 @@
 #include "Environment.h"
 #include "../standard-library/BuiltinFunctions.h"
 
+
 Environment::Environment(Environment* parentEnv) : parent(parentEnv) {}
 
 
@@ -19,6 +20,7 @@ RuntimeVal* Environment::declareVar(const std::string& varName, RuntimeVal* valu
     return value;
 }
 
+
 RuntimeVal* Environment::assignVar(const std::string& varName, RuntimeVal* value) {
     Environment* env = resolve(varName);
 
@@ -30,10 +32,12 @@ RuntimeVal* Environment::assignVar(const std::string& varName, RuntimeVal* value
     return value;
 }
 
+
 RuntimeVal* Environment::lookupVar(const std::string& varName) {
     Environment* env = resolve(varName);
     return env->variables[varName];
 }
+
 
 Environment* Environment::resolve(const std::string& varName) {
     if (variables.find(varName) != variables.end()) {

@@ -19,7 +19,10 @@ BooleanVal::BooleanVal(bool b) : value(b) {
 }
 
 std::string BooleanVal::toString() const {
-    return std::to_string(value);
+    if (value) {
+        return "true";
+    }
+    return "false";
 }
 
 std::unique_ptr<RuntimeVal> BooleanVal::clone() const {
