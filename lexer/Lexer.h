@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 
+
 enum TokenType {
   // Name of variable, function itp ...
   Identifier,
@@ -60,6 +61,7 @@ enum TokenType {
 	EOFToken, 
 };
 
+
 class Token {
 	public:
 		Token(const std::string& value, TokenType type);
@@ -72,21 +74,36 @@ class Token {
 		TokenType type;
 };
 
+
 class Lexer {
 	public:
 		Lexer(const std::string& sourceCode);
-		std::vector<Token> tokenize();
+		void tokenize();
+    std::vector<Token> getTokens();
     void printTokens();
 
 	private:
+    char currentChar;
+    std::vector<Token> tokens;
 		std::string sourceCode;
 		std::vector<char> src;
+
 		bool isAlpha(char c) const;
 		bool isSkippable(char c) const;
 		bool isInt(char c) const;
     void unrecognizedChar(char c) const;
     char peek() const;
     char eat();
+
+    void createNumberToken();
+    void createStringToken();
+    void createAndToken();
+    void createOrToken();
+    void createBinaryOperatorToken();
+    void createCompareToken(std::string firstChar, std::string secondChar, TokenType firstToken, TokenType secondToken);
+    void createOneCharToken(std::string tokenChar, TokenType charType);
+    void createIdentifierToken();
 };
+
 
 #endif
