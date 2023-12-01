@@ -141,11 +141,9 @@ std::unique_ptr<Expr> Parser::parse_call_member_expr() {
 
 std::unique_ptr<Expr> Parser::parse_call_expr(std::unique_ptr<Expr> caller) {
     std::unique_ptr<Expr> call_expr = std::make_unique<CallExpr>(std::move(caller), this->parse_args());
-
     while (this->at().getType() == TokenType::OpenParen) {
         call_expr = parse_call_expr(std::move(call_expr));
     }
-
     return call_expr;
 }
 

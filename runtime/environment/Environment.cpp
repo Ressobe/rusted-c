@@ -68,20 +68,7 @@ FnVal::FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vec
 }
 
 
-std::unique_ptr<RuntimeVal> NativeFnVal::clone() const {
-        return std::make_unique<NativeFnVal>(*this);
-}
-
-
-std::unique_ptr<RuntimeVal> FnVal::clone() const {
-   return std::make_unique<FnVal>(*this);
-}
-
-
-void Environment::createGlobalEnv() {
-    this->declareVar("true", new BooleanVal(true), true);
-    this->declareVar("false",new BooleanVal(false), true);
-    this->declareVar("null", new NullVal(), true);
+void Environment::createBuilinFunctions() {
     this->declareVar("print", new NativeFnVal(printFunction), true);
     this->declareVar("exit", new NativeFnVal(exitFunction), true);
     this->declareVar("clear", new NativeFnVal(clearFunction), true);
@@ -94,4 +81,12 @@ void Environment::createGlobalEnv() {
     this->declareVar("num", new NativeFnVal(numberFunction), true);
     this->declareVar("len", new NativeFnVal(lenFunction), true);
     this->declareVar("floor", new NativeFnVal(floorFunction), true);
+}
+
+
+void Environment::createGlobalEnv() {
+    this->declareVar("true", new BooleanVal(true), true);
+    this->declareVar("false",new BooleanVal(false), true);
+    this->declareVar("null", new NullVal(), true);
+    this->createBuilinFunctions();
 }

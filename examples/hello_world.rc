@@ -1,3 +1,9 @@
-let x = -30;
+let x = -31;
 
-print(-x)
+if (x != -30) {
+  print("1")
+}
+else {
+  print("2")
+}
+

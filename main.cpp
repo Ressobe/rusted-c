@@ -29,8 +29,9 @@ void repl() {
         }
 
         Lexer lexer = Lexer(input);
+        lexer.tokenize();
 
-        program = parser.produceAST(lexer.tokenize());
+        program = parser.produceAST(lexer.getTokens());
 
         RuntimeVal* val =  Interpreter::evaluate(program.get(), &env);
         std::cout << val->toString() << std::endl;
@@ -41,8 +42,11 @@ void repl() {
 void run(std::string fileContent) {
     Lexer lexer = Lexer(fileContent);
 
+    lexer.tokenize();
+
     Parser parser;
-    std::unique_ptr<Program> program = parser.produceAST(lexer.tokenize());
+
+    std::unique_ptr<Program> program = parser.produceAST(lexer.getTokens());
 
     Environment env;
     env.createGlobalEnv();

@@ -13,7 +13,6 @@
 #include <cstring>
 
 
-
 class Environment {
 	private:
 		Environment* parent;
@@ -27,6 +26,7 @@ class Environment {
 		RuntimeVal* lookupVar(const std::string& varName);
 		Environment* resolve(const std::string& varName);
 		void createGlobalEnv();
+    void createBuilinFunctions();
 		bool isConstant(const std::string& varname);
 };
 
@@ -37,7 +37,6 @@ class NativeFnVal : public RuntimeVal {
 	public:
 		FunctionType call;
 		NativeFnVal(FunctionType c);    
-    std::unique_ptr<RuntimeVal> clone() const override;
 };
 
 class FnVal : public RuntimeVal {
@@ -47,12 +46,7 @@ class FnVal : public RuntimeVal {
 		Environment* declarationEnv;
 		std::vector<Stmt*> body;
 
-
 		FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b);
-
-		std::unique_ptr<RuntimeVal> clone() const override;
  };
 
 #endif
-
-

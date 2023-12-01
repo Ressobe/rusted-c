@@ -9,10 +9,6 @@ std::string NullVal::toString() const {
     return value;
 }
 
-std::unique_ptr<RuntimeVal> NullVal::clone() const {
-    return std::make_unique<NullVal>(*this);
-}
-
 // BooleanVal
 BooleanVal::BooleanVal(bool b) : value(b) {
     type = ValueType::BooleanValue;
@@ -25,9 +21,6 @@ std::string BooleanVal::toString() const {
     return "false";
 }
 
-std::unique_ptr<RuntimeVal> BooleanVal::clone() const {
-    return std::make_unique<BooleanVal>(*this);
-}
 
 // NumberVal
 NumberVal::NumberVal(double n) : value(n) {
@@ -42,9 +35,6 @@ std::string NumberVal::toString() const {
     return std::to_string(value);
 }
 
-std::unique_ptr<RuntimeVal> NumberVal::clone() const {
-    return std::make_unique<NumberVal>(*this);
-}
 
 // ReturnValue
 ReturnValue::ReturnValue(RuntimeVal* val) : value(val) {
@@ -55,9 +45,6 @@ std::string ReturnValue::toString() const {
     return value->toString();
 }
 
-std::unique_ptr<RuntimeVal> ReturnValue::clone() const {
-    return std::make_unique<ReturnValue>(*this);
-}
 
 StringVal::StringVal(const std::string& str) : value(str) {
     type = ValueType::StringValue;
@@ -65,8 +52,4 @@ StringVal::StringVal(const std::string& str) : value(str) {
 
 std::string StringVal::toString() const {
     return value;
-}
-
-std::unique_ptr<RuntimeVal> StringVal::clone() const {
-    return std::make_unique<StringVal>(*this);
 }
