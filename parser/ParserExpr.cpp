@@ -1,13 +1,17 @@
 ﻿#include "Parser.h"
 
 
-std::unique_ptr<Expr> Parser::parse_expr() {
+using ExprPtr = std::unique_ptr<Expr>;
+using StmtPtr = std::unique_ptr<Stmt>;
+
+
+ExprPtr Parser::parse_expr() {
     return parse_assignment_expr();
 }
 
 
-std::unique_ptr<Expr> Parser::parse_comprasion_expr() {
-    std::unique_ptr<Expr> left = parse_additive_expr();
+ExprPtr Parser::parse_comprasion_expr() {
+    ExprPtr left = parse_additive_expr();
 
     if (at().getType() == TokenType::LessThan ||
         at().getType() == TokenType::LessEqual ||
@@ -17,7 +21,7 @@ std::unique_ptr<Expr> Parser::parse_comprasion_expr() {
         at().getType() == TokenType::NotEqual) {
         std::string comparisonOperator = eat().getValue();
 
-        std::unique_ptr<Expr> right = parse_additive_expr();
+        ExprPtr right = parse_additive_expr();
 
         left = std::make_unique<BinaryExpr>(std::move(left), std::move(right), comparisonOperator);
     }
@@ -26,9 +30,9 @@ std::unique_ptr<Expr> Parser::parse_comprasion_expr() {
 }
 
 
-std::unique_ptr<Expr> Parser::parse_primary_expr() {
+ExprPtr Parser::parse_primary_expr() {
     TokenType tk = at().getType();
-    std::unique_ptr<Expr> value = nullptr;
+    ExprPtr value = nullptr;
 
     if (tk == TokenType::Not) {
         this->eat();
@@ -62,7 +66,7 @@ std::unique_ptr<Expr> Parser::parse_primary_expr() {
             expect(TokenType::CloseParen, "Unexpected token found inside parenthesized expression. Expected closing parenthesis.");
             break;
         default:
-            value = nullptr; // Initialize value as nullptr in the default case
+            value = nullptr;
             std::cerr << "Unexpected token found during parsing!" << at().getValue() << std::endl;
             std::exit(1);
         }
@@ -72,12 +76,12 @@ std::unique_ptr<Expr> Parser::parse_primary_expr() {
 }
 
 
-std::unique_ptr<Expr> Parser::parse_additive_expr() {
-    std::unique_ptr<Expr> left = this->parse_multiplicative_expr();
+ExprPtr Parser::parse_additive_expr() {
+     ExprPtr left = this->parse_multiplicative_expr();
 
     while (this->at().getValue() == "+" || this->at().getValue() == "-") {
         std::string binaryOperator = this->eat().getValue();
-        std::unique_ptr<Expr> right = this->parse_multiplicative_expr();
+        ExprPtr right = this->parse_multiplicative_expr();
         left = std::make_unique<BinaryExpr>(std::move(left), std::move(right), binaryOperator);
     }
 
@@ -85,12 +89,12 @@ std::unique_ptr<Expr> Parser::parse_additive_expr() {
 }
 
 
-std::unique_ptr<Expr> Parser::parse_multiplicative_expr() {
-    std::unique_ptr<Expr> left = this->parse_call_member_expr();
+ExprPtr Parser::parse_multiplicative_expr() {
+    ExprPtr left = this->parse_call_member_expr();
 
     while (at().getValue() == "/" || at().getValue() == "*" || at().getValue() == "%") {
         std::string binaryOperator = this->eat().getValue();
-        std::unique_ptr<Expr> right = this->parse_primary_expr();
+        ExprPtr right = this->parse_primary_expr();
         left = std::make_unique<BinaryExpr>(std::move(left), std::move(right), binaryOperator);
     }
 
@@ -98,13 +102,13 @@ std::unique_ptr<Expr> Parser::parse_multiplicative_expr() {
 }
 
 
-std::unique_ptr<Expr> Parser::parse_assignment_expr() {
-    std::unique_ptr<Expr> left = this->parse_additive_expr();
+ExprPtr Parser::parse_assignment_expr() {
+    ExprPtr left = this->parse_additive_expr();
 
     if (this->at().getType() == TokenType::Equals) {
         this->eat();
 
-        std::unique_ptr<Expr> value = this->parse_assignment_expr();
+        ExprPtr value = this->parse_assignment_expr();
         
         this->expect(TokenType::Semicolon, "Expected semicolon at the end of assigment expression");
         
@@ -114,12 +118,12 @@ std::unique_ptr<Expr> Parser::parse_assignment_expr() {
     return left;
 }
 
-std::unique_ptr<Expr> Parser::parse_call_member_expr() {
-    std::unique_ptr<Expr> caller = this->parse_primary_expr();
+ExprPtr Parser::parse_call_member_expr() {
+    ExprPtr caller = this->parse_primary_expr();
 
     while (this->at().getType() == TokenType::OpenParen) {
         this->eat();
-        std::vector<std::unique_ptr<Expr>> arguments;
+        std::vector<ExprPtr> arguments;
 
         while (this->at().getType() != TokenType::CloseParen) {
             arguments.push_back(this->parse_expr());
@@ -137,10 +141,8 @@ std::unique_ptr<Expr> Parser::parse_call_member_expr() {
 }
 
 
-
-
-std::unique_ptr<Expr> Parser::parse_call_expr(std::unique_ptr<Expr> caller) {
-    std::unique_ptr<Expr> call_expr = std::make_unique<CallExpr>(std::move(caller), this->parse_args());
+ExprPtr Parser::parse_call_expr(std::unique_ptr<Expr> caller) {
+    ExprPtr call_expr = std::make_unique<CallExpr>(std::move(caller), this->parse_args());
     while (this->at().getType() == TokenType::OpenParen) {
         call_expr = parse_call_expr(std::move(call_expr));
     }
@@ -148,9 +150,9 @@ std::unique_ptr<Expr> Parser::parse_call_expr(std::unique_ptr<Expr> caller) {
 }
 
 
-std::vector<std::unique_ptr<Expr>> Parser::parse_args() {
+std::vector<ExprPtr> Parser::parse_args() {
     this->expect(TokenType::OpenParen, "Expected open parenthesis");
-    std::vector<std::unique_ptr<Expr>> args;
+    std::vector<ExprPtr> args;
 
     if (this->at().getType() != TokenType::CloseParen) {
         args = this->parse_arguments_list();
@@ -161,8 +163,8 @@ std::vector<std::unique_ptr<Expr>> Parser::parse_args() {
 }
 
 
-std::vector<std::unique_ptr<Expr>> Parser::parse_arguments_list() {
-    std::vector<std::unique_ptr<Expr>> args;
+std::vector<ExprPtr> Parser::parse_arguments_list() {
+    std::vector<ExprPtr> args;
     args.push_back(this->parse_assignment_expr());
 
     while (this->at().getType() == TokenType::Comma) {
