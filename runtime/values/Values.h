@@ -40,7 +40,7 @@ class NullVal : public RuntimeVal {
     NullVal();
 
     std::string toString() const override;
-    std::string getType() const {
+    std::string getType() const override {
         return "NullVal";
     }
 };
@@ -51,22 +51,26 @@ class BooleanVal : public RuntimeVal {
     bool value;
 
     BooleanVal(bool b = true);
+    BooleanVal(BooleanVal& orginal);
 
     std::string toString() const override;
-    std::string getType() const {
+    std::string getType() const override {
         return "BooleanVal";
     }
+
 };
 
 
 class NumberVal : public RuntimeVal {
   public:
     double value;
+
     NumberVal(double n = 0);
+    NumberVal(const NumberVal& orginal);
+    NumberVal(const NumericLiteral* numberLiteral);
 
     std::string toString() const override;
-
-    std::string getType() const {
+    std::string getType() const override {
         return "NumberVal";
     }
 };
@@ -74,12 +78,14 @@ class NumberVal : public RuntimeVal {
 
 class ReturnValue : public RuntimeVal {
   public:
+
     RuntimeVal* value;
+
     ReturnValue(RuntimeVal* val);
+    ReturnValue(ReturnValue& val);
 
     std::string toString() const override;
-
-    std::string getType() const {
+    std::string getType() const override {
         return "ReturnVal";
     }
 };
@@ -89,10 +95,11 @@ class StringVal : public RuntimeVal {
   public:
     std::string value;
     StringVal(const std::string& str = "");
+    StringVal(const StringVal& orginal);
+    StringVal(const StrLiteral* strLiteral);
 
     std::string toString() const override;
-
-    std::string getType() const {
+    std::string getType() const override {
         return "StringVal";
     }
 };

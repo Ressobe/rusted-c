@@ -6,13 +6,11 @@ RuntimeVal* Interpreter::evaluate(Stmt* astNode, Environment* env) {
 
     switch (astNode->kind) {
       case NodeType::NumericLiteral: {
-        NumericLiteral* numLiteral = dynamic_cast<NumericLiteral*>(astNode);
-        result = new NumberVal(numLiteral->value);
+        result = new NumberVal(dynamic_cast<NumericLiteral*>(astNode));
         break;
       }
       case NodeType::StrLiteral: {
-        StrLiteral* strLiteral = dynamic_cast<StrLiteral*>(astNode);
-        result = new StringVal(strLiteral->value);
+        result = new StringVal(dynamic_cast<StrLiteral*>(astNode));
         break;
       }
       case NodeType::Null: {

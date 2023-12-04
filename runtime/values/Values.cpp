@@ -11,7 +11,12 @@ std::string NullVal::toString() const {
 
 // BooleanVal
 BooleanVal::BooleanVal(bool b) : value(b) {
-    type = ValueType::BooleanValue;
+    this->type = ValueType::BooleanValue;
+}
+
+BooleanVal::BooleanVal(BooleanVal& orginal) {
+  this->type = ValueType::BooleanValue;
+  this->value = orginal.value;
 }
 
 std::string BooleanVal::toString() const {
@@ -24,7 +29,17 @@ std::string BooleanVal::toString() const {
 
 // NumberVal
 NumberVal::NumberVal(double n) : value(n) {
-    type = ValueType::NumberValue;
+    this->type = ValueType::NumberValue;
+}
+
+NumberVal::NumberVal(const NumberVal& orginal) {
+    this->type = ValueType::NumberValue;
+    this->value = orginal.value;
+}
+
+NumberVal::NumberVal(const NumericLiteral* numberLiteral) {
+    this->type = ValueType::NumberValue;
+    this->value = numberLiteral->value; 
 }
 
 std::string NumberVal::toString() const {
@@ -41,6 +56,11 @@ ReturnValue::ReturnValue(RuntimeVal* val) : value(val) {
     type = ValueType::ReturnValue;
 }
 
+ReturnValue::ReturnValue(ReturnValue& orginal) {
+    this->type = ValueType::ReturnValue;
+    this->value = orginal.value;
+}
+
 std::string ReturnValue::toString() const {
     return value->toString();
 }
@@ -48,6 +68,18 @@ std::string ReturnValue::toString() const {
 
 StringVal::StringVal(const std::string& str) : value(str) {
     type = ValueType::StringValue;
+}
+
+
+StringVal::StringVal(const StringVal& orginal) {
+    this->type = ValueType::StringValue;
+    this->value = orginal.value;
+}
+
+
+StringVal::StringVal(const StrLiteral* strLiteral) {
+    this->type = ValueType::StringValue;
+    this->value = strLiteral->value;
 }
 
 std::string StringVal::toString() const {
