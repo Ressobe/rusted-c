@@ -82,6 +82,7 @@ class FunctionDeclaration : public Stmt {
     std::unique_ptr<ReturnStatement> returnStatement;
 
     FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b, std::unique_ptr<ReturnStatement> retStmt = nullptr);
+    ~FunctionDeclaration();
 };
 
 class BinaryExpr : public Expr {

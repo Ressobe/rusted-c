@@ -36,7 +36,13 @@ CallExpr::CallExpr(std::unique_ptr<Expr> caller, std::vector<std::unique_ptr<Exp
 
 FunctionDeclaration::FunctionDeclaration(
     std::vector<std::string> param, std::string n, std::vector<Stmt*> b, std::unique_ptr<ReturnStatement> retStmt)
-    : Stmt(NodeType::FunctionDeclaration), parameters(param), name(n), body(std::move(b)), returnStatement(std::move(retStmt)) {}
+    : Stmt(NodeType::FunctionDeclaration), parameters(param), name(n), body(b), returnStatement(std::move(retStmt)) {}
+
+FunctionDeclaration::~FunctionDeclaration() {
+    for (auto& stmt : body) {
+        delete stmt;
+    }
+}
 
 IfStatement::IfStatement(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stmt>> ifB, std::vector<std::unique_ptr<Stmt>> elseB)
     : Stmt(NodeType::IfStatement), condition(std::move(cond)), ifBody(std::move(ifB)), elseBody(std::move(elseB)) {}
@@ -46,6 +52,7 @@ WhileLoop::WhileLoop(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stm
 
 ReturnStatement::ReturnStatement(std::unique_ptr<Stmt> value)
     : Stmt(NodeType::ReturnStatement), returnValue(std::move(value)) {}
+
 
 void printProgram(std::unique_ptr<Program> program, const std::string& indent) {
     std::cout << '{' << std::endl;
@@ -179,9 +186,9 @@ void printStatement(const Stmt& stmt, const std::string& indent) {
         printStatement(*assignmentExpr.value, indent + "    ");
     }
 
-
     std::cout << "\n" << indent << "}";
 }
+
 
 std::string NodeTypeToString(NodeType type) {
     switch (type) {
