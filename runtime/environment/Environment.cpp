@@ -40,8 +40,8 @@ RuntimeVal* Environment::lookupVar(const std::string& varName) {
 
 
 Environment* Environment::resolve(const std::string& varName) {
-    if (variables.find(varName) != variables.end()) {
-        return this;
+    if (variables[varName]) {
+      return this;
     }
 
     if (parent == nullptr) {
@@ -57,15 +57,11 @@ bool Environment::isConstant(const std::string& varname) {
 }
 
 
-NativeFnVal::NativeFnVal(FunctionType c) : call(c) {
-    type = ValueType::NativeFunction;
-}
+NativeFnVal::NativeFnVal(FunctionType c) : RuntimeVal(ValueType::NativeFunction), call(c) {}
 
 
 FnVal::FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b)
-    : name(n), parameters(std::move(p)), declarationEnv(d), body(std::move(b)) {
-    type = ValueType::Function;
-}
+    : RuntimeVal(ValueType::Function), name(n), parameters(std::move(p)), declarationEnv(d), body(std::move(b)) {}
 
 
 void Environment::createBuilinFunctions() {
