@@ -9,6 +9,7 @@ RuntimeVal* Interpreter::eval_program(Program* program, Environment* env) {
     return lastEvaluated;
 }
 
+
 RuntimeVal* Interpreter::eval_return_statement(ReturnStatement* stmt, Environment* env) {
     if (stmt->returnValue) {
         RuntimeVal* result  = Interpreter::evaluate(stmt->returnValue.get(), env);
@@ -18,13 +19,13 @@ RuntimeVal* Interpreter::eval_return_statement(ReturnStatement* stmt, Environmen
     }
 }
 
+
 RuntimeVal* Interpreter::eval_stmt_vector(const std::vector<std::unique_ptr<Stmt>>& stmts, Environment* env) {
     RuntimeVal* result = nullptr;
 
     for (auto& stmt : stmts) {
         result = Interpreter::evaluate(stmt.get(), env);
 
-        // Sprawdź, czy wynik ewaluacji to return (zakończ jeśli tak)
         if (result->type == ValueType::ReturnValue) {
             return result;
         }
@@ -71,15 +72,15 @@ RuntimeVal* Interpreter::eval_while_statement(WhileLoop* loop, Environment* env)
                 RuntimeVal* loopResult = Interpreter::eval_stmt_vector(loop->loopBody, env);
 
                 if (loopResult->type == ValueType::ReturnValue) {
-                    delete result;  // Zwolnij poprzedni wynik
-                    return loopResult;  // Zwróć ReturnValue
+                    delete result; 
+                    return loopResult; 
                 }
 
-                delete result;  // Zwolnij poprzedni wynik
+                delete result;
                 result = loopResult;
 
             } else {
-                conditionMet = false;  // Ustawienie flagi, aby przerwać pętlę
+                conditionMet = false; 
             }
         } else {
             std::cerr << "While loop condition must evaluate to a numeric value." << std::endl;
@@ -92,7 +93,6 @@ RuntimeVal* Interpreter::eval_while_statement(WhileLoop* loop, Environment* env)
 
 RuntimeVal* Interpreter::eval_var_declaration(VarDeclaration* declaration, Environment* env) {
     RuntimeVal* value = Interpreter::evaluate(declaration->value.get(), env);
-
     return env->declareVar(declaration->identifier, value, declaration->constant);
 }
 

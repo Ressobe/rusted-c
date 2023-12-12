@@ -6,6 +6,7 @@ RuntimeVal* Interpreter::eval_identifer(IdentifierExpr* ident, Environment* env)
     return val;
 }
 
+
 RuntimeVal* Interpreter::eval_assignment(AssignmentExpr* node, Environment* env) {
     if (node->assigne->kind != NodeType::Identifier) {
         throw std::runtime_error("Invalid LHS inside assignment expr");
@@ -15,6 +16,7 @@ RuntimeVal* Interpreter::eval_assignment(AssignmentExpr* node, Environment* env)
     const std::string varname = ident->symbol;
     return env->assignVar(varname, Interpreter::evaluate(node->value.get(), env));
 }
+
 
 RuntimeVal* Interpreter::eval_call_expr(CallExpr* expr, Environment* env) {
     std::vector<RuntimeVal*> args;
@@ -46,15 +48,17 @@ RuntimeVal* Interpreter::eval_call_expr(CallExpr* expr, Environment* env) {
             result = Interpreter::evaluate(stmt, functionEnv);
             if (result->type == ValueType::ReturnValue) {
                 return result; 
+                delete functionEnv;
             }
         }
 
 
-        delete functionEnv; // Zwalnianie pamiêci po œrodowisku funkcji
+        delete functionEnv;
         return result;
     }
     throw std::runtime_error("Cannot call value that is not a function");
 }
+
 
 RuntimeVal* Interpreter::eval_unary_expr(UnaryExpr* expr, Environment* env) {
     RuntimeVal* rightValue = Interpreter::evaluate(expr->right.get(), env);
