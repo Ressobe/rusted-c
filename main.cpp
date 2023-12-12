@@ -48,11 +48,12 @@ void run(std::string fileContent) {
 
     std::unique_ptr<Program> program = parser.produceAST(lexer.getTokens());
 
-    Environment env;
-    env.createGlobalEnv();
+    Environment * env = new Environment();
+    env->createGlobalEnv();
 
-    RuntimeVal* val =  Interpreter::evaluate(program.get(), &env);
+    RuntimeVal* val =  Interpreter::evaluate(program.get(), env);
     delete val;
+    delete env;
 }
 
 
