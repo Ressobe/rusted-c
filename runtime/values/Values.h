@@ -8,7 +8,7 @@
 #include <memory>
 #include "../../ast/AST.h"
 
-// Enum to represent value types
+
 enum class ValueType {
     NullValue,
     NumberValue,
@@ -24,13 +24,9 @@ class RuntimeVal {
   public:
     ValueType type;
     virtual ~RuntimeVal() = default;
-    virtual std::string toString() const {
-        return "RuntimeVal";
-    }
-
-    virtual std::string getType() const {
-        return "RuntimeVal";
-    }
+    virtual std::string toString() = 0;
+    virtual std::string getType() = 0;
+    RuntimeVal(ValueType type);
 };
 
 
@@ -39,8 +35,8 @@ class NullVal : public RuntimeVal {
     const std::string value = "null";
     NullVal();
 
-    std::string toString() const override;
-    std::string getType() const override {
+    std::string toString() override;
+    std::string getType()  override {
         return "NullVal";
     }
 };
@@ -53,8 +49,8 @@ class BooleanVal : public RuntimeVal {
     BooleanVal(bool b = true);
     BooleanVal(BooleanVal& orginal);
 
-    std::string toString() const override;
-    std::string getType() const override {
+    std::string toString() override;
+    std::string getType() override {
         return "BooleanVal";
     }
 
@@ -69,8 +65,8 @@ class NumberVal : public RuntimeVal {
     NumberVal(const NumberVal& orginal);
     NumberVal(const NumericLiteral* numberLiteral);
 
-    std::string toString() const override;
-    std::string getType() const override {
+    std::string toString() override;
+    std::string getType() override {
         return "NumberVal";
     }
 };
@@ -78,15 +74,18 @@ class NumberVal : public RuntimeVal {
 
 class ReturnValue : public RuntimeVal {
   public:
-
     RuntimeVal* value;
 
     ReturnValue(RuntimeVal* val);
     ReturnValue(ReturnValue& val);
 
-    std::string toString() const override;
-    std::string getType() const override {
+    std::string toString() override;
+    std::string getType() override {
         return "ReturnVal";
+    }
+
+    ~ReturnValue() {
+        delete value;
     }
 };
 
@@ -98,8 +97,8 @@ class StringVal : public RuntimeVal {
     StringVal(const StringVal& orginal);
     StringVal(const StrLiteral* strLiteral);
 
-    std::string toString() const override;
-    std::string getType() const override {
+    std::string toString() override;
+    std::string getType() override {
         return "StringVal";
     }
 };

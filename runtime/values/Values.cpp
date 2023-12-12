@@ -1,25 +1,24 @@
 #include "Values.h"
 
-// NullVal
-NullVal::NullVal() {
-    type = ValueType::NullValue;
-}
 
-std::string NullVal::toString() const {
+RuntimeVal::RuntimeVal(ValueType type) : type(type) {};
+
+
+NullVal::NullVal() : RuntimeVal(ValueType::NullValue) {}
+
+
+std::string NullVal::toString() {
     return value;
 }
 
-// BooleanVal
-BooleanVal::BooleanVal(bool b) : value(b) {
-    this->type = ValueType::BooleanValue;
-}
 
-BooleanVal::BooleanVal(BooleanVal& orginal) {
-  this->type = ValueType::BooleanValue;
-  this->value = orginal.value;
-}
+BooleanVal::BooleanVal(bool b) : RuntimeVal(ValueType::BooleanValue), value(b) {}
 
-std::string BooleanVal::toString() const {
+
+BooleanVal::BooleanVal(BooleanVal& orginal) : RuntimeVal(ValueType::BooleanValue), value(orginal.value) {}
+
+
+std::string BooleanVal::toString() {
     if (value) {
         return "true";
     }
@@ -27,22 +26,16 @@ std::string BooleanVal::toString() const {
 }
 
 
-// NumberVal
-NumberVal::NumberVal(double n) : value(n) {
-    this->type = ValueType::NumberValue;
-}
+NumberVal::NumberVal(double n) : RuntimeVal(ValueType::NumberValue), value(n) {}
 
-NumberVal::NumberVal(const NumberVal& orginal) {
-    this->type = ValueType::NumberValue;
-    this->value = orginal.value;
-}
 
-NumberVal::NumberVal(const NumericLiteral* numberLiteral) {
-    this->type = ValueType::NumberValue;
-    this->value = numberLiteral->value; 
-}
+NumberVal::NumberVal(const NumberVal& orginal) : RuntimeVal(ValueType::NumberValue), value(orginal.value) {}
 
-std::string NumberVal::toString() const {
+
+NumberVal::NumberVal(const NumericLiteral* numberLiteral) : RuntimeVal(ValueType::NumberValue), value(numberLiteral->value) {}
+
+
+std::string NumberVal::toString() {
     int valueInt = value;
     if ((value - valueInt) == 0) {
       return std::to_string(valueInt);
@@ -51,37 +44,26 @@ std::string NumberVal::toString() const {
 }
 
 
-// ReturnValue
-ReturnValue::ReturnValue(RuntimeVal* val) : value(val) {
-    type = ValueType::ReturnValue;
-}
+ReturnValue::ReturnValue(RuntimeVal* val) : RuntimeVal(ValueType::ReturnValue), value(val) {}
 
-ReturnValue::ReturnValue(ReturnValue& orginal) {
-    this->type = ValueType::ReturnValue;
-    this->value = orginal.value;
-}
 
-std::string ReturnValue::toString() const {
+ReturnValue::ReturnValue(ReturnValue& orginal) : RuntimeVal(ValueType::ReturnValue), value(orginal.value) {}
+
+
+std::string ReturnValue::toString() {
     return value->toString();
 }
 
 
-StringVal::StringVal(const std::string& str) : value(str) {
-    type = ValueType::StringValue;
-}
+StringVal::StringVal(const std::string& str) : RuntimeVal(ValueType::StringValue), value(str) {}
 
 
-StringVal::StringVal(const StringVal& orginal) {
-    this->type = ValueType::StringValue;
-    this->value = orginal.value;
-}
+StringVal::StringVal(const StringVal& orginal) : RuntimeVal(ValueType::StringValue), value(orginal.value) {}
 
 
-StringVal::StringVal(const StrLiteral* strLiteral) {
-    this->type = ValueType::StringValue;
-    this->value = strLiteral->value;
-}
+StringVal::StringVal(const StrLiteral* strLiteral) : RuntimeVal(ValueType::StringValue), value(strLiteral->value) {}
 
-std::string StringVal::toString() const {
+
+std::string StringVal::toString() {
     return value;
 }
