@@ -27,7 +27,7 @@ Check out [documentation](./docs/DOCS.md) for more information about Rusted-C
   - **standard-library:** Contains built-in standard functions in the files `BuiltinFunctions.cpp` and `BuiltinFunctions.h`.
   - **values:** Contains the implementation of values used during interpretation in the files `Values.cpp` and `Values.h`.
 
-- **main.cpp:** The main program file where the `main` function may reside.
+- **main.cpp:** The main program file where the where you can interpret file or use simple, interactive programming environment.
 
 - **makefile:** The file for automating the compilation process.
 
