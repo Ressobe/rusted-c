@@ -46,7 +46,7 @@ pow(2, 3) * sqrt(16)
 The `print` function is available for outputting values to the console.
 
 ```python
-print("Hello world");
+print("Hello world")
 ```
 
 
@@ -72,7 +72,7 @@ To call or invoke a function in the Simple Language, you use the function name f
 
 ```javascript
 const result = addNumbers(5, 7);
-print("The sum is:", result);
+print("The sum is:", result)
 ```
 
 - **Invocation:** The `addNumbers` function is invoked with arguments `5` and `7`. The returned result is stored in the variable `result`, and then the `print` function is used to display the result.
@@ -85,7 +85,7 @@ func greet(name) {
 }
 
 const userName = "John";
-greet(userName);
+greet(userName)
 ```
 
 In this example, a function named `greet` is declared to print a greeting message. The function is then invoked with the `userName` variable as an argument, resulting in the output "Hello, John!".
@@ -121,9 +121,9 @@ if (condition) {
 const temperature = 25;
 
 if (temperature > 30) {
-  print("It's a hot day!");
+  print("It's a hot day!")
 } else {
-  print("It's not too hot today.");
+  print("It's not too hot today.")
 }
 ```
 
@@ -157,7 +157,7 @@ let i = 1;
 const n = 5;
 
 while (i <= n) {
-  print("Iteration:", i);
+  print("Iteration:", i)
   i = i + 1;
 }
 ```
