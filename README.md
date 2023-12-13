@@ -7,7 +7,7 @@ The interpreter consists of several main modules, including a lexer, parser, abs
 The project also includes sample programs written in the interpreted language.
 
 ## Language
-Checkout [documentation](./docs/DOCS.md) for more information about Rusted-C
+Check out [documentation](./docs/DOCS.md) for more information about Rusted-C
 
 ## Project Structure
 
