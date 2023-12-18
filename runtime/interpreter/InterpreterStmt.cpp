@@ -97,6 +97,20 @@ RuntimeVal* Interpreter::eval_var_declaration(VarDeclaration* declaration, Envir
 }
 
 
+RuntimeVal* Interpreter::eval_struct_declaration(StructDeclaration* structDecl, Environment* env) {
+   StructVal* structVal = new StructVal(structDecl->structName, true);
+
+    for (const auto& stmt : structDecl->structBody) {
+        if (stmt->kind == NodeType::VarDeclaration) {
+            auto fieldDecl = dynamic_cast<VarDeclaration*>(stmt.get());
+            structVal->addField(fieldDecl->identifier, Interpreter::evaluate(fieldDecl->value.get(), env));
+        }
+    }
+
+    return env->declareVar(structDecl->structName, structVal, true);
+}
+
+
  RuntimeVal* Interpreter::eval_function_declaration(FunctionDeclaration* declaration, Environment* env) {
     FnVal* fn = new FnVal(declaration->name, declaration->parameters, env, declaration->body);
     return env->declareVar(declaration->name, fn, true);

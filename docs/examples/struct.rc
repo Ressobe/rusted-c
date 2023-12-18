@@ -1,0 +1,15 @@
+struct Person {
+    let name = null;
+    let nazwisko = null;
+    let wiek = null;
+}
+
+let me = Person("Bartosz", "Sobina", 21);
+
+
+
+print(me.name, me.nazwisko)
+
+print(" ")
+
+print(me)

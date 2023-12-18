@@ -1,11 +1,13 @@
-#pragma once
-
 #ifndef VALUES_H
 #define VALUES_H
 
 #include <iostream>
 #include <functional>
 #include <memory>
+#include <map>
+
+class Environment; // Deklaracja wstêpna
+
 #include "../../ast/AST.h"
 
 
@@ -14,9 +16,11 @@ enum class ValueType {
     NumberValue,
     StringValue,
     BooleanValue,
+
     NativeFunction,
     Function,
     ReturnValue,
+    StructValue,
 };
 
 
@@ -101,6 +105,60 @@ class StringVal : public RuntimeVal {
     std::string getType() override {
         return "StringVal";
     }
+};
+
+typedef std::function<RuntimeVal* (const std::vector<RuntimeVal*>, Environment*)> FunctionType;
+
+class NativeFnVal : public RuntimeVal {
+	public:
+		FunctionType call;
+		NativeFnVal(FunctionType c);
+
+    std::string toString() override {
+      return "NativeFnVal";
+    }
+
+    std::string getType() override {
+      return "NativeFnVal";
+    }
+};
+
+
+class FnVal : public RuntimeVal {
+	public:
+ 		std::string name;
+		std::vector<std::string> parameters;
+		Environment* declarationEnv;
+		std::vector<Stmt*> body;
+
+		FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b);
+
+    std::string toString() override {
+      return "FnVal";
+    }
+
+    std::string getType() override {
+      return "FnVal";
+    }
+ };
+
+
+class StructVal : public RuntimeVal {
+  public:
+    bool isDeclaration;
+    std::string structName;
+    std::map<std::string, RuntimeVal*> fields;
+
+
+  public:
+    StructVal(const std::string& name, bool isDecl);
+
+    RuntimeVal* getField(const std::string& fieldName);
+    void setField(const std::string& fieldName, RuntimeVal* value);
+    void addField(const std::string& fieldName, RuntimeVal* value);
+
+    std::string toString() override;
+    std::string getType() override;
 };
 
 

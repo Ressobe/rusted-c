@@ -1,16 +1,19 @@
-#pragma once
-
 #ifndef ENVIRONMENT_H
 #define ENVIRONMENT_H
 
 #include <string>
+#include <map>
 #include <unordered_map>
-#include "../values/Values.h"
 #include <set>
 #include <functional>
 #include <cstdlib>
 #include <math.h>
 #include <cstring>
+
+class RuntimeVal;
+class NativeFnVal;
+class FnVal;
+class StructVal;
 
 
 class Environment {
@@ -26,47 +29,12 @@ class Environment {
 		RuntimeVal* lookupVar(const std::string& varName);
 		Environment* resolve(const std::string& varName);
 		void createGlobalEnv();
-    void createBuilinFunctions();
+		void createBuilinFunctions();
 		bool isConstant(const std::string& varname);
 
     ~Environment() {
       delete parent;
     }
 };
-
-
-typedef std::function<RuntimeVal* (const std::vector<RuntimeVal*>, Environment*)> FunctionType;
-
-class NativeFnVal : public RuntimeVal {
-	public:
-		FunctionType call;
-		NativeFnVal(FunctionType c);
-
-    std::string toString() override {
-      return "NativeFnVal";
-    }
-
-    std::string getType() override {
-      return "NativeFnVal";
-    }
-};
-
-class FnVal : public RuntimeVal {
-	public:
- 		std::string name;
-		std::vector<std::string> parameters;
-		Environment* declarationEnv;
-		std::vector<Stmt*> body;
-
-		FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b);
-
-    std::string toString() override {
-      return "FnVal";
-    }
-
-    std::string getType() override {
-      return "FnVal";
-    }
- };
 
 #endif

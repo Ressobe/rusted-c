@@ -12,7 +12,8 @@ std::unordered_map<std::string, TokenType> KEYWORDS = {
     {"if", If},
     {"else", Else},
     {"while", While},
-    {"return", Return}
+    {"return", Return},
+    {"struct", StructToken}
 };
 
 
@@ -29,7 +30,9 @@ TokenType Token::getType() const {
 }
 
 
-Lexer::Lexer(const std::string& sourceCode) : sourceCode(sourceCode) {}
+Lexer::Lexer(const std::string& sourceCode) : sourceCode(sourceCode), currentChar(sourceCode[0]) {
+    this->tokenize();
+}
 
 
 void Lexer::createNumberToken() {
@@ -55,15 +58,16 @@ void Lexer::createNumberToken() {
 void Lexer::createStringToken() {
     std::string stringLiteral;
 
-    while(!src.empty() && (this->isAlpha(peek()) || peek() == ' ') ) {
-      stringLiteral += this->eat();
+    while (!src.empty() && peek() != '"') {
+        stringLiteral += eat();
     }
 
-    if (src[0] == '"') {
-      tokens.push_back(Token(stringLiteral, TokenType::StringLiteral));
-    }
-    else {
-      this->unrecognizedChar(currentChar);
+    if (!src.empty() && peek() == '"') {
+        // Zjedz cudzys³ów, aby zakoñczyæ litera³ stringowy
+        eat();
+        tokens.push_back(Token(stringLiteral, TokenType::StringLiteral));
+    } else {
+        this->unrecognizedChar(currentChar);
     }
 }
 
@@ -163,6 +167,9 @@ void Lexer::tokenize() {
                 case ',':
                     createOneCharToken(",", TokenType::Comma);
                     break;
+                case '.':
+                    createOneCharToken(".", TokenType::Dot);
+                    break;
                 case '-':
                     if (std::isdigit(this->peek())) {
                       createNumberToken();
@@ -257,6 +264,7 @@ std::string Token::getTokeTypeName() {
         {Let, "Let"},
         {Const, "Const"},
         {Func, "Func"},
+        {StructToken, "Struct"},
         {If, "If"},
         {Else, "Else"},
         {While, "While"},
@@ -293,7 +301,7 @@ std::string Token::getTokeTypeName() {
 
 
 std::vector<Token> Lexer::getTokens() {
-  return this->tokens;
+   return this->tokens;
 }
 
 
