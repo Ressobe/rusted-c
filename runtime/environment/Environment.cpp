@@ -57,11 +57,6 @@ bool Environment::isConstant(const std::string& varname) {
 }
 
 
-NativeFnVal::NativeFnVal(FunctionType c) : RuntimeVal(ValueType::NativeFunction), call(c) {}
-
-
-FnVal::FnVal(std::string n, std::vector<std::string> p, Environment* d, std::vector<Stmt*> b)
-    : RuntimeVal(ValueType::Function), name(n), parameters(std::move(p)), declarationEnv(d), body(std::move(b)) {}
 
 
 void Environment::createBuilinFunctions() {

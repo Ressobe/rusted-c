@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef LEXER_H
 #define LEXER_H
 
@@ -19,14 +17,15 @@ enum TokenType {
   FloatLiteral,
 
   // KEYWORDS
-	Null,
+  Null,
   Let,
-	Const,
-	Func,
+  Const,
+  Func,
   If,  
   Else, 
   While,
   Return,
+  StructToken,
 
   // Assigment
   Equals, // =
@@ -48,17 +47,18 @@ enum TokenType {
   Not,      // !
 
   // Other characters
-	Semicolon, // ;
+  Semicolon, // ;
   OpenParen, // (
   CloseParen, // )
-	OpenBrace, // {
-	CloseBrace, // }
-	OpenBracket, // [
-	CloseBracket, // ]
-	Comma, // ,
+  OpenBrace, // {
+  CloseBrace, // }
+  OpenBracket, // [
+  CloseBracket, // ]
+  Comma, // ,
+  Dot, // .
          
   // End of file token
-	EOFToken, 
+  EOFToken, 
 };
 
 
@@ -79,30 +79,31 @@ class Lexer {
 	public:
 		Lexer(const std::string& sourceCode);
 		void tokenize();
-    std::vector<Token> getTokens();
-    void printTokens();
+        std::vector<Token> getTokens();
+        void printTokens();
 
 	private:
-    char currentChar;
-    std::vector<Token> tokens;
+
+        char currentChar;
+        std::vector<Token> tokens;
 		std::string sourceCode;
 		std::vector<char> src;
 
 		bool isAlpha(char c) const;
 		bool isSkippable(char c) const;
 		bool isInt(char c) const;
-    void unrecognizedChar(char c) const;
-    char peek() const;
-    char eat();
+        void unrecognizedChar(char c) const;
+        char peek() const;
+        char eat();
 
-    void createNumberToken();
-    void createStringToken();
-    void createAndToken();
-    void createOrToken();
-    void createBinaryOperatorToken();
-    void createCompareToken(std::string firstChar, std::string secondChar, TokenType firstToken, TokenType secondToken);
-    void createOneCharToken(std::string tokenChar, TokenType charType);
-    void createIdentifierToken();
+        void createNumberToken();
+        void createStringToken();
+        void createAndToken();
+        void createOrToken();
+        void createBinaryOperatorToken();
+        void createCompareToken(std::string firstChar, std::string secondChar, TokenType firstToken, TokenType secondToken);
+        void createOneCharToken(std::string tokenChar, TokenType charType);
+        void createIdentifierToken();
 };
 
 

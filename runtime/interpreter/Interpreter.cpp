@@ -45,8 +45,16 @@ RuntimeVal* Interpreter::evaluate(Stmt* astNode, Environment* env) {
         result = Interpreter::eval_call_expr(dynamic_cast<CallExpr*>(astNode), env);
         break;
       }
+      case NodeType::MemberAccessExpr: {
+        result = Interpreter::eval_member_access(dynamic_cast<MemberAccessExpr*>(astNode), env);
+        break;
+      }
       case NodeType::FunctionDeclaration: {
         result = Interpreter::eval_function_declaration(dynamic_cast<FunctionDeclaration*>(astNode), env);
+        break;
+      }
+      case NodeType::StructDeclaration: {
+        result = Interpreter::eval_struct_declaration(dynamic_cast<StructDeclaration*>(astNode), env);
         break;
       }
       case NodeType::IfStatement: {

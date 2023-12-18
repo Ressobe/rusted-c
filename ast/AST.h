@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef AST_H
 #define AST_H
 
@@ -13,6 +11,7 @@ enum class NodeType {
     Program,
     VarDeclaration,
     FunctionDeclaration,    
+    StructDeclaration,
     IfStatement,    
     WhileLoop,
     ReturnStatement,
@@ -25,6 +24,7 @@ enum class NodeType {
     Identifier,
     BinaryExpr,
     CallExpr,
+    MemberAccessExpr,
     UnaryExpr,
 };
 
@@ -55,7 +55,6 @@ class AssignmentExpr : public Expr {
   public:
     std::unique_ptr<Expr> assigne;
     std::unique_ptr<Expr> value;
-
     AssignmentExpr(std::unique_ptr<Expr> assigne, std::unique_ptr<Expr> value);
 };
 
@@ -64,7 +63,6 @@ class VarDeclaration : public Stmt {
     bool constant;
     std::string identifier;
     std::unique_ptr<Expr> value;
-
     VarDeclaration(bool isConst, const std::string& id, std::unique_ptr<Expr> val = nullptr);
 };
 
@@ -80,7 +78,6 @@ class FunctionDeclaration : public Stmt {
     std::string name;
     std::vector<Stmt*> body;    
     std::unique_ptr<ReturnStatement> returnStatement;
-
     FunctionDeclaration(std::vector<std::string> param, std::string n, std::vector<Stmt*> b, std::unique_ptr<ReturnStatement> retStmt = nullptr);
     ~FunctionDeclaration();
 };
@@ -97,7 +94,6 @@ class UnaryExpr : public Expr {
   public:
     std::unique_ptr<Expr> right;
     std::string op;
-
     UnaryExpr(std::unique_ptr<Expr> right, const std::string& op);
 };
 
@@ -105,21 +101,18 @@ class CallExpr : public Expr {
   public:
     std::unique_ptr<Expr> caller;
     std::vector<std::unique_ptr<Expr>> args;
-
     CallExpr(std::unique_ptr<Expr> caller, std::vector<std::unique_ptr<Expr>> args);
 };
 
 class IdentifierExpr : public Expr {
   public:
     std::string symbol;
-
     IdentifierExpr(const std::string& symbol);
 };
 
 class NumericLiteral : public Expr {
   public:
     double value;
-
     NumericLiteral(double value);
 };
 
@@ -138,7 +131,6 @@ class FloatLiteral : public Expr {
 class NullLiteral : public Expr {
   public:
     std::string value;
-
     NullLiteral(const std::string& value);
 };
 
@@ -157,13 +149,24 @@ class WhileLoop : public Stmt {
     WhileLoop(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stmt>> bd);
 };
 
-// Convert enum numbers to string
+class StructDeclaration : public Stmt {
+  public:
+    std::string structName;
+    std::vector<std::unique_ptr<Stmt>> structBody;
+    StructDeclaration(const std::string& name, std::vector<std::unique_ptr<Stmt>> body);
+};
+
+class MemberAccessExpr : public Expr {
+  public:
+    std::unique_ptr<Expr> object;
+    std::string memberName;
+    MemberAccessExpr(std::unique_ptr<Expr> obj, const std::string& member);
+};
+
 std::string NodeTypeToString(NodeType type);
 
-// Function to print the program and its body recursively
 void printProgram(std::unique_ptr<Program> program, const std::string& indent);
 
-// Function to print a statement and its body recursively
 void printStatement(const Stmt& stmt, const std::string& indent);
 
 #endif

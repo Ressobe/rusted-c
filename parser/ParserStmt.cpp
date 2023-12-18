@@ -9,6 +9,10 @@ StmtPtr Parser::parse_stmt() {
         return parse_var_declaration();        
     }
 
+    if (at().getType() == TokenType::StructToken) {
+        return parse_struct_declaration();
+    }
+
     if (at().getType() == TokenType::Func) {
         return parse_function_declaration();
     } 
@@ -33,7 +37,7 @@ StmtPtr Parser::parse_while_statement() {
 
     expect(TokenType::OpenParen, "Expected '(' after 'while'");
 
-    ExprPtr condition = parse_comprasion_expr();    
+    ExprPtr condition = parse_comparision_expr();
 
     expect(TokenType::CloseParen, "Expected ')' after 'while' condition");    
 
@@ -68,7 +72,7 @@ StmtPtr Parser::parse_if_statement() {
     eat(); // Consume the "if" keyword
     expect(TokenType::OpenParen, "Expected '(' after 'if'");
 
-    ExprPtr condition = parse_comprasion_expr();
+    ExprPtr condition = parse_comparision_expr();
 
     expect(TokenType::CloseParen, "Expected ')' after 'if' condition");
 
@@ -149,4 +153,22 @@ StmtPtr Parser::parse_function_declaration() {
     expect(TokenType::CloseBrace, "Closing brace expected inside function declaration");
 
     return std::make_unique<FunctionDeclaration>(std::move(params), name, body);
+}
+
+StmtPtr Parser::parse_struct_declaration() {
+    eat(); // Consume the "struct" keyword
+
+    std::string structName = expect(TokenType::Identifier, "Expected struct name following 'struct' keyword").getValue();
+
+    expect(TokenType::OpenBrace, "Expected '{' after struct name");
+
+    std::vector<std::unique_ptr<Stmt>> structBody;
+
+    while (at().getType() != TokenType::CloseBrace) {
+        structBody.push_back(parse_var_declaration());
+    }
+
+    expect(TokenType::CloseBrace, "Expected '}' after struct body");
+
+    return std::make_unique<StructDeclaration>(structName, std::move(structBody));
 }

@@ -22,6 +22,8 @@ IdentifierExpr::IdentifierExpr(const std::string& symbol)
 NumericLiteral::NumericLiteral(double value)
     : Expr(NodeType::NumericLiteral), value(value) {}
 
+FloatLiteral::FloatLiteral(double value): Expr(NodeType::NumericLiteral), value(value) {}
+
 StrLiteral::StrLiteral(std::string value)
     : Expr(NodeType::StrLiteral), value(value) {}
 
@@ -33,6 +35,10 @@ AssignmentExpr::AssignmentExpr(std::unique_ptr<Expr> assigne, std::unique_ptr<Ex
 
 CallExpr::CallExpr(std::unique_ptr<Expr> caller, std::vector<std::unique_ptr<Expr>> args)
     : Expr(NodeType::CallExpr), caller(std::move(caller)), args(std::move(args)) {}
+
+MemberAccessExpr::MemberAccessExpr(std::unique_ptr<Expr> obj, const std::string& member)
+    : Expr(NodeType::MemberAccessExpr), object(std::move(obj)), memberName(member) {
+}
 
 FunctionDeclaration::FunctionDeclaration(
     std::vector<std::string> param, std::string n, std::vector<Stmt*> b, std::unique_ptr<ReturnStatement> retStmt)
@@ -53,172 +59,5 @@ WhileLoop::WhileLoop(std::unique_ptr<Expr> cond, std::vector<std::unique_ptr<Stm
 ReturnStatement::ReturnStatement(std::unique_ptr<Stmt> value)
     : Stmt(NodeType::ReturnStatement), returnValue(std::move(value)) {}
 
-
-void printProgram(std::unique_ptr<Program> program, const std::string& indent) {
-    std::cout << '{' << std::endl;
-    std::cout << indent << " \"Program\": {\n";
-    for (const auto& stmt : program->body) {
-        printStatement(*stmt, indent + "  ");
-        if (stmt != program->body.back()) {
-            std::cout << ',';
-        }
-        std::cout << '\n';
-    }
-    std::cout << indent << '}';
-    std::cout << "\n}\n";
-}
-
-
-void printStatement(const Stmt& stmt, const std::string& indent) {
-    std::cout << indent << "{\n";
-    std::cout << indent << "  \"Statement\": \"" << NodeTypeToString(stmt.kind) << "\",\n";
-
-    if (stmt.kind == NodeType::Identifier) {
-        const auto& id = static_cast<const IdentifierExpr&>(stmt);
-        std::cout << indent << "  \"Symbol\": \"" << id.symbol << "\"";
-    } else if (stmt.kind == NodeType::NumericLiteral) {
-        const auto& numLit = static_cast<const NumericLiteral&>(stmt);
-        std::cout << indent << "  \"Value\": " << numLit.value;
-    } else if (stmt.kind == NodeType::StrLiteral) {
-        const auto& strLit = static_cast<const StrLiteral&>(stmt);
-        std::cout << indent << "  \"Value\": \"" << strLit.value << "\"";
-    } else if (stmt.kind == NodeType::BinaryExpr) {
-        const auto& binaryExpr = static_cast<const BinaryExpr&>(stmt);
-        std::cout << indent << "  \"BinaryOperator\": \"" << binaryExpr.binaryOperator << "\",\n";
-        std::cout << indent << "  \"Left\": ";
-        printStatement(*binaryExpr.left, indent + "    ");
-        std::cout << ",\n";
-        std::cout << indent << "  \"Right\": ";
-        printStatement(*binaryExpr.right, indent + "    ");
-
-    } else if (stmt.kind == NodeType::VarDeclaration) {
-        const auto& varDecl = static_cast<const VarDeclaration&>(stmt);
-        std::cout << indent << "  \"Constant\": " << (varDecl.constant ? "true" : "false") << ",\n";
-        std::cout << indent << "  \"Identifier\": \"" << varDecl.identifier << "\",\n";
-        std::cout << indent << "  \"Value\": ";
-        if (varDecl.value) {
-            printStatement(*varDecl.value, indent + "    ");
-        } else {
-            std::cout << "null";
-        }
-    } else if (stmt.kind == NodeType::CallExpr) {
-        const auto& callExpr = static_cast<const CallExpr&>(stmt);
-        std::cout << indent << "  \"Caller\": ";
-        printStatement(*callExpr.caller, indent + "    ");
-        std::cout << ",\n";
-        std::cout << indent << "  \"Arguments\": [\n";
-        for (const auto& arg : callExpr.args) {
-            printStatement(*arg, indent + "    ");
-            if (&arg != &callExpr.args.back()) {
-                std::cout << ",";
-            }
-            std::cout << "\n";
-        }
-        std::cout << indent << "  ]";
-    } else if (stmt.kind == NodeType::FunctionDeclaration) {
-        const auto& funcDecl = static_cast<const FunctionDeclaration&>(stmt);
-        std::cout << indent << "  \"Name\": \"" << funcDecl.name << "\",\n";
-        std::cout << indent << "  \"Parameters\": [\n";
-        for (const auto& param : funcDecl.parameters) {
-            std::cout << indent << "    \"" << param << "\"";
-            if (&param != &funcDecl.parameters.back()) {
-                std::cout << ",";
-            }
-            std::cout << "\n";
-        }
-        std::cout << indent << "  ],\n";
-        std::cout << indent << "  \"Body\": [\n";
-        for (const auto& bodyStmt : funcDecl.body) {
-            printStatement(*bodyStmt, indent + "    ");
-            if (&bodyStmt != &funcDecl.body.back()) {
-                std::cout << ",";
-            }
-            std::cout << "\n";
-        }
-        std::cout << indent << "  ]";
-    } else if (stmt.kind == NodeType::IfStatement) {
-        const auto& ifStmt = static_cast<const IfStatement&>(stmt);
-        std::cout << indent << "  \"Condition\": ";
-        printStatement(*ifStmt.condition, indent + "    ");
-        std::cout << ",\n";
-        std::cout << indent << "  \"IfBody\": [\n";
-        for (const auto& ifBodyStmt : ifStmt.ifBody) {
-            printStatement(*ifBodyStmt, indent + "    ");
-            if (&ifBodyStmt != &ifStmt.ifBody.back()) {
-                std::cout << ",";
-            }
-            std::cout << "\n";
-        }
-        std::cout << indent << "  ],\n";
-        std::cout << indent << "  \"ElseBody\": [\n";
-        for (const auto& elseBodyStmt : ifStmt.elseBody) {
-            printStatement(*elseBodyStmt, indent + "    ");
-            if (&elseBodyStmt != &ifStmt.elseBody.back()) {
-                std::cout << ",";
-            }
-            std::cout << "\n";
-        }
-        std::cout << indent << "  ]";
-    } else if (stmt.kind == NodeType::WhileLoop) {
-        const auto& whileLoop = static_cast<const WhileLoop&>(stmt);
-        std::cout << indent << "  \"Condition\": ";
-        printStatement(*whileLoop.condition, indent + "    ");
-        std::cout << ",\n";
-        std::cout << indent << "  \"LoopBody\": [\n";
-        for (const auto& loopBodyStmt : whileLoop.loopBody) {
-            printStatement(*loopBodyStmt, indent + "    ");
-            if (&loopBodyStmt != &whileLoop.loopBody.back()) {
-                std::cout << ",";
-            }
-            std::cout << "\n";
-        }
-        std::cout << indent << "  ]";
-    } else if (stmt.kind == NodeType::ReturnStatement) {
-        const auto& returnStmt = static_cast<const ReturnStatement&>(stmt);
-        std::cout << indent << "  \"ReturnValue\": ";
-        printStatement(*returnStmt.returnValue, indent + "    ");
-    } else if (stmt.kind == NodeType::AssignmentExpr) {
-        const auto& assignmentExpr = static_cast<const AssignmentExpr&>(stmt);
-        std::cout << indent << "  \"Assignee\": ";
-        printStatement(*assignmentExpr.assigne, indent + "    ");
-        std::cout << ",\n";
-        std::cout << indent << "  \"Value\": ";
-        printStatement(*assignmentExpr.value, indent + "    ");
-    }
-
-    std::cout << "\n" << indent << "}";
-}
-
-
-std::string NodeTypeToString(NodeType type) {
-    switch (type) {
-        case NodeType::Program:
-            return "Program";
-        case NodeType::NumericLiteral:
-            return "NumericLiteral";
-        case NodeType::StrLiteral:
-            return "StrLiteral";
-        case NodeType::Identifier:
-            return "Identifier";
-        case NodeType::BinaryExpr:
-            return "BinaryExpr";
-        case NodeType::AssignmentExpr:
-            return "AssigmentExpr";
-        case NodeType::VarDeclaration:
-            return "VarDeclaration";
-        case NodeType::CallExpr:
-            return "CallExpr";
-        case NodeType::FunctionDeclaration:
-            return "FunctionDeclaration";
-        case NodeType::IfStatement:
-            return "IfStatement";
-        case NodeType::WhileLoop:
-            return "WhileLoop";
-        case NodeType::ReturnStatement:
-            return "ReturnStatement";
-        case NodeType::Null:
-            return "Null";
-        default:
-            return "Unknown";
-    }
-}
+StructDeclaration::StructDeclaration(const std::string& name, std::vector<std::unique_ptr<Stmt>> body)
+    : Stmt(NodeType::StructDeclaration), structName(name), structBody(std::move(body)) {}

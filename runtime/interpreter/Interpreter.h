@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
@@ -22,12 +20,15 @@ class Interpreter {
     static RuntimeVal* eval_function_declaration(FunctionDeclaration* declaration, Environment* env);
     static RuntimeVal* eval_return_statement(ReturnStatement* returnStmt, Environment* env);
     static RuntimeVal* eval_var_declaration(VarDeclaration* declaration, Environment* env);
+    static RuntimeVal* eval_struct_declaration(StructDeclaration* declaration, Environment* env);
 
     static RuntimeVal* eval_assignment(AssignmentExpr* node, Environment* env);
     static RuntimeVal* eval_call_expr(CallExpr* call, Environment* env);
     static RuntimeVal* eval_identifer(IdentifierExpr* ident, Environment* env);
     static RuntimeVal* eval_binary_expr(BinaryExpr* binop, Environment* env);
     static RuntimeVal* eval_unary_expr(UnaryExpr* expr, Environment* env);
+    static RuntimeVal* eval_member_access(MemberAccessExpr* memberAccess, Environment* env);
+    static RuntimeVal* eval_member_access_assignment(MemberAccessExpr* memberAccessExpr, Expr* valueExpr, Environment* env);
 };
 
 #endif
