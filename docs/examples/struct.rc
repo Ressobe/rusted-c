@@ -4,8 +4,7 @@ struct Person {
     let wiek = null;
 }
 
-let me = Person("Bartosz", "Sobina", 21);
-
+let me = Person("Bartosz");
 
 
 print(me.name, me.nazwisko)
