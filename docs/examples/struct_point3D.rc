@@ -1,0 +1,21 @@
+struct Point3D {
+	let x = null;
+	let y = null;
+	let z = null;
+}
+
+func calculateDistance(point1, point2) {
+    let distance = sqrt(pow(point2.x - point1.x, 2) + pow(point2.y - point1.y, 2) + pow(point2.z - point1.z, 2));
+    return distance;
+}
+
+let p1 = Point3D(1, 2, 3);
+let p2 = Point3D(4, 5, 6);
+
+print(p1)
+print()
+print(p2)
+
+print("Distance", calculateDistance(p1, p2))
+
+
