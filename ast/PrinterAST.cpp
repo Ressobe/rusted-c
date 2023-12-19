@@ -160,6 +160,16 @@ void printStatement(const Stmt &stmt, const std::string &indent) {
               << "\"";
     break;
   }
+  case NodeType::LogicalExpr: {
+	const auto &logicalExpr = static_cast<const LogicalExpr &>(stmt);
+	std::cout << indent << "  \"LogicalOperator\": \"" << logicalExpr.logicalOperator << "\",\n";
+	std::cout << indent << "  \"Left\": ";
+	printStatement(*logicalExpr.left, indent + "    ");
+	std::cout << ",\n";
+	std::cout << indent << "  \"Right\": ";
+	printStatement(*logicalExpr.right, indent + "    ");
+	break;
+  }
   case NodeType::ReturnStatement: {
     const auto &returnStmt = static_cast<const ReturnStatement &>(stmt);
     std::cout << indent << "  \"ReturnValue\": ";
@@ -225,6 +235,8 @@ std::string NodeTypeToString(NodeType type) {
     return "CallExpr";
   case NodeType::MemberAccessExpr:
     return "MemberAccessExpr";
+  case NodeType::LogicalExpr:
+    return "LogicalExpr";
   case NodeType::FunctionDeclaration:
     return "FunctionDeclaration";
   case NodeType::IfStatement:

@@ -78,3 +78,6 @@ StructDeclaration::StructDeclaration(const std::string &name,
                                      std::vector<std::unique_ptr<Stmt>> body)
     : Stmt(NodeType::StructDeclaration), structName(name),
       structBody(std::move(body)) {}
+
+LogicalExpr::LogicalExpr(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right, const std::string& logicalOperator)
+        : Expr(NodeType::LogicalExpr), left(std::move(left)), right(std::move(right)), logicalOperator(logicalOperator) {}

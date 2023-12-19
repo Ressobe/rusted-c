@@ -31,6 +31,7 @@ private:
   std::unique_ptr<Expr> parse_primary_expr();
   std::unique_ptr<Expr> parse_assignment_expr();
   std::unique_ptr<Expr> parse_comparision_expr();
+  std::unique_ptr<Expr> parse_logical_expr();
   std::unique_ptr<Expr> parse_call_member_expr();
   std::unique_ptr<Expr> parse_member_access(std::unique_ptr<Expr> left);
 
@@ -40,6 +41,7 @@ private:
   bool is_comparison_operator(TokenType type);
   bool is_additive_operator(std::string type);
   bool is_multiplicative_operator(std::string value);
+  bool is_logical_operator(TokenType type);
 
 public:
   std::unique_ptr<Program> produceAST(std::vector<Token> tokens);

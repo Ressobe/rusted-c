@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <cmath>
 
 class Environment; // Deklaracja wstêpna
 
@@ -58,6 +59,21 @@ public:
   NumberVal(double n = 0);
   NumberVal(const NumberVal &orginal);
   NumberVal(const NumericLiteral *numberLiteral);
+
+  NumberVal* operator+(const NumberVal& other) const;
+  NumberVal* operator-(const NumberVal& other) const;
+  NumberVal* operator*(const NumberVal& other) const;
+  NumberVal* operator/(const NumberVal& other) const;
+  NumberVal* operator<(const NumberVal& other) const;
+  NumberVal* operator<=(const NumberVal& other) const;
+  NumberVal* operator>=(const NumberVal& other) const;
+  NumberVal* operator>(const NumberVal& other) const;
+  NumberVal* operator==(const NumberVal& other) const;
+  NumberVal* operator!=(const NumberVal& other) const;
+  NumberVal* operator%(const NumberVal& other) const;
+  NumberVal* operator&&(const NumberVal& other) const;
+  NumberVal* operator||(const NumberVal& other) const;
+;
 
   std::string toString() override;
   std::string getType() override { return "NumberVal"; }

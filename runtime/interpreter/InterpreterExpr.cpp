@@ -92,7 +92,6 @@ RuntimeVal *Interpreter::eval_member_access(MemberAccessExpr *memberAccess,
                                             Environment *env) {
   RuntimeVal *object = evaluate(memberAccess->object.get(), env);
 
-  // Sprawdzenie, czy obiekt jest rzeczywiœcie obiektem struktury
   if (object->type != ValueType::StructValue) {
     std::cerr << "Error: Member access is only supported for structs."
               << std::endl;
@@ -103,12 +102,44 @@ RuntimeVal *Interpreter::eval_member_access(MemberAccessExpr *memberAccess,
   return structVal->getField(memberAccess->memberName);
 }
 
+RuntimeVal* Interpreter::eval_logical_expr(LogicalExpr* logicalExpr, Environment* env) {
+RuntimeVal* left = evaluate(logicalExpr->left.get(), env);
+    RuntimeVal* right = evaluate(logicalExpr->right.get(), env);
+
+    if (left->type == ValueType::ReturnValue) {
+        left = dynamic_cast<ReturnValue*>(left)->value;
+    }
+
+    if (right->type == ValueType::ReturnValue) {
+        right = dynamic_cast<ReturnValue*>(right)->value;
+    }
+
+    if (left->type == ValueType::NumberValue && right->type == ValueType::NumberValue) {
+        NumberVal* leftBool = dynamic_cast<NumberVal*>(left);
+        NumberVal* rightBool = dynamic_cast<NumberVal*>(right);
+
+        NumberVal left = (*leftBool);
+        NumberVal right = (*rightBool);
+
+        if (logicalExpr->logicalOperator == "&&") {
+            return left && right;
+        } else if (logicalExpr->logicalOperator == "||") {
+            return left || right;
+        } else {
+            std::cerr << "Invalid logical operator: " << logicalExpr->logicalOperator << std::endl;
+            std::exit(1);
+        }
+    }
+
+    std::cerr << "Invalid operands for logical expression" << std::endl;
+    std::exit(1);
+
+}
+
 RuntimeVal *
 Interpreter::eval_member_access_assignment(MemberAccessExpr *memberAccessExpr,
                                            Expr *valueExpr, Environment *env) {
-  // Ewaluacja obiektu, którego dotyczy dostêp
   RuntimeVal *object = evaluate(memberAccessExpr->object.get(), env);
-  // Sprawdzenie, czy obiekt jest rzeczywiœcie obiektem struktury
   if (object->type != ValueType::StructValue) {
     std::cerr << "Error: Member access is only supported for structs."
               << std::endl;
@@ -116,13 +147,10 @@ Interpreter::eval_member_access_assignment(MemberAccessExpr *memberAccessExpr,
   }
   StructVal *structVal = dynamic_cast<StructVal *>(object);
 
-  // Operacja przypisania do pola struktury
   RuntimeVal *value = evaluate(valueExpr, env);
 
-  // Przypisanie wartoœci do pola struktury
   structVal->setField(memberAccessExpr->memberName, value);
 
-  // Zwróæ wartoœæ przypisan¹
   return value;
 }
 
@@ -151,6 +179,9 @@ RuntimeVal *Interpreter::eval_binary_expr(BinaryExpr *binop, Environment *env) {
   RuntimeVal *lhs = Interpreter::evaluate(binop->left.get(), env);
   RuntimeVal *rhs = Interpreter::evaluate(binop->right.get(), env);
 
+
+  RuntimeVal* result = new NullVal();
+
   if (lhs->type == ValueType::ReturnValue) {
     lhs = dynamic_cast<ReturnValue *>(lhs)->value;
   }
@@ -161,42 +192,48 @@ RuntimeVal *Interpreter::eval_binary_expr(BinaryExpr *binop, Environment *env) {
 
   if (lhs->type == ValueType::NumberValue &&
       rhs->type == ValueType::NumberValue) {
-    NumberVal *leftNumber = dynamic_cast<NumberVal *>(lhs);
-    NumberVal *rightNumber = dynamic_cast<NumberVal *>(rhs);
+      NumberVal* leftNumber = dynamic_cast<NumberVal*>(lhs);
+      NumberVal* rightNumber = dynamic_cast<NumberVal*>(rhs);
 
+      NumberVal left = (*leftNumber);
+      NumberVal right = (*rightNumber);
+
+       
     if (binop->binaryOperator == "+") {
-      return new NumberVal(leftNumber->value + rightNumber->value);
+        result = left + right;
     } else if (binop->binaryOperator == "-") {
-      return new NumberVal(leftNumber->value - rightNumber->value);
+        result = left - right;
     } else if (binop->binaryOperator == "*") {
-      return new NumberVal(leftNumber->value * rightNumber->value);
+        result = left * right;
     } else if (binop->binaryOperator == ">") {
-      return new NumberVal(leftNumber->value > rightNumber->value);
+        result = left > right;
     } else if (binop->binaryOperator == "<") {
-      return new NumberVal(leftNumber->value < rightNumber->value);
+        result = left < right;
     } else if (binop->binaryOperator == "<=") {
-      return new NumberVal(leftNumber->value <= rightNumber->value);
+        result = left <= right;
     } else if (binop->binaryOperator == ">=") {
-      return new NumberVal(leftNumber->value >= rightNumber->value);
+        result = left >= right;
     } else if (binop->binaryOperator == "==") {
-      return new NumberVal(leftNumber->value == rightNumber->value);
+        result = left == right;
     } else if (binop->binaryOperator == "!=") {
-      return new NumberVal(leftNumber->value != rightNumber->value);
+        result = left != right;
     } else if (binop->binaryOperator == "/") {
       if (rightNumber->value != 0) {
-        return new NumberVal(leftNumber->value / rightNumber->value);
+        result = left / right;
       } else {
         std::cerr << "Division by zero error" << std::endl;
         std::exit(1);
       }
     } else if (binop->binaryOperator == "%") {
       if (rightNumber->value != 0) {
-        return new NumberVal(fmod(leftNumber->value, rightNumber->value));
+        result = left % right;
       } else {
         std::cerr << "Modulo by zero error" << std::endl;
         std::exit(1);
       }
     }
-  }
-  return new NullVal;
+
+  } 
+
+   return result;
 }

@@ -110,6 +110,12 @@ void Lexer::createIdentifierToken() {
   }
 }
 
+void Lexer::skipComments() {
+    while (!src.empty() && peek() != '\n') {
+        this->eat();
+    }
+}
+
 void Lexer::tokenize() {
   src = std::vector<char>(sourceCode.begin(), sourceCode.end());
 
@@ -125,6 +131,9 @@ void Lexer::tokenize() {
       createIdentifierToken();
     } else {
       switch (currentChar) {
+      case '#':
+        skipComments();
+        break;
       case '(':
         createOneCharToken("(", TokenType::OpenParen);
         break;

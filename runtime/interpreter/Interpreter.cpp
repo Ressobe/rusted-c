@@ -21,6 +21,11 @@ RuntimeVal *Interpreter::evaluate(Stmt *astNode, Environment *env) {
         dynamic_cast<IdentifierExpr *>(astNode), env);
     break;
   }
+  case NodeType::LogicalExpr: {
+    result =
+        Interpreter::eval_logical_expr(dynamic_cast<LogicalExpr *>(astNode), env);
+    break;
+  }
   case NodeType::BinaryExpr: {
     result =
         Interpreter::eval_binary_expr(dynamic_cast<BinaryExpr *>(astNode), env);

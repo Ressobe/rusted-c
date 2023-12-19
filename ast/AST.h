@@ -26,6 +26,7 @@ enum class NodeType {
   CallExpr,
   MemberAccessExpr,
   UnaryExpr,
+  LogicalExpr,
 };
 
 class Node {
@@ -169,6 +170,15 @@ public:
   std::unique_ptr<Expr> object;
   std::string memberName;
   MemberAccessExpr(std::unique_ptr<Expr> obj, const std::string &member);
+};
+
+class LogicalExpr : public Expr {
+public:
+    std::unique_ptr<Expr> left;
+    std::unique_ptr<Expr> right;
+    std::string logicalOperator;
+
+    LogicalExpr(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right, const std::string& logicalOperator);
 };
 
 std::string NodeTypeToString(NodeType type);

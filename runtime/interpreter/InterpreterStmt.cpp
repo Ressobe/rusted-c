@@ -25,7 +25,6 @@ Interpreter::eval_stmt_vector(const std::vector<std::unique_ptr<Stmt>> &stmts,
 
   for (auto &stmt : stmts) {
     result = Interpreter::evaluate(stmt.get(), env);
-
     if (result->type == ValueType::ReturnValue) {
       return result;
     }

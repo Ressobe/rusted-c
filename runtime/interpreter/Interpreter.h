@@ -35,6 +35,9 @@ public:
   static RuntimeVal *eval_unary_expr(UnaryExpr *expr, Environment *env);
   static RuntimeVal *eval_member_access(MemberAccessExpr *memberAccess,
                                         Environment *env);
+   
+
+  static RuntimeVal *eval_logical_expr(LogicalExpr* logicalExpr, Environment* env);
   static RuntimeVal *
   eval_member_access_assignment(MemberAccessExpr *memberAccessExpr,
                                 Expr *valueExpr, Environment *env);

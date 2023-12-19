@@ -101,6 +101,8 @@ private:
                           TokenType firstToken, TokenType secondToken);
   void createOneCharToken(std::string tokenChar, TokenType charType);
   void createIdentifierToken();
+
+  void skipComments();
 };
 
 #endif

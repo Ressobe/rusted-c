@@ -5,17 +5,29 @@ using StmtPtr = std::unique_ptr<Stmt>;
 
 ExprPtr Parser::parse_expr() { return parse_assignment_expr(); }
 
+ExprPtr Parser::parse_logical_expr() {
+    ExprPtr left = parse_comparision_expr();
+
+    while (is_logical_operator(at().getType())) {
+        std::string logicalOperator = eat().getValue();
+        ExprPtr right = parse_comparision_expr();
+        left = std::make_unique<LogicalExpr>(std::move(left), std::move(right), logicalOperator);
+    }
+
+    return left;
+}
+
 ExprPtr Parser::parse_comparision_expr() {
-  ExprPtr left = parse_additive_expr();
+   ExprPtr left = parse_additive_expr();
 
-  while (is_comparison_operator(at().getType())) {
-    std::string comparisonOperator = eat().getValue();
-    ExprPtr right = parse_additive_expr();
-    left = std::make_unique<BinaryExpr>(std::move(left), std::move(right),
-                                        comparisonOperator);
-  }
+    if (is_comparison_operator(at().getType())) {
+        std::string comparisonOperator = eat().getValue();
+        ExprPtr right = parse_additive_expr();
+        left = std::make_unique<BinaryExpr>(std::move(left), std::move(right), comparisonOperator);
+    }
 
-  return left;
+    return left;
+  
 }
 
 ExprPtr Parser::parse_primary_expr() {
@@ -125,7 +137,7 @@ ExprPtr Parser::parse_call_member_expr() {
   return caller;
 }
 
-std::unique_ptr<Expr> Parser::parse_member_access(std::unique_ptr<Expr> left) {
+ExprPtr Parser::parse_member_access(ExprPtr left) {
   while (at().getType() == TokenType::Dot ||
          at().getType() == TokenType::OpenParen) {
     if (at().getType() == TokenType::Dot) {
@@ -167,18 +179,4 @@ std::vector<ExprPtr> Parser::parse_arguments_list() {
   }
 
   return args;
-}
-
-bool Parser::is_comparison_operator(TokenType type) {
-  return type == TokenType::LessThan || type == TokenType::LessEqual ||
-         type == TokenType::GreaterThan || type == TokenType::GreaterEqual ||
-         type == TokenType::EqualEqual || type == TokenType::NotEqual;
-}
-
-bool Parser::is_additive_operator(std::string value) {
-  return value == "+" || value == "-";
-}
-
-bool Parser::is_multiplicative_operator(std::string value) {
-  return value == "*" || value == "/" || value == "%";
 }

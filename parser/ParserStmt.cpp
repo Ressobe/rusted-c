@@ -36,7 +36,7 @@ StmtPtr Parser::parse_while_statement() {
 
   expect(TokenType::OpenParen, "Expected '(' after 'while'");
 
-  ExprPtr condition = parse_comparision_expr();
+  ExprPtr condition = parse_logical_expr();
 
   expect(TokenType::CloseParen, "Expected ')' after 'while' condition");
 
@@ -71,7 +71,7 @@ StmtPtr Parser::parse_if_statement() {
   eat(); // Consume the "if" keyword
   expect(TokenType::OpenParen, "Expected '(' after 'if'");
 
-  ExprPtr condition = parse_comparision_expr();
+  ExprPtr condition = parse_logical_expr();
 
   expect(TokenType::CloseParen, "Expected ')' after 'if' condition");
 

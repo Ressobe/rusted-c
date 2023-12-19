@@ -27,6 +27,58 @@ NumberVal::NumberVal(const NumberVal &orginal)
 NumberVal::NumberVal(const NumericLiteral *numberLiteral)
     : RuntimeVal(ValueType::NumberValue), value(numberLiteral->value) {}
 
+NumberVal* NumberVal::operator+(const NumberVal& other) const {
+    return new NumberVal(this->value + other.value);
+}
+
+NumberVal* NumberVal::operator-(const NumberVal& other) const {
+    return new NumberVal(this->value - other.value);
+}
+
+NumberVal* NumberVal::operator*(const NumberVal& other) const {
+    return new NumberVal(this->value * other.value);
+}
+
+NumberVal* NumberVal::operator/(const NumberVal& other) const {
+    return new NumberVal(this->value / other.value);
+}
+
+NumberVal* NumberVal::operator<(const NumberVal& other) const {
+    return new NumberVal(this->value < other.value);
+}
+
+NumberVal* NumberVal::operator<=(const NumberVal& other) const {
+    return new NumberVal(this->value <= other.value);
+}
+
+NumberVal* NumberVal::operator>=(const NumberVal& other) const {
+    return new NumberVal(this->value >= other.value);
+}
+
+NumberVal* NumberVal::operator>(const NumberVal& other) const {
+    return new NumberVal(this->value > other.value);
+}
+
+NumberVal* NumberVal::operator==(const NumberVal& other) const {
+    return new NumberVal(this->value == other.value);
+}
+
+NumberVal* NumberVal::operator!=(const NumberVal& other) const {
+    return new NumberVal(this->value != other.value);
+}
+
+NumberVal* NumberVal::operator%(const NumberVal& other) const {
+    return new NumberVal(fmod(this->value, other.value));
+}
+
+NumberVal* NumberVal::operator&&(const NumberVal& other) const {
+    return new NumberVal(this->value && other.value);
+}
+
+NumberVal* NumberVal::operator||(const NumberVal& other) const {
+    return new NumberVal(this->value || other.value);
+}
+
 std::string NumberVal::toString() {
   int valueInt = value;
   if ((value - valueInt) == 0) {
