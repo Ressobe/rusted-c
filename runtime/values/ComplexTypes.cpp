@@ -13,14 +13,11 @@ StructVal::StructVal(const std::string &name, bool isDecl)
       isDeclaration(isDecl) {}
 
 RuntimeVal *StructVal::getField(const std::string &fieldName) {
-  // Sprawdzanie, czy pole istnieje w klasie obiektu
   auto it = this->fields.find(fieldName);
 
   if (it != this->fields.end()) {
-    // Jeli pole istnieje, zwracamy jego wartoæ
     return it->second;
   } else {
-    // Jeli pole nie istnieje, zg³aszamy b³¹d
     std::cerr << "Error: Field '" << fieldName << "' not found in struct '"
               << this->structName << "'" << std::endl;
     std::exit(1);
@@ -44,7 +41,12 @@ std::string StructVal::toString() {
   return result;
 }
 
-std::string StructVal::getType() { return "Object"; }
+std::string StructVal::getType() { 
+  if (this->isDeclaration) {
+    return "Struct declaration"; 
+  }
+  return "Struct instance";
+}
 
 void StructVal::setField(const std::string &fieldName, RuntimeVal *value) {
   fields[fieldName] = value;
