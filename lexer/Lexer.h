@@ -80,9 +80,9 @@ public:
   void printTokens();
 
 private:
+  std::string sourceCode;
   char currentChar;
   std::vector<Token> tokens;
-  std::string sourceCode;
   std::vector<char> src;
 
   bool isAlpha(char c) const;

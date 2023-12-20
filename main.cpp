@@ -1,4 +1,4 @@
-﻿#include "lexer/Lexer.h"
+#include "lexer/Lexer.h"
 #include "parser/Parser.h"
 #include "runtime/environment/Environment.h"
 #include "runtime/interpreter/Interpreter.h"
@@ -35,6 +35,7 @@ void repl() {
 
 void run(std::string fileContent) {
   Lexer lexer = Lexer(fileContent);
+  lexer.printTokens();
   Parser parser;
     
   std::unique_ptr<Program> program = parser.produceAST(lexer.getTokens());

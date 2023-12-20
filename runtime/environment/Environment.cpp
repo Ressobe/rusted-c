@@ -68,6 +68,13 @@ void Environment::createBuilinFunctions() {
   this->declareVar("num", new NativeFnVal(numberFunction), true);
   this->declareVar("len", new NativeFnVal(lenFunction), true);
   this->declareVar("floor", new NativeFnVal(floorFunction), true);
+  this->declareVar("type", new NativeFnVal(typeFunction), true);
+  this->declareVar("concat", new NativeFnVal(concatFunction), true);
+  this->declareVar("sin", new NativeFnVal(sinFunction), true);
+  this->declareVar("cos", new NativeFnVal(cosFunction), true);
+  this->declareVar("tan", new NativeFnVal(tanFunction), true);
+  this->declareVar("log", new NativeFnVal(logFunction), true);
+  this->declareVar("ceil", new NativeFnVal(ceilFunction), true);
 }
 
 void Environment::createGlobalEnv() {

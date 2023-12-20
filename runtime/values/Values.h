@@ -134,8 +134,8 @@ public:
 
 class StructVal : public RuntimeVal {
 public:
-  bool isDeclaration;
   std::string structName;
+  bool isDeclaration;
   std::map<std::string, RuntimeVal *> fields;
 
 public:

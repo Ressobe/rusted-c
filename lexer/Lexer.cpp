@@ -49,7 +49,6 @@ void Lexer::createStringToken() {
   }
 
   if (!src.empty() && peek() == '"') {
-    // Zjedz cudzys³ów, aby zakoñczyæ litera³ stringowy
     eat();
     tokens.push_back(Token(stringLiteral, TokenType::StringLiteral));
   } else {
