@@ -35,7 +35,6 @@ void repl() {
 
 void run(std::string fileContent) {
   Lexer lexer = Lexer(fileContent);
-  lexer.printTokens();
   Parser parser;
     
   std::unique_ptr<Program> program = parser.produceAST(lexer.getTokens());

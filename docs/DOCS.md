@@ -9,6 +9,7 @@ Variables can have these types:
    - number (float or int) 
    - string (characters) 
    - null (no value)
+   - struct (collection of values)
 
 
 The language is interpreted by the provided C++ interpreter.
@@ -164,6 +165,69 @@ while (i <= n) {
 
 In this example, the loop prints the current iteration number while `i` is less than or equal to `n`. 
 The loop iterates five times, demonstrating the basic structure and functionality of the `while` loop.
+
+## Structs
+
+Structures, or structs, in Rusted-C allow you to create custom data types to group related data together. Here's an example of defining and using a struct:
+
+```javascript
+// Define a struct named Point2D
+struct Point2D {
+    let x = 0;
+    let y = 0;
+}
+
+// Create an instance of Point2D
+let myPoint = Point2D(3, 7);
+
+// Accessing struct members
+print("X coordinate:", myPoint.x);
+print("Y coordinate:", myPoint.y);
+```
+
+In this example, we've defined a struct `Point2D` with two members `x` and `y`. We then create an instance of this struct with initial values. The `print` statements demonstrate how to access the individual members of the struct.
+
+## Functions with Structs
+
+Structs can be used as parameters and return types for functions, providing a convenient way to work with related data.
+
+### Calculate Distance
+
+```javascript
+// Function to calculate distance between two points
+func calculateDistance(point1, point2) {
+    return sqrt(pow(point2.x - point1.x, 2) + pow(point2.y - point1.y, 2));
+}
+
+// Example usage
+let pointA = Point2D(1, 2);
+let pointB = Point2D(4, 5);
+let distance = calculateDistance(pointA, pointB);
+
+print("Distance between points A and B: ", distance);
+```
+
+In this example, the `calculateDistance` function takes two `Point2D` instances as parameters and returns the distance between them using the Euclidean distance formula.
+
+### Add Points
+
+```javascript
+// Function to add two points
+func addPoints(point1, point2) {
+    return Point2D(point1.x + point2.x, point1.y + point2.y);
+}
+
+// Example usage
+let sum = addPoints(pointA, pointB);
+
+print("Sum of points A and B:");
+print(sum);
+```
+
+The `addPoints` function adds corresponding `x` and `y` values of two points and returns a new `Point2D` instance representing their sum.
+
+This example demonstrates the creation of two points (`pointA` and `pointB`), calculates the distance between them, adds them together, and scales one of them. The results are then printed to the console.
+
 
 ## Notes
 
