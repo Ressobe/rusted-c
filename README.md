@@ -6,6 +6,46 @@ This project is an interpreter written in C++ for a simple programming language.
 The interpreter consists of several main modules, including a lexer, parser, abstract syntax tree (AST), and an execution environment. 
 The project also includes sample programs written in the interpreted language.
 
+## Example code
+
+```javascript
+
+# struct for point
+
+struct Point2D {
+    let x = 0;
+    let y = 0;
+}
+func calculateDistance(point1, point2) {
+    return sqrt(pow(point2.x - point1.x, 2) + pow(point2.y - point1.y, 2));
+    
+}
+func addPoints(point1, point2) {
+    return Point2D(point1.x + point2.x, point1.y + point2.y);
+}
+
+func scalePoint(point, scale) {
+    return Point2D(point.x * scale, point.y * scale);
+}
+
+let pointA = Point2D(1, 2);
+let pointB = Point2D(4, 5);
+
+let distance = calculateDistance(pointA, pointB);
+let sum = addPoints(pointA, pointB);
+let scaledPoint = scalePoint(pointA, 2.5);
+    
+print("Distance between points A and B: ", distance)
+
+print("Sum of points A and B")
+print(sum)
+
+print("Scaled point A by 2.5")
+print(scaledPoint)
+
+```
+
+
 ## Language
 Check out [documentation](./docs/DOCS.md) for more information about Rusted-C
 
