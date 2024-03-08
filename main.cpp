@@ -2,10 +2,13 @@
 #include "parser/Parser.h"
 #include "runtime/environment/Environment.h"
 #include "runtime/interpreter/Interpreter.h"
+#include "database/DatabaseHandler.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <cstdlib>
+
 
 void repl() {
   Parser parser;
@@ -24,11 +27,11 @@ void repl() {
       break;
     }
 
+
     Lexer lexer = Lexer(input);
-
     program = parser.produceAST(lexer.getTokens());
-
     RuntimeVal *val = Interpreter::evaluate(program.get(), &env);
+
     std::cout << val->toString() << std::endl;
   }
 }
@@ -85,14 +88,27 @@ std::string read_file(std::string filePath) {
   return buffer.str();
 }
 
-
+// Dodaj flagi żeby skompilować tą bibliotekę do postgresql
 int main(int argc, char **argv) {
-  if (argc == 1) {
-    repl();
-  }
 
-  if (argc == 2) {
-    run(read_file(argv[1]));
-  }
+  // if (argc == 1) {
+  //   repl();
+  // }
+  //
+  // if (argc == 2) {
+  //   run(read_file(argv[1]));
+  // }
+  //
+  //
+  const char* hostName = "127.0.0.1";
+  const char* dbName = "rusted-c";
+  const char* user = "postgres";
+  const char* password = "postgres";
+
+  DatabaseHandler database(hostName, dbName, user, password);
+
+
+  std::cout << hostName << dbName << user << password;
+
   return 0;
 }

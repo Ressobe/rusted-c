@@ -1,18 +1,19 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall
+CXXFLAGS = -std=c++17 -Wall -lpq -lpqxx
 SRCDIR = .
 OBJDIR = obj
 BINDIR = bin
 ASTDIR = $(SRCDIR)/ast
 LEXERDIR = $(SRCDIR)/lexer
 PARSERDIR = $(SRCDIR)/parser
+DATABASEDIR = $(SRCDIR)/database
 ENVDIR = $(SRCDIR)/runtime/environment
 INTERPRETERDIR = $(SRCDIR)/runtime/interpreter
 VALUESDIR = $(SRCDIR)/runtime/values
 STANDARDLIBDIR = $(SRCDIR)/runtime/standard-library
 
 # Lista plików źródłowych
-SOURCES = $(wildcard $(SRCDIR)/*.cpp $(ASTDIR)/*.cpp $(LEXERDIR)/*.cpp $(PARSERDIR)/*.cpp $(ENVDIR)/*.cpp $(INTERPRETERDIR)/*.cpp $(VALUESDIR)/*.cpp $(STANDARDLIBDIR)/*.cpp)
+SOURCES = $(wildcard $(SRCDIR)/*.cpp $(ASTDIR)/*.cpp $(LEXERDIR)/*.cpp $(PARSERDIR)/*.cpp $(ENVDIR)/*.cpp $(INTERPRETERDIR)/*.cpp $(VALUESDIR)/*.cpp $(STANDARDLIBDIR)/*.cpp $(DATABASEDIR)/*.cpp)
 
 # Lista plików obiektowych
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
@@ -30,7 +31,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # Reguła dla plików obiektowych z podkatalogów
-$(OBJDIR)/%.o: $(ASTDIR)/%.cpp $(LEXERDIR)/%.cpp $(PARSERDIR)/%.cpp $(ENVDIR)/%.cpp $(INTERPRETERDIR)/%.cpp $(VALUESDIR)/%.cpp $(STANDARDLIBDIR)/%.cpp
+$(OBJDIR)/%.o: $(ASTDIR)/%.cpp $(LEXERDIR)/%.cpp $(PARSERDIR)/%.cpp $(ENVDIR)/%.cpp $(INTERPRETERDIR)/%.cpp $(VALUESDIR)/%.cpp $(STANDARDLIBDIR)/%.cpp $(DATABASEDIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
