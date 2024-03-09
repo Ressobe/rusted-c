@@ -8,9 +8,105 @@
 #include <iostream>
 #include <memory>
 #include <cstdlib>
+#include <ostream>
+#include <stdexcept>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <string>
 
 
-void repl() {
+const char* hostName = "127.0.0.1";
+const char* dbName = "rusted-c";
+const char* user = "relow";
+const char* password = "";
+
+
+std::string get_current_datetime() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&now_c), "%Y-%m-%d %H:%M:%S");
+    return ss.str();
+}
+
+
+double process_mem_usage() {
+    double vm_usage = 0.0;
+
+    unsigned long vsize;
+    {
+        std::string ignore;
+        std::ifstream ifs("/proc/self/stat", std::ios_base::in);
+        ifs >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore
+                >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore
+                >> ignore >> ignore >> vsize;
+    }
+
+    vm_usage = vsize / 1024.0;
+
+    return vm_usage;
+}
+
+void run(std::string code, DatabaseHandler* db, std::string type) {
+  std::string errorMessage = "";
+  std::string errorType = "";
+
+  auto start = std::chrono::high_resolution_clock::now();
+  double mem_before = process_mem_usage();
+  RuntimeVal* result = nullptr;
+
+  try {
+    Lexer lexer = Lexer(code);
+    Parser parser;
+      
+    std::unique_ptr<Program> program = parser.produceAST(lexer.getTokens());
+
+    Environment *env = new Environment();
+    env->createGlobalEnv();
+
+    result = Interpreter::evaluate(program.get(), env);
+
+  } catch(const std::exception& e) {
+      std::cerr << e.what() << std::endl;
+      if (const LexerError* lexErr = dynamic_cast<const LexerError*>(&e)) {
+          errorMessage = lexErr->what();
+          errorType = "LEXER";
+      } else if (const ParserError* parseErr = dynamic_cast<const ParserError*>(&e)) {
+          errorMessage = parseErr->what();
+          errorType = "PARSER";
+      } else if (const InterpreterError* interpErr = dynamic_cast<const InterpreterError*>(&e)) {
+          errorMessage = interpErr->what();
+          errorType = "INTERPRETER";
+      } else {
+          errorMessage = e.what();
+          errorType = "UNKNOWN";
+      }
+  }
+  auto end = std::chrono::high_resolution_clock::now();
+  auto mem_after = process_mem_usage();
+
+
+  if (db != nullptr) {
+    auto execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000;
+    auto memory_usage = mem_after - mem_before;
+    bool isSucces = (errorMessage.empty()) ?  true : false;
+    std::string date = get_current_datetime();
+
+    std::cout << "Code: " << code << std::endl;
+    std::cout << "Status: " << isSucces << std::endl;
+    std::cout << "Duration: " <<  execution_time << "ms" << std::endl;
+    std::cout << "Mem used: " <<  memory_usage << "KB" << std::endl;
+    std::cout << "Runtime val: " << result->toString() << std::endl;
+    std::cout << "Type: " << type << std::endl;
+    std::cout << "Date: " << date << std::endl;
+  }
+
+  delete result;
+}
+
+
+void repl(DatabaseHandler* db) {
   Parser parser;
   std::unique_ptr<Program> program;
 
@@ -26,29 +122,10 @@ void repl() {
     if (input.find("exit") != std::string::npos) {
       break;
     }
-
-
-    Lexer lexer = Lexer(input);
-    program = parser.produceAST(lexer.getTokens());
-    RuntimeVal *val = Interpreter::evaluate(program.get(), &env);
-
-    std::cout << val->toString() << std::endl;
+    run(input, db, "REPL");
   }
 }
 
-void run(std::string fileContent) {
-  Lexer lexer = Lexer(fileContent);
-  Parser parser;
-    
-  std::unique_ptr<Program> program = parser.produceAST(lexer.getTokens());
-
-  Environment *env = new Environment();
-  env->createGlobalEnv();
-
-  RuntimeVal *val = Interpreter::evaluate(program.get(), env);
-  delete val;
-  delete env;
-}
 
 std::string read_file(std::string filePath) {
   std::filesystem::path filePathObject(filePath);
@@ -88,27 +165,24 @@ std::string read_file(std::string filePath) {
   return buffer.str();
 }
 
-// Dodaj flagi żeby skompilować tą bibliotekę do postgresql
 int main(int argc, char **argv) {
+  DatabaseHandler* database = nullptr;
 
-  // if (argc == 1) {
-  //   repl();
-  // }
-  //
-  // if (argc == 2) {
-  //   run(read_file(argv[1]));
-  // }
-  //
-  //
-  const char* hostName = "127.0.0.1";
-  const char* dbName = "rusted-c";
-  const char* user = "postgres";
-  const char* password = "postgres";
+  try {
+     database = new DatabaseHandler(hostName, dbName, user, password);
+  } catch (std::runtime_error& e) {
+    std::cout << e.what() << std::endl;
+    std::cout << "Something wrong with database but you can run code" << std::endl;
+  }
 
-  DatabaseHandler database(hostName, dbName, user, password);
+  if (argc == 1) {
+    repl(database);
+  }
 
+  if (argc == 2) {
+    run(read_file(argv[1]), database, "FILE");
+  }
 
-  std::cout << hostName << dbName << user << password;
-
+  delete database;
   return 0;
 }

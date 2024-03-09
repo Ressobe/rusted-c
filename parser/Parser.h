@@ -4,6 +4,7 @@
 #include "../ast/AST.h"
 #include "../lexer/Lexer.h"
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -45,6 +46,11 @@ private:
 
 public:
   std::unique_ptr<Program> produceAST(std::vector<Token> tokens);
+};
+
+class ParserError : public std::runtime_error {
+  public:
+      ParserError(const std::string& message) : std::runtime_error(message) {}
 };
 
 #endif

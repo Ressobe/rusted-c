@@ -20,7 +20,7 @@ func fibonacci(n) {
 
 
 let i = 0;
-let n = 20;
+let n = 40;
 
 while (i <= n) {
   print(fibonacci(i))

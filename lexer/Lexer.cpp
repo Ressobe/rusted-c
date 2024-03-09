@@ -224,8 +224,9 @@ bool Lexer::isSkippable(char c) const {
 bool Lexer::isInt(char c) const { return std::isdigit(c); }
 
 void Lexer::unrecognizedChar(char c) const {
-  std::cerr << "Unrecognized character found in source: " << c << std::endl;
-  exit(1);
+  std::string message = "Unrecognized character found in source: ";
+  message += c;
+  throw LexerError(message);
 }
 
 std::string Token::getTokeTypeName() {

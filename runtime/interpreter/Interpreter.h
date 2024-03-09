@@ -5,6 +5,7 @@
 #include "../environment/Environment.h"
 #include "../values/Values.h"
 
+#include <stdexcept>
 #include <cmath>
 #include <iostream>
 
@@ -41,6 +42,11 @@ public:
   static RuntimeVal *
   eval_member_access_assignment(MemberAccessExpr *memberAccessExpr,
                                 Expr *valueExpr, Environment *env);
+};
+
+class InterpreterError : public std::runtime_error {
+  public:
+      InterpreterError(const std::string& message) : std::runtime_error(message) {}
 };
 
 #endif

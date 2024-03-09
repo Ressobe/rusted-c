@@ -24,6 +24,10 @@ class DatabaseHandler {
 
     ~DatabaseHandler();
 
+    void createTable(const std::string& tableName, const std::string& tableDefinition);
+    void dropTable(const std::string& tableName);
+    void resetDatabase();
+
     void createTables();
     void dropTables();
 

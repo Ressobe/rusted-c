@@ -2,6 +2,7 @@
 #define LEXER_H
 
 #include <iostream>
+#include <stdexcept>
 #include <map>
 #include <string>
 #include <vector>
@@ -103,6 +104,11 @@ private:
   void createIdentifierToken();
 
   void skipComments();
+};
+
+class LexerError : public std::runtime_error {
+  public:
+      LexerError(const std::string& message) : std::runtime_error(message) {}
 };
 
 #endif
