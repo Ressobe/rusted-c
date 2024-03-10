@@ -25,24 +25,14 @@ class DatabaseHandler {
     ~DatabaseHandler();
 
     void createTable(const std::string& tableName, const std::string& tableDefinition);
-    void dropTable(const std::string& tableName);
-    void resetDatabase();
-
     void createTables();
-    void dropTables();
 
-    void logCodeExecution(const std::string& code, double executionTime, int errorCount);
-    void logError(const std::string& code, const std::string& errorMessage);
-    void logAdditionalInfo(const std::string& code, const std::string& additionalInfo);
+    int insertSourceType(const std::string& type) ;
+    int insertCode(std::string code, int sourceTypeId);
+    int insertExecutionStat(int codeId, bool status, int executionTime, std::string result, double memoryUsage);
 
-    std::string getCodeExecutionStats(const std::string& code);
-    std::string getErrors(const std::string& code);
-    void clearData();
-
-    void updateExecutionTime(const std::string& code, double newExecutionTime);
-    std::string getAdditionalInfo(const std::string& code);
-    std::vector<std::string> getUniqueCodes();
-    void deleteEntry(const std::string& table, int id);
+    int insertErrorType(const std::string& type);
+    int insertError(int executionStatId, const std::string& errorMessage, int errorTypeId);
 };
 
 #endif

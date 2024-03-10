@@ -149,4 +149,9 @@ public:
   std::string getType() override;
 };
 
+class InterpreterError : public std::runtime_error {
+  public:
+      InterpreterError(const std::string& message) : std::runtime_error(message) {}
+};
+
 #endif

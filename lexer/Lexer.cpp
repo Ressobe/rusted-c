@@ -1,5 +1,6 @@
 #include "Lexer.h"
 #include <cctype>
+#include <exception>
 #include <iostream>
 #include <unordered_map>
 
@@ -17,7 +18,12 @@ TokenType Token::getType() const { return type; }
 
 Lexer::Lexer(const std::string &sourceCode)
     : sourceCode(sourceCode), currentChar(sourceCode[0]) {
-  this->tokenize();
+  try {
+    this->tokenize();
+  }
+  catch (const std::exception& e) {
+      throw; // Ponowne rzucenie wyjątku, aby mógł być przechwycony na wyższym poziomie
+  }
 }
 
 void Lexer::createNumberToken() {
@@ -118,6 +124,9 @@ void Lexer::skipComments() {
 void Lexer::tokenize() {
   src = std::vector<char>(sourceCode.begin(), sourceCode.end());
 
+  try {
+
+  
   while (!src.empty()) {
     currentChar = this->eat();
 
@@ -205,6 +214,10 @@ void Lexer::tokenize() {
   }
 
   createOneCharToken("EndOfFile", TokenType::EOFToken);
+  }
+  catch (const std::exception& e) {        
+    throw;
+  }
 }
 
 char Lexer::eat() {

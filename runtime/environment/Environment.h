@@ -14,6 +14,7 @@ class RuntimeVal;
 class NativeFnVal;
 class FnVal;
 class StructVal;
+class InterpreterError;
 
 class Environment {
 private:

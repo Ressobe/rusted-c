@@ -9,7 +9,6 @@
 #include <memory>
 #include <cstdlib>
 #include <ostream>
-#include <stdexcept>
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -54,12 +53,14 @@ void run(std::string code, DatabaseHandler* db, std::string type) {
 
   auto start = std::chrono::high_resolution_clock::now();
   double mem_before = process_mem_usage();
+
   RuntimeVal* result = nullptr;
+
 
   try {
     Lexer lexer = Lexer(code);
     Parser parser;
-      
+
     std::unique_ptr<Program> program = parser.produceAST(lexer.getTokens());
 
     Environment *env = new Environment();
@@ -83,26 +84,30 @@ void run(std::string code, DatabaseHandler* db, std::string type) {
           errorType = "UNKNOWN";
       }
   }
-  auto end = std::chrono::high_resolution_clock::now();
-  auto mem_after = process_mem_usage();
 
-
-  if (db != nullptr) {
-    auto execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000;
-    auto memory_usage = mem_after - mem_before;
-    bool isSucces = (errorMessage.empty()) ?  true : false;
-    std::string date = get_current_datetime();
-
-    std::cout << "Code: " << code << std::endl;
-    std::cout << "Status: " << isSucces << std::endl;
-    std::cout << "Duration: " <<  execution_time << "ms" << std::endl;
-    std::cout << "Mem used: " <<  memory_usage << "KB" << std::endl;
-    std::cout << "Runtime val: " << result->toString() << std::endl;
-    std::cout << "Type: " << type << std::endl;
-    std::cout << "Date: " << date << std::endl;
-  }
-
-  delete result;
+  // auto end = std::chrono::high_resolution_clock::now();
+  // auto mem_after = process_mem_usage();
+  //
+  //
+  // std::cout << "hi";
+  //
+  // if (db != nullptr) {
+  //   auto execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000;
+  //   auto memory_usage = mem_after - mem_before;
+  //   bool isSucces = (errorMessage.empty()) ?  true : false;
+  //
+  //   int typeId = db->insertSourceType(type);
+  //   int codeId = db->insertCode(code, typeId);
+  //   int executionStat = db->insertExecutionStat(codeId, isSucces,  execution_time,  result->toString(), memory_usage);
+  //
+  //   if (!isSucces) {
+  //     int errorTypeId = db->insertErrorType(errorType);
+  //     db->insertError(executionStat, errorMessage, errorTypeId);
+  //   }
+  //
+  // }
+  //
+  // delete result;
 }
 
 

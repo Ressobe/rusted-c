@@ -1,4 +1,5 @@
 #include "Parser.h"
+#include <string>
 
 std::unique_ptr<Program> Parser::produceAST(std::vector<Token> tokens) {
   this->tokens = tokens;
@@ -33,10 +34,7 @@ Token Parser::lookahead(size_t num) {
 Token Parser::expect(TokenType type, const std::string &err) {
   Token prev = this->eat();
   if (prev.getType() != type) {
-    std::cerr << "Parser Error:\n"
-              << err << prev.getValue()
-              << " - Expecting: " << static_cast<int>(type) << std::endl;
-    std::exit(1);
+    throw ParserError(err + prev.getValue() + " - Expecting: " + std::to_string(static_cast<int>(type)));
   }
   return prev;
 }

@@ -6,9 +6,7 @@ Environment::Environment(Environment *parentEnv) : parent(parentEnv) {}
 RuntimeVal *Environment::declareVar(const std::string &varName,
                                     RuntimeVal *value, bool isConst) {
   if (variables.find(varName) != variables.end()) {
-    std::cerr << "Cannot declare variable " << varName
-              << ". It is already defined.";
-    std::exit(1);
+    throw InterpreterError("Cannot declare variable " + varName + ". It is already defined.");
   }
 
   variables[varName] = value;
@@ -25,7 +23,7 @@ RuntimeVal *Environment::assignVar(const std::string &varName,
   Environment *env = resolve(varName);
 
   if (isConstant(varName)) {
-    throw std::runtime_error("Cannot reassign to variable " + varName +
+    throw InterpreterError("Cannot reassign to variable " + varName +
                              " as it was declared constant.");
   }
 
@@ -44,8 +42,7 @@ Environment *Environment::resolve(const std::string &varName) {
   }
 
   if (parent == nullptr) {
-    std::cerr << "Cannot resolve ' " << varName << " ' as it does not exist.";
-    std::exit(1);
+    throw InterpreterError("Cannot resolve ' " + varName + " ' as it does not exist.");
   }
 
   return parent->resolve(varName);

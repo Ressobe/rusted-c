@@ -23,44 +23,117 @@ void DatabaseHandler::createTable(const std::string& tableName, const std::strin
     txn.commit();
 }
 
-void DatabaseHandler::dropTable(const std::string& tableName) {
-    pqxx::work txn(connection);
-    txn.exec("DROP TABLE IF EXISTS " + tableName);
-    txn.commit();
-}
-
 void DatabaseHandler::createTables() {
     // Tworzenie tabeli source_type
     createTable("source_type", "id SERIAL PRIMARY KEY, type VARCHAR(255) NOT NULL");
 
     // Tworzenie tabeli code
-    createTable("code", "id SERIAL PRIMARY KEY, source_type_id INT NOT NULL, code TEXT NOT NULL, FOREIGN KEY (source_type_id) REFERENCES source_type(id)");
-
-    // Tworzenie tabeli status
-    createTable("status", "id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL");
+    createTable("code", " id SERIAL PRIMARY KEY, source_type_id INTEGER REFERENCES source_type(id), code TEXT NOT NULL");
 
     // Tworzenie tabeli execution_stat
-    createTable("execution_stat", "id SERIAL PRIMARY KEY, code_id INT NOT NULL, status_id INT NOT NULL, execution_time INT, execution_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, result TEXT, input_data TEXT, output_data TEXT, memory_usage INT, FOREIGN KEY (code_id) REFERENCES code(id), FOREIGN KEY (status_id) REFERENCES status(id)");
+    createTable("execution_stat", " id SERIAL PRIMARY KEY, code_id INTEGER REFERENCES code(id), status BOOLEAN, execution_time INTEGER, execution_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, result TEXT, memory_usage INTEGER");
 
     // Tworzenie tabeli error_type
     createTable("error_type", "id SERIAL PRIMARY KEY, type VARCHAR(255) NOT NULL");
 
     // Tworzenie tabeli error
-    createTable("error", "id SERIAL PRIMARY KEY, execution_stat_id INT NOT NULL, error_message TEXT, error_type_id INT NOT NULL, FOREIGN KEY (execution_stat_id) REFERENCES execution_stat(id), FOREIGN KEY (error_type_id) REFERENCES error_type(id)");
-
+    createTable("error", "id SERIAL PRIMARY KEY, execution_stat_id INTEGER REFERENCES execution_stat(id), error_message TEXT, error_type_id INTEGER REFERENCES error_type(id)");
 }
 
-void DatabaseHandler::dropTables() {
-  dropTable("execution_stat");
-  dropTable("code");
-  dropTable("error");
-  dropTable("source_type");
-  dropTable("status");
-  dropTable("error_type");
-}
-
-void DatabaseHandler::resetDatabase() {
+int DatabaseHandler::insertSourceType(const std::string& type) {
     pqxx::work txn(connection);
-    txn.exec("DROP DATABASE \"" + dbName + "\"");
-    txn.commit();
+    pqxx::result res = txn.exec_params("SELECT id FROM source_type WHERE type = $1", type);
+
+    if (!res.empty()) {
+        txn.commit();
+        return res[0][0].as<int>();
+    } else {
+        res = txn.exec_params("INSERT INTO source_type (type) VALUES ($1) RETURNING id", type);
+
+        int typeId = res[0][0].as<int>();
+        txn.commit();
+        return typeId;
+  }
+}
+
+int DatabaseHandler::insertCode(std::string code, int sourceTypeId) {
+    try {
+        pqxx::work txn(connection);
+        std::string query = "INSERT INTO code (source_type_id, code) VALUES ($1, $2) RETURNING id";
+        pqxx::result res = txn.exec_params(query, sourceTypeId, code);
+        txn.commit();
+        if (!res.empty()) {
+            int codeId = res[0][0].as<int>();
+            return codeId;
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "Failed to insert code: " << e.what() << std::endl;
+    }
+    return -1;
+}
+
+int DatabaseHandler::insertExecutionStat(
+  int codeId, 
+  bool status, 
+  int executionTime, 
+  std::string result, 
+  double memoryUsage
+  ) {
+  try {
+      pqxx::work txn(connection);
+
+      std::string query = "INSERT INTO execution_stat (code_id, status, execution_time, result, memory_usage) VALUES ($1, $2, $3, $4, $5) RETURNING id";
+
+      pqxx::result res = txn.exec_params(query, codeId, status, executionTime, result, memoryUsage);
+
+      int statId = res[0][0].as<int>();
+      txn.commit();
+      return statId;
+    } catch (const std::exception& e) {
+      std::cerr << "Error while inserting execution stat: " << e.what() << std::endl;
+      return -1;
+    }
+
+}
+
+int DatabaseHandler::insertErrorType(const std::string& type) {
+    try {
+        pqxx::work txn(connection);
+
+        std::string checkQuery = "SELECT id FROM error_type WHERE type = $1";
+        pqxx::result checkRes = txn.exec_params(checkQuery, type);
+
+        if (!checkRes.empty()) {
+            int typeId = checkRes[0][0].as<int>();
+            return typeId;
+        } else {
+
+            std::string insertQuery = "INSERT INTO error_type (type) VALUES ($1) RETURNING id";
+            pqxx::result insertRes = txn.exec_params(insertQuery, type);
+
+            int typeId = insertRes[0][0].as<int>();
+            txn.commit();
+            return typeId;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error while inserting error type: " << e.what() << std::endl;
+        return -1;
+    }
+}
+
+
+int DatabaseHandler::insertError(int executionStatId, const std::string& errorMessage, int errorTypeId) {
+    try {
+        pqxx::work txn(connection);
+
+        std::string insertQuery = "INSERT INTO error (execution_stat_id, error_message, error_type_id) VALUES ($1, $2, $3) RETURNING id";
+        pqxx::result insertRes = txn.exec_params(insertQuery, executionStatId, errorMessage, errorTypeId);
+
+        int errorId = insertRes[0][0].as<int>();
+        txn.commit();
+        return errorId;
+    } catch (const std::exception& e) {
+        std::cerr << "Error while inserting error: " << e.what() << std::endl;
+        return -1;
+    }
 }
