@@ -3,6 +3,7 @@
 #include "runtime/environment/Environment.h"
 #include "runtime/interpreter/Interpreter.h"
 #include "database/DatabaseHandler.h"
+#include "runtime/values/Values.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -11,7 +12,6 @@
 #include <ostream>
 #include <chrono>
 #include <ctime>
-#include <iomanip>
 #include <string>
 
 
@@ -19,16 +19,6 @@ const char* hostName = "127.0.0.1";
 const char* dbName = "rusted-c";
 const char* user = "relow";
 const char* password = "";
-
-
-std::string get_current_datetime() {
-    auto now = std::chrono::system_clock::now();
-    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&now_c), "%Y-%m-%d %H:%M:%S");
-    return ss.str();
-}
-
 
 double process_mem_usage() {
     double vm_usage = 0.0;
@@ -45,6 +35,36 @@ double process_mem_usage() {
     vm_usage = vsize / 1024.0;
 
     return vm_usage;
+}
+
+void save_to_database(
+  double execution_time,
+  double memory_usage, 
+  std::string& errorMessage, 
+  std::string& errorType, 
+  std::string& type,
+  std::string& code,
+  RuntimeVal* result,
+  DatabaseHandler* db
+) {
+    bool isSucces = (errorMessage.empty()) ?  true : false;
+
+    int typeId = db->insertSourceType(type);
+    int codeId = db->insertCode(code, typeId);
+
+    int executionStat = -1;
+
+    if (result != nullptr) {
+      executionStat = db->insertExecutionStat(codeId, isSucces,  execution_time,  result->toString(), memory_usage);
+    }
+    else {
+      executionStat = db->insertExecutionStat(codeId, isSucces,  execution_time,  "", memory_usage);
+    }
+
+    if (!isSucces) {
+      int errorTypeId = db->insertErrorType(errorType);
+      db->insertError(executionStat, errorMessage, errorTypeId);
+    }
 }
 
 void run(std::string code, DatabaseHandler* db, std::string type) {
@@ -64,7 +84,6 @@ void run(std::string code, DatabaseHandler* db, std::string type) {
     std::unique_ptr<Program> program = parser.produceAST(lexer.getTokens());
 
     Environment *env = new Environment();
-    env->createGlobalEnv();
 
     result = Interpreter::evaluate(program.get(), env);
 
@@ -85,41 +104,38 @@ void run(std::string code, DatabaseHandler* db, std::string type) {
       }
   }
 
-  // auto end = std::chrono::high_resolution_clock::now();
-  // auto mem_after = process_mem_usage();
-  //
-  //
-  // std::cout << "hi";
-  //
-  // if (db != nullptr) {
-  //   auto execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000;
-  //   auto memory_usage = mem_after - mem_before;
-  //   bool isSucces = (errorMessage.empty()) ?  true : false;
-  //
-  //   int typeId = db->insertSourceType(type);
-  //   int codeId = db->insertCode(code, typeId);
-  //   int executionStat = db->insertExecutionStat(codeId, isSucces,  execution_time,  result->toString(), memory_usage);
-  //
-  //   if (!isSucces) {
-  //     int errorTypeId = db->insertErrorType(errorType);
-  //     db->insertError(executionStat, errorMessage, errorTypeId);
-  //   }
-  //
-  // }
-  //
-  // delete result;
+  auto end = std::chrono::high_resolution_clock::now();
+  auto mem_after = process_mem_usage();
+  
+  if (db != nullptr) {
+    auto execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000;
+    auto memory_usage = mem_after - mem_before;
+    save_to_database(execution_time, memory_usage, errorMessage, errorType, type, code, result, db);
+  }
+
+  delete result;
 }
 
 
+
+
 void repl(DatabaseHandler* db) {
+  std::string type = "REPL";
   Parser parser;
   std::unique_ptr<Program> program;
 
+  RuntimeVal *val = nullptr;
   Environment env;
-  env.createGlobalEnv();
 
   std::cout << "RustedC v0.1" << std::endl;
   while (true) {
+    std::string errorMessage = "";
+    std::string errorType = "";
+
+    auto start = std::chrono::high_resolution_clock::now();
+    double mem_before = process_mem_usage();
+
+
     std::string input;
     std::cout << ">>> ";
     std::getline(std::cin, input);
@@ -127,7 +143,39 @@ void repl(DatabaseHandler* db) {
     if (input.find("exit") != std::string::npos) {
       break;
     }
-    run(input, db, "REPL");
+
+  try {
+    Lexer lexer = Lexer(input);
+
+    program = parser.produceAST(lexer.getTokens());
+
+    val = Interpreter::evaluate(program.get(), &env);
+    std::cout << val->toString() << std::endl;
+  } catch(const std::exception& e) {
+      std::cerr << e.what() << std::endl;
+      if (const LexerError* lexErr = dynamic_cast<const LexerError*>(&e)) {
+          errorMessage = lexErr->what();
+          errorType = "LEXER";
+      } else if (const ParserError* parseErr = dynamic_cast<const ParserError*>(&e)) {
+          errorMessage = parseErr->what();
+          errorType = "PARSER";
+      } else if (const InterpreterError* interpErr = dynamic_cast<const InterpreterError*>(&e)) {
+          errorMessage = interpErr->what();
+          errorType = "INTERPRETER";
+      } else {
+          errorMessage = e.what();
+          errorType = "UNKNOWN";
+      }
+  }
+  auto end = std::chrono::high_resolution_clock::now();
+  auto mem_after = process_mem_usage();
+  
+  if (db != nullptr) {
+    auto execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000;
+    auto memory_usage = mem_after - mem_before;
+    save_to_database(execution_time, memory_usage, errorMessage, errorType, type, input, val, db);
+  }
+
   }
 }
 
@@ -170,6 +218,7 @@ std::string read_file(std::string filePath) {
   return buffer.str();
 }
 
+
 int main(int argc, char **argv) {
   DatabaseHandler* database = nullptr;
 
@@ -185,7 +234,12 @@ int main(int argc, char **argv) {
   }
 
   if (argc == 2) {
-    run(read_file(argv[1]), database, "FILE");
+    if (strcmp(argv[1], "database") == 0) {
+      database->displayMenu();
+    }
+    else {
+      run(read_file(argv[1]), database, "FILE");
+    }
   }
 
   delete database;

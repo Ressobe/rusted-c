@@ -1,7 +1,9 @@
 #include "Environment.h"
 #include "../standard-library/BuiltinFunctions.h"
 
-Environment::Environment(Environment *parentEnv) : parent(parentEnv) {}
+Environment::Environment(Environment *parentEnv) : parent(parentEnv) {
+  this->createGlobalEnv();
+}
 
 RuntimeVal *Environment::declareVar(const std::string &varName,
                                     RuntimeVal *value, bool isConst) {

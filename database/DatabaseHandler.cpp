@@ -162,6 +162,7 @@ std::string DatabaseHandler::getMostCommonErrorType() {
 
 std::vector<std::pair<std::string, int>> DatabaseHandler::getTop3ExecutionDays() {
   std::vector<std::pair<std::string, int>> top3Days;
+
   try {
       pqxx::work txn(connection);
       pqxx::result result = txn.exec("SELECT DATE(execution_date) as execution_day, COUNT(*) as code_count "
@@ -178,6 +179,7 @@ std::vector<std::pair<std::string, int>> DatabaseHandler::getTop3ExecutionDays()
   } catch (const std::exception &e) {
       std::cerr << "Error getting top 3 execution days: " << e.what() << std::endl;
   }
+
   return top3Days; 
 }
 
@@ -316,4 +318,83 @@ double DatabaseHandler::getAverageCodeLength() {
   }
 
   return averageCodeLength;
+}
+void DatabaseHandler::displayMenu() {
+    int choice;
+    do {
+        std::cout << "\n============================" << std::endl;
+        std::cout << "MENU" << std::endl;
+        std::cout << "1. Najczęstszy rodzaj błędu" << std::endl;
+        std::cout << "2. 3 dni z największą ilością uruchomionych kodów" << std::endl;
+        std::cout << "3. Unikalne typy źródeł" << std::endl;
+        std::cout << "4. Długość najdłuższego kodu" << std::endl;
+        std::cout << "5. Średni czas wykonania" << std::endl;
+        std::cout << "6. Całkowite zużycie pamięci" << std::endl;
+        std::cout << "7. Całkowitą liczbę błędów" << std::endl;
+        std::cout << "8. Liczba udanych uruchomień" << std::endl;
+        std::cout << "9. Liczba nieudanych uruchomień" << std::endl;
+        std::cout << "10. Średnią długość kodu" << std::endl;
+        std::cout << "0. Wyjście" << std::endl;
+        std::cout << ">>> ";
+        std::cin >> choice;
+
+        std::system("clear");
+        switch(choice) {
+            case 1: {
+                std::cout << "Najczęstszy rodzaj błędu: " << getMostCommonErrorType() << std::endl;
+                break;
+            }
+            case 2: {
+                std::cout << "Top 3 dni z największą ilością uruchomionych kodów:" << std::endl;
+                auto topDays = getTop3ExecutionDays();
+                for (const auto& pair : topDays) {
+                    std::cout << pair.first << ": " << pair.second << " uruchomień" << std::endl;
+                }
+                break;
+            }
+            case 3: {
+                std::cout << "Unikalne typy źródeł:" << std::endl;
+                auto sourceTypes = getDistinctSourceTypes();
+                for (const auto& type : sourceTypes) {
+                    std::cout << type << std::endl;
+                }
+                break;
+            }
+            case 4: {
+                std::cout << "Długość najdłuższego kodu: " << getLongestCodeLength() << " znaków" << std::endl;
+                break;
+            }
+            case 5: {
+                std::cout << "Średni czas wykonania: " << getAverageExecutionTime() << " ms" << std::endl;
+                break;
+            }
+            case 6: {
+                std::cout << "Całkowite zużycie pamięci: " << getTotalMemoryUsage() << " KB" << std::endl;
+                break;
+            }
+            case 7: {
+                std::cout << "Całkowita liczba błędów: " << getTotalErrorCount() << std::endl;
+                break;
+            }
+            case 8: {
+                std::cout << "Liczba udanych uruchomień: " << getSuccessfulExecutionCount() << std::endl;
+                break;
+            }
+            case 9: {
+                std::cout << "Liczba nieudanych uruchomień: " << getUnsuccesfulExecutionCount() << std::endl;
+                break;
+            }
+            case 10: {
+                std::cout << "Średnia długość kodu: " << getAverageCodeLength() << " znaków" << std::endl;
+                break;
+            }
+            case 0: {
+                break;
+            }
+            default: {
+                std::cout << "Nieprawidłowa opcja. Wybierz ponownie." << std::endl;
+                break;
+            }
+        }
+    } while (choice != 0);
 }
