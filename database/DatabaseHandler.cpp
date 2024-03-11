@@ -137,3 +137,183 @@ int DatabaseHandler::insertError(int executionStatId, const std::string& errorMe
         return -1;
     }
 }
+
+std::string DatabaseHandler::getMostCommonErrorType() {
+  std::string mostCommonErrorType;
+
+  try {
+      pqxx::work txn(connection);
+      pqxx::result result = txn.exec("SELECT error_type.type, COUNT(error.error_type_id) as error_count "
+                                     "FROM error "
+                                     "JOIN error_type ON error.error_type_id = error_type.id "
+                                     "GROUP BY error_type.type "
+                                     "ORDER BY error_count DESC "
+                                     "LIMIT 1");
+      if (!result.empty()) {
+          mostCommonErrorType = result[0]["type"].as<std::string>();
+      }
+  } catch (const std::exception &e) {
+      std::cerr << "Error getting most common error type: " << e.what() << std::endl;
+  }
+
+  return mostCommonErrorType;
+}
+
+
+std::vector<std::pair<std::string, int>> DatabaseHandler::getTop3ExecutionDays() {
+  std::vector<std::pair<std::string, int>> top3Days;
+  try {
+      pqxx::work txn(connection);
+      pqxx::result result = txn.exec("SELECT DATE(execution_date) as execution_day, COUNT(*) as code_count "
+                                     "FROM execution_stat "
+                                     "GROUP BY execution_day "
+                                     "ORDER BY code_count DESC "
+                                     "LIMIT 3");
+
+      for (const auto &row : result) {
+          std::string executionDay = row["execution_day"].as<std::string>();
+          int codeCount = row["code_count"].as<int>();
+          top3Days.push_back(std::make_pair(executionDay, codeCount));
+      }
+  } catch (const std::exception &e) {
+      std::cerr << "Error getting top 3 execution days: " << e.what() << std::endl;
+  }
+  return top3Days; 
+}
+
+std::vector<std::string> DatabaseHandler::getDistinctSourceTypes() {
+  std::vector<std::string> distinctSourceTypes;
+
+  try {
+      pqxx::work txn(connection);
+      pqxx::result result = txn.exec("SELECT DISTINCT type FROM source_type");
+
+      for (const auto &row : result) {
+          distinctSourceTypes.push_back(row["type"].as<std::string>());
+      }
+  } catch (const std::exception &e) {
+      std::cerr << "Error getting distinct source types: " << e.what() << std::endl;
+  }
+
+  return distinctSourceTypes;
+}
+
+int DatabaseHandler::getLongestCodeLength() {
+  int longestCodeLength = 0;
+
+  try {
+      pqxx::work txn(connection);
+      pqxx::result result = txn.exec("SELECT MAX(LENGTH(code)) as max_length FROM code");
+
+      if (!result.empty()) {
+          longestCodeLength = result[0]["max_length"].as<int>();
+      }
+  } catch (const std::exception &e) {
+      std::cerr << "Error getting longest code length: " << e.what() << std::endl;
+  }
+
+  return longestCodeLength;
+}
+
+double DatabaseHandler::getAverageExecutionTime() {
+  double averageExecutionTime = 0.0;
+
+  try {
+      pqxx::work txn(connection);
+      pqxx::result result = txn.exec("SELECT AVG(execution_time) as avg_time FROM execution_stat");
+
+      if (!result.empty()) {
+          averageExecutionTime = result[0]["avg_time"].as<double>();
+      }
+  } catch (const std::exception &e) {
+      std::cerr << "Error getting average execution time: " << e.what() << std::endl;
+  }
+
+  return averageExecutionTime;
+}
+
+int DatabaseHandler::getTotalMemoryUsage() {
+  int totalMemoryUsage = 0;
+
+  try {
+      pqxx::work txn(connection);
+      pqxx::result result = txn.exec("SELECT SUM(memory_usage) as total_usage FROM execution_stat");
+
+      if (!result.empty()) {
+          totalMemoryUsage = result[0]["total_usage"].as<int>();
+      }
+  } catch (const std::exception &e) {
+      std::cerr << "Error getting total memory usage: " << e.what() << std::endl;
+  }
+
+  return totalMemoryUsage;
+}
+
+int DatabaseHandler::getTotalErrorCount() {
+  int totalErrorCount = 0;
+
+  try {
+      pqxx::work txn(connection);
+      pqxx::result result = txn.exec("SELECT COUNT(*) AS error_count FROM error");
+
+      if (!result.empty()) {
+          totalErrorCount = result[0]["error_count"].as<int>();
+      }
+  } catch (const std::exception &e) {
+      std::cerr << "Error getting total error count: " << e.what() << std::endl;
+  }
+
+  return totalErrorCount;
+}
+
+int DatabaseHandler::getSuccessfulExecutionCount() {
+  int successfulExecutionCount = 0;
+
+  try {
+      pqxx::work txn(connection);
+      pqxx::result result = txn.exec("SELECT COUNT(*) AS success_count FROM execution_stat WHERE status = true");
+
+      if (!result.empty()) {
+          successfulExecutionCount = result[0]["success_count"].as<int>();
+      }
+  } catch (const std::exception &e) {
+      std::cerr << "Error getting successful execution count: " << e.what() << std::endl;
+  }
+
+  return successfulExecutionCount;
+}
+
+int DatabaseHandler::getUnsuccesfulExecutionCount() {
+  int unsucessfulExecutionCount = 0;
+
+  try {
+      pqxx::work txn(connection);
+      pqxx::result result = txn.exec("SELECT COUNT(*) AS unsuccess_count FROM execution_stat WHERE status = false");
+
+      if (!result.empty()) {
+          unsucessfulExecutionCount = result[0]["unsuccess_count"].as<int>();
+      }
+  } catch (const std::exception &e) {
+      std::cerr << "Error getting unsuccessful execution count: " << e.what() << std::endl;
+  }
+
+  return unsucessfulExecutionCount;
+
+}
+
+double DatabaseHandler::getAverageCodeLength() {
+  double averageCodeLength = 0.0;
+
+  try {
+      pqxx::work txn(connection);
+      pqxx::result result = txn.exec("SELECT AVG(LENGTH(code)) AS avg_length FROM code");
+
+      if (!result.empty()) {
+          averageCodeLength = result[0]["avg_length"].as<double>();
+      }
+  } catch (const std::exception &e) {
+      std::cerr << "Error getting average code length: " << e.what() << std::endl;
+  }
+
+  return averageCodeLength;
+}

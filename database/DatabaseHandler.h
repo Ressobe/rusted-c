@@ -33,6 +33,19 @@ class DatabaseHandler {
 
     int insertErrorType(const std::string& type);
     int insertError(int executionStatId, const std::string& errorMessage, int errorTypeId);
+
+
+    std::string getMostCommonErrorType();
+    std::vector<std::pair<std::string, int>> getTop3ExecutionDays();
+    std::vector<std::string> getDistinctSourceTypes();
+
+    int getLongestCodeLength();
+    double getAverageExecutionTime();
+    int getTotalMemoryUsage();
+    int getTotalErrorCount();
+    int getSuccessfulExecutionCount();
+    int getUnsuccesfulExecutionCount();
+    double getAverageCodeLength();
 };
 
 #endif
