@@ -5,7 +5,6 @@
 #include "database/DatabaseHandler.h"
 #include "runtime/values/Values.h"
 #include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <memory>
 #include <cstdlib>
@@ -13,12 +12,14 @@
 #include <chrono>
 #include <ctime>
 #include <string>
+#include <fstream>
 
 
 const char* hostName = "127.0.0.1";
 const char* dbName = "rusted-c";
 const char* user = "relow";
 const char* password = "";
+
 
 double process_mem_usage() {
     double vm_usage = 0.0;
@@ -37,36 +38,6 @@ double process_mem_usage() {
     return vm_usage;
 }
 
-void save_to_database(
-  double execution_time,
-  double memory_usage, 
-  std::string& errorMessage, 
-  std::string& errorType, 
-  std::string& type,
-  std::string& code,
-  RuntimeVal* result,
-  DatabaseHandler* db
-) {
-    bool isSucces = (errorMessage.empty()) ?  true : false;
-
-    int typeId = db->insertSourceType(type);
-    int codeId = db->insertCode(code, typeId);
-
-    int executionStat = -1;
-
-    if (result != nullptr) {
-      executionStat = db->insertExecutionStat(codeId, isSucces,  execution_time,  result->toString(), memory_usage);
-    }
-    else {
-      executionStat = db->insertExecutionStat(codeId, isSucces,  execution_time,  "", memory_usage);
-    }
-
-    if (!isSucces) {
-      int errorTypeId = db->insertErrorType(errorType);
-      db->insertError(executionStat, errorMessage, errorTypeId);
-    }
-}
-
 void run(std::string code, DatabaseHandler* db, std::string type) {
   std::string errorMessage = "";
   std::string errorType = "";
@@ -75,7 +46,6 @@ void run(std::string code, DatabaseHandler* db, std::string type) {
   double mem_before = process_mem_usage();
 
   RuntimeVal* result = nullptr;
-
 
   try {
     Lexer lexer = Lexer(code);
@@ -110,13 +80,11 @@ void run(std::string code, DatabaseHandler* db, std::string type) {
   if (db != nullptr) {
     auto execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000;
     auto memory_usage = mem_after - mem_before;
-    save_to_database(execution_time, memory_usage, errorMessage, errorType, type, code, result, db);
+    db->addNewStatistic(execution_time, memory_usage, errorMessage, errorType, type, code, result);
   }
 
   delete result;
 }
-
-
 
 
 void repl(DatabaseHandler* db) {
@@ -173,7 +141,7 @@ void repl(DatabaseHandler* db) {
   if (db != nullptr) {
     auto execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000;
     auto memory_usage = mem_after - mem_before;
-    save_to_database(execution_time, memory_usage, errorMessage, errorType, type, input, val, db);
+    db->addNewStatistic(execution_time, memory_usage, errorMessage, errorType, type, input, val);
   }
 
   }

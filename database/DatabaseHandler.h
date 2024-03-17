@@ -5,8 +5,9 @@
 #include <string>
 #include <pqxx/pqxx>
 #include <vector>
-#include <utility> // for pair
+#include <utility>
 #include <cstdlib> 
+#include "../runtime/values/Values.h"
 
 class DatabaseHandler {
   private:
@@ -17,7 +18,6 @@ class DatabaseHandler {
     pqxx::connection connection;
 
     void createTable(const std::string& tableName, const std::string& tableDefinition);
-    void createTables();
 
     std::vector<std::pair<std::string, int>> getTop3ExecutionDays();
     std::vector<std::string> getDistinctSourceTypes();
@@ -30,6 +30,9 @@ class DatabaseHandler {
     int getUnsuccesfulExecutionCount();
     double getAverageCodeLength();
     std::string getMostCommonErrorType();
+
+    void createTables();
+    void dropTables();
 
   public:
     DatabaseHandler(
@@ -47,6 +50,16 @@ class DatabaseHandler {
 
     int insertErrorType(const std::string& type);
     int insertError(int executionStatId, const std::string& errorMessage, int errorTypeId);
+
+    void addNewStatistic(
+      double execution_time,
+      double memory_usage, 
+      std::string& errorMessage, 
+      std::string& errorType, 
+      std::string& type,
+      std::string& code,
+      RuntimeVal* result
+    );
 
     void displayMenu();
 };

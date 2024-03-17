@@ -31,7 +31,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # Reguła dla plików obiektowych z podkatalogów
-$(OBJDIR)/%.o: $(ASTDIR)/%.cpp $(LEXERDIR)/%.cpp $(PARSERDIR)/%.cpp $(ENVDIR)/%.cpp $(INTERPRETERDIR)/%.cpp $(VALUESDIR)/%.cpp $(STANDARDLIBDIR)/%.cpp $(DATABASEDIR)/%.cpp
+$(OBJDIR)/%.o: $(ASTDIR)/%.cpp $(LEXERDIR)/%.cpp $(PARSERDIR)/%.cpp $(ENVDIR)/%.cpp $(INTERPRETERDIR)/%.cpp $(VALUESDIR)/%.cpp $(STANDARDLIBDIR)/%.cpp $(DATABASEDIR)/%.cpp 
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 

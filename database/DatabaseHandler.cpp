@@ -40,6 +40,22 @@ void DatabaseHandler::createTables() {
     createTable("error", "id SERIAL PRIMARY KEY, execution_stat_id INTEGER REFERENCES execution_stat(id), error_message TEXT, error_type_id INTEGER REFERENCES error_type(id)");
 }
 
+void DatabaseHandler::dropTables() {
+  try {
+    pqxx::work txn(connection);
+
+    txn.exec("DROP TABLE IF EXISTS error CASCADE");
+    txn.exec("DROP TABLE IF EXISTS error_type CASCADE");
+    txn.exec("DROP TABLE IF EXISTS execution_stat CASCADE");
+    txn.exec("DROP TABLE IF EXISTS code CASCADE");
+    txn.exec("DROP TABLE IF EXISTS source_type CASCADE");
+
+    txn.commit();
+  } catch (const std::exception &e) {
+    std::cerr << "Error while dropping tables: " << e.what() << std::endl;
+  }
+}
+
 int DatabaseHandler::insertSourceType(const std::string& type) {
     pqxx::work txn(connection);
     pqxx::result res = txn.exec_params("SELECT id FROM source_type WHERE type = $1", type);
@@ -319,6 +335,34 @@ double DatabaseHandler::getAverageCodeLength() {
 
   return averageCodeLength;
 }
+
+void DatabaseHandler::addNewStatistic(
+  double execution_time,
+  double memory_usage, 
+  std::string& errorMessage, 
+  std::string& errorType, 
+  std::string& type,
+  std::string& code,
+  RuntimeVal* result
+) {
+    bool isSucces = (errorMessage.empty()) ?  true : false;
+    int typeId = this->insertSourceType(type);
+    int codeId = this->insertCode(code, typeId);
+
+    int executionStat = -1;
+
+    if (result != nullptr) {
+      executionStat = this->insertExecutionStat(codeId, isSucces,  execution_time,  result->toString(), memory_usage);
+    }
+    else {
+      executionStat = this->insertExecutionStat(codeId, isSucces,  execution_time,  "", memory_usage);
+    }
+    if (!isSucces) {
+      int errorTypeId = this->insertErrorType(errorType);
+      this->insertError(executionStat, errorMessage, errorTypeId);
+    }
+}
+
 void DatabaseHandler::displayMenu() {
     int choice;
     do {
@@ -333,7 +377,8 @@ void DatabaseHandler::displayMenu() {
         std::cout << "7. Całkowitą liczbę błędów" << std::endl;
         std::cout << "8. Liczba udanych uruchomień" << std::endl;
         std::cout << "9. Liczba nieudanych uruchomień" << std::endl;
-        std::cout << "10. Średnią długość kodu" << std::endl;
+        std::cout << "10. Średnią długość kodu" << std::endl;        
+        std::cout << "11. Procentowa liczba udanych i nieudanych uruchomień" << std::endl;
         std::cout << "0. Wyjście" << std::endl;
         std::cout << ">>> ";
         std::cin >> choice;
@@ -387,6 +432,23 @@ void DatabaseHandler::displayMenu() {
             case 10: {
                 std::cout << "Średnia długość kodu: " << getAverageCodeLength() << " znaków" << std::endl;
                 break;
+            }
+            case 11: {
+                int successful = getSuccessfulExecutionCount();
+                int unsuccessful = getUnsuccesfulExecutionCount();
+                int total = successful + unsuccessful;
+                if (total > 0) {
+                  double successfulPercentage = static_cast<double>(successful) / total * 100;
+                  double unsuccessfulPercentage = static_cast<double>(unsuccessful) / total * 100;
+          
+                  std::cout << "Procentowy udział udanych uruchomień: " << successfulPercentage << "%" << std::endl;
+                  std::cout << "Procentowy udział nieudanych uruchomień: " << unsuccessfulPercentage << "%" << std::endl;
+                } else {
+                    std::cout << "Brak danych do wyświetlenia." << std::endl;
+                }
+                break;
+
+
             }
             case 0: {
                 break;
