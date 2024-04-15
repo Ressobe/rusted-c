@@ -16,6 +16,7 @@ struct Point2D {
     let x = 0;
     let y = 0;
 }
+
 func calculateDistance(point1, point2) {
     return sqrt(pow(point2.x - point1.x, 2) + pow(point2.y - point1.y, 2));
 
