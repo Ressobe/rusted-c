@@ -1,0 +1,17 @@
+func add(num1, num2) {
+    return num1 + num2;
+}
+
+func minus(num1, num2) {
+    return num1 - num2;
+}
+
+
+let y = 20;
+let x = 30;
+
+let wynik = add(x, y);
+let wynik2 = minus(wynik, y);
+
+
+print(wynik2)
