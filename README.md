@@ -4,7 +4,7 @@
 
 This project is an interpreter written in C++ for a simple programming language.
 The interpreter consists of several main modules, including a lexer, parser, abstract syntax tree (AST), and an execution environment.
-The project also includes sample programs written in the interpreted language.
+The project also includes sample programs.
 
 ## Example code
 
